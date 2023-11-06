@@ -1,0 +1,12 @@
+fonts/ChakraPetch-Bold.fnt
+fonts/ChakraPetch-BoldItalic.fnt
+fonts/ChakraPetch-Italic.fnt
+fonts/ChakraPetch-Light.fnt
+fonts/ChakraPetch-LightItalic.fnt
+fonts/ChakraPetch-Medium.fnt
+fonts/ChakraPetch-MediumItalic.fnt
+fonts/ChakraPetch-Regular.fnt
+fonts/ChakraPetch-SemiBold.fnt
+fonts/ChakraPetch-SemiBoldItalic.fnt
+fonts/font.fnt
+fonts/Roboto-Regular.fnt

@@ -1,0 +1,67 @@
+buildscript {
+    ext.kotlinVersion = '1.9.20'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        google()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+
+    version = '1.0'
+    ext {
+        appName = "GameOff2023"
+        gdxVersion = '1.11.0'
+        roboVMVersion = '2.3.19'
+        box2DLightsVersion = '1.5'
+        ashleyVersion = '1.7.4'
+        aiVersion = '1.8.2'
+        gdxControllersVersion = '2.2.1'
+        kotlinxSerializationVersion = '1.4.1'
+        kotlinCsvVesion = '1.9.1'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
+    }
+}
+
+project(":desktop") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation project(":core")
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    }
+}
+
+project(":core") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
+        implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$kotlinCsvVesion"
+    }
+}

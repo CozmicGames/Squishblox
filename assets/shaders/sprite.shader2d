@@ -1,0 +1,10 @@
+#fragment
+
+vec4 fragment(Fragment f) {
+    vec4 color = sampleTexture(f.texcoord) * f.color;
+
+    if (color.a < 1.0 / 255.0)
+        discard;
+
+    return color;
+}

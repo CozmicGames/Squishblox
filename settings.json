@@ -1,0 +1,22 @@
+{
+    "vsync": {
+        "type": "BOOLEAN",
+        "value": false
+    },
+    "width": {
+        "type": "INT",
+        "value": 1920
+    },
+    "language": {
+        "type": "STRING",
+        "value": "English"
+    },
+    "isFullscreen": {
+        "type": "BOOLEAN",
+        "value": false
+    },
+    "height": {
+        "type": "INT",
+        "value": 991
+    }
+}
