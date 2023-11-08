@@ -56,3 +56,30 @@ sealed class BlockComponent : Component() {
 }
 
 class WorldBlockComponent : BlockComponent()
+
+class PlayerBlockComponent : BlockComponent() {
+    fun addSize(amount: Float) {
+        if ((maxX - minX) > (maxY - minY))
+            maxX += amount
+        else
+            maxY += amount
+    }
+
+    fun adjustWidth(newMinX: Float, newMaxX: Float) {
+        val area = (maxX - minX) * (maxY - minY)
+        val width = newMaxX - newMinX
+        val height = area / width
+        maxY = minY + height
+        minX = newMinX
+        maxX = newMaxX
+    }
+
+    fun adjustHeight(newMinY: Float, newMaxY: Float) {
+        val area = (maxX - minX) * (maxY - minY)
+        val height = newMaxY - newMinY
+        val width = area / height
+        maxX = minX + width
+        minY = newMinY
+        maxY = newMaxY
+    }
+}

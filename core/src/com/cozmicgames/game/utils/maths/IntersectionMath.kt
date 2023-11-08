@@ -8,7 +8,15 @@ fun intersectPointRect(x: Float, y: Float, minX: Float, minY: Float, maxX: Float
     return minX <= x && minY <= y && maxX >= x && maxY >= y
 }
 
+fun intersectPointRect(x: Int, y: Int, minX: Int, minY: Int, maxX: Int, maxY: Int): Boolean {
+    return minX <= x && minY <= y && maxX >= x && maxY >= y
+}
+
 fun intersectRectRect(minX0: Float, minY0: Float, maxX0: Float, maxY0: Float, minX1: Float, minY1: Float, maxX1: Float, maxY1: Float): Boolean {
+    return maxX0 >= minX1 && maxY0 >= minY1 && minX0 <= maxX1 && minY0 <= maxY1
+}
+
+fun intersectRectRect(minX0: Int, minY0: Int, maxX0: Int, maxY0: Int, minX1: Int, minY1: Int, maxX1: Int, maxY1: Int): Boolean {
     return maxX0 >= minX1 && maxY0 >= minY1 && minX0 <= maxX1 && minY0 <= maxY1
 }
 

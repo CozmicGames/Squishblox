@@ -40,7 +40,7 @@ class PlayerCamera {
     private val viewportPoints = Array(VIEWPORT_POINTS_NDC.size) { Vector3() }
 
     init {
-        camera.setToOrtho(true)
+        camera.setToOrtho(false)
     }
 
     fun update(updateMovement: Boolean = true) {
