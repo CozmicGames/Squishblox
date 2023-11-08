@@ -15,7 +15,6 @@ class BlockRenderProcessor : SceneProcessor() {
 
     init {
         val texture = TextureRegion(Game.textures.getTexture("textures/block_32.png"))
-        //texture.flip(false, true)
         blockNinePatch = NinePatch(texture, texture.regionWidth / 3, texture.regionWidth / 3, texture.regionHeight / 3, texture.regionHeight / 3)
     }
 

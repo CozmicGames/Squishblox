@@ -5,5 +5,6 @@ object RenderLayers {
 
     const val WORLD_LAYER_BEGIN = 10
     const val WORLD_LAYER_END = WORLD_LAYER_BEGIN + 100
-    const val WORLD_LAYER_BLOCK = WORLD_LAYER_BEGIN
+    const val WORLD_LAYER_BACKGROUND = WORLD_LAYER_BEGIN
+    const val WORLD_LAYER_BLOCK = WORLD_LAYER_BEGIN + 1
 }

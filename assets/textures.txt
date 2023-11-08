@@ -3,4 +3,5 @@ textures/block_128.png
 textures/block_256.png
 textures/block_32.png
 textures/block_64.png
+textures/grid_background_8x8.png
 textures/menu_button.png
