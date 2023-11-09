@@ -8,7 +8,7 @@ import com.cozmicgames.game.utils.maths.intersectPointRect
 
 class World {
     companion object {
-        private const val DEBUG_INTERSECTION = true
+        private const val DEBUG_INTERSECTION = false
     }
 
     private class Block(var id: Int, var minX: Int, var minY: Int, var maxX: Int, var maxY: Int)

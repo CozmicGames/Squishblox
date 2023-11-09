@@ -303,7 +303,6 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
     private fun editPlayerBlock(block: PlayerBlockComponent): Boolean {
         val isTopHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
         val isLeftHovered = Game.player.isHovered(block.minX, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
-        val isCenterHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
         val isRightHovered = Game.player.isHovered(block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.maxX, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
         val isBottomHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.maxY - WorldConstants.RESIZE_BORDER_SIZE, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.maxY)
 
@@ -316,8 +315,6 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize)
             else if (isBottomHovered)
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize)
-            else if (isCenterHovered)
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.AllResize)
             else
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
         }
@@ -343,11 +340,6 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 offsetY = Game.player.inputY - (block.maxY - WorldConstants.WORLD_CELL_SIZE)
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize)
                 1 shl 3
-            } else if (isCenterHovered) {
-                offsetX = Game.player.inputX - block.minX
-                offsetY = Game.player.inputY - block.minY
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.AllResize)
-                1 shl 8
             } else
                 0
 

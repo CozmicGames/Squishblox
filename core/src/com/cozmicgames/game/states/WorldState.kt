@@ -58,6 +58,7 @@ class WorldState : SuspendableGameState {
             returnState = InGameMenuState(this)
 
         drawBackground()
+        scene.updateEditState()
         scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 

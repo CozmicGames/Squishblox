@@ -11,7 +11,6 @@ import com.cozmicgames.game.player
 class InGameRenderFunction : RenderFunction() {
     override fun render(delta: Float) {
         ScreenUtils.clear(Color.SKY)
-
         Game.graphics2d.render(Game.player.camera.camera) { it in RenderLayers.WORLD_LAYER_BEGIN..RenderLayers.WORLD_LAYER_END }
     }
 }
