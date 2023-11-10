@@ -22,22 +22,15 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
         val scene = this.scene ?: return
         val blockPreviewComponent = scene.findGameObjectByComponent<BlockPreviewComponent> { true }?.getComponent<BlockPreviewComponent>() ?: return
 
-        if (Game.input.justTouchedUp) {
-            x1 = WorldUtils.toCellCoord(Game.player.inputX)
-            y1 = WorldUtils.toCellCoord(Game.player.inputY)
-
-            val minX = min(x0, x1)
-            val minY = min(y0, y1)
-            val maxX = max(x0, x1)
-            val maxY = max(y0, y1)
-
-            if (blockPreviewComponent.isBuildable)
-                world.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
-        }
-
         if (Game.input.isTouched) {
-            x1 = WorldUtils.toCellCoord(Game.player.inputX)
-            y1 = WorldUtils.toCellCoord(Game.player.inputY)
+            x1 = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR) + 1
+            y1 = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+
+            if (x1 == x0)
+                x1 = x0 + 1
+
+            if (y1 == y0)
+                y1 = y0 + 1
 
             val minX = min(x0, x1)
             val minY = min(y0, y1)
@@ -49,17 +42,22 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
             blockPreviewComponent.maxX = WorldUtils.toWorldCoord(maxX)
             blockPreviewComponent.maxY = WorldUtils.toWorldCoord(maxY)
         } else {
-            if (Game.input.justTouchedDown) {
-                x0 = WorldUtils.toCellCoord(Game.player.inputX)
-                y0 = WorldUtils.toCellCoord(Game.player.inputY)
-                x1 = x0 + 1
-                y1 = y0 + 1
-            }
+            if (Game.input.justTouchedUp)
+                if (blockPreviewComponent.isBuildable) {
+                    val minX = min(x0, x1)
+                    val minY = min(y0, y1)
+                    val maxX = max(x0, x1)
+                    val maxY = max(y0, y1)
+                    world.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
+                }
 
-            blockPreviewComponent.minX = WorldUtils.roundWorldToCellCoord(Game.player.inputX)
-            blockPreviewComponent.minY = WorldUtils.roundWorldToCellCoord(Game.player.inputY)
-            blockPreviewComponent.maxX = blockPreviewComponent.minX + WorldConstants.WORLD_CELL_SIZE
-            blockPreviewComponent.maxY = blockPreviewComponent.minY + WorldConstants.WORLD_CELL_SIZE
+            x0 = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR)
+            y0 = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+
+            blockPreviewComponent.minX = WorldUtils.toWorldCoord(x0)
+            blockPreviewComponent.minY = WorldUtils.toWorldCoord(y0)
+            blockPreviewComponent.maxX = WorldUtils.toWorldCoord(x0 + 1)
+            blockPreviewComponent.maxY = WorldUtils.toWorldCoord(y0 + 1)
         }
     }
 }
