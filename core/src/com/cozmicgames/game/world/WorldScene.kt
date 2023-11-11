@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
 import com.cozmicgames.game.scene.Scene
+import com.cozmicgames.game.scene.findGameObjectByComponent
 
 class WorldScene : Scene() {
     private val world = World()
@@ -53,4 +54,8 @@ class WorldScene : Scene() {
             }
         }
     }
+
+    fun getBlockFromId(id: Int): BlockComponent? = findGameObjectByComponent<BlockComponent> {
+        it.getComponent<BlockComponent>()?.id == id
+    }?.getComponent()
 }

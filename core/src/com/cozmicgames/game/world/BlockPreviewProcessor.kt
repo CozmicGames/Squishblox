@@ -22,7 +22,7 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
         val scene = this.scene ?: return
         val blockPreviewComponent = scene.findGameObjectByComponent<BlockPreviewComponent> { true }?.getComponent<BlockPreviewComponent>() ?: return
 
-        if (Game.input.isTouched) {
+        if (Game.input.isButtonDown(0)) {
             val cursorX = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR)
             val cursorY = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
 
@@ -52,7 +52,7 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
             blockPreviewComponent.maxX = WorldUtils.toWorldCoord(maxX)
             blockPreviewComponent.maxY = WorldUtils.toWorldCoord(maxY)
         } else {
-            if (Game.input.justTouchedUp)
+            if (Game.input.isButtonJustUp(0))
                 if (blockPreviewComponent.isBuildable) {
                     val minX = min(if (x1 < x0) x0 + 1 else x0, x1)
                     val minY = min(if (y1 < y0) y0 + 1 else y0, y1)

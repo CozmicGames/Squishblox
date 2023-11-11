@@ -6,7 +6,6 @@ import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
 import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
-import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import kotlin.math.abs
 
@@ -20,11 +19,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
         return true
     }
 
-    private fun getBlockFromId(id: Int): BlockComponent? = scene?.findGameObjectByComponent<BlockComponent> {
-        it.getComponent<BlockComponent>()?.id == id
-    }?.getComponent()
-
-    private fun editWorldBlock(block: WorldBlockComponent): Boolean {
+    private fun editWorldBlock(scene: WorldScene, block: WorldBlockComponent): Boolean {
         val isTopLeftHovered = Game.player.isHovered(block.minX, block.minY, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
         val isTopCenterHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
         val isTopRightHovered = Game.player.isHovered(block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY, block.maxX, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
@@ -60,7 +55,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
         }
 
-        if (Game.input.justTouchedDown) {
+        if (Game.input.isButtonJustDown(0)) {
             isResizingFlag = if (isTopLeftHovered) {
                 offsetX = Game.player.inputX - block.minX
                 offsetY = Game.player.inputY - block.minY
@@ -113,7 +108,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 editingId = block.id
         }
 
-        if (Game.input.justTouchedUp) {
+        if (Game.input.isButtonJustUp(0)) {
             isResizingFlag = 0
             offsetX = 0.0f
             offsetY = 0.0f
@@ -135,13 +130,13 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinX < block.minX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinX = collidingBlocks.minOf { getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
             }
 
             if (newMinY < block.minY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinY = collidingBlocks.minOf { getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
             }
         }
 
@@ -152,7 +147,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinY < block.minY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinY = collidingBlocks.minOf { getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
             }
         }
 
@@ -165,13 +160,13 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxX > block.maxX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxX = collidingBlocks.minOf { getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
             }
 
             if (newMinY < block.minY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinY = collidingBlocks.minOf { getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
             }
         }
 
@@ -182,7 +177,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinX < block.minX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinX = collidingBlocks.minOf { getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
             }
         }
 
@@ -193,7 +188,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxX > block.maxX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxX = collidingBlocks.minOf { getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
             }
         }
 
@@ -206,13 +201,13 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinX < block.minX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinX = collidingBlocks.minOf { getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
             }
 
             if (newMaxY > block.maxY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxY = collidingBlocks.minOf { getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
             }
         }
 
@@ -223,7 +218,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxY > block.maxY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxY = collidingBlocks.minOf { getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
             }
         }
 
@@ -236,13 +231,13 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxX > block.maxX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxX = collidingBlocks.minOf { getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
             }
 
             if (newMaxY > block.maxY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxY = collidingBlocks.minOf { getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
             }
         }
 
@@ -258,7 +253,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinX < block.minX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty()) {
-                    newMinX = collidingBlocks.minOf { getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
                     newMaxX = newMinX + width
                 }
             }
@@ -266,7 +261,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinY < block.minY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty()) {
-                    newMinY = collidingBlocks.minOf { getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
                     newMaxY = newMinY + height
                 }
             }
@@ -274,7 +269,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxX > block.maxX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty()) {
-                    newMaxX = collidingBlocks.minOf { getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
                     newMinX = newMaxX - width
                 }
             }
@@ -282,7 +277,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxY > block.maxY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty()) {
-                    newMaxY = collidingBlocks.minOf { getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
                     newMinY = newMaxY - height
                 }
             }
@@ -300,7 +295,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
         return true
     }
 
-    private fun editPlayerBlock(block: PlayerBlockComponent): Boolean {
+    private fun editPlayerBlock(scene: WorldScene, block: PlayerBlockComponent): Boolean {
         val isTopHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
         val isLeftHovered = Game.player.isHovered(block.minX, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
         val isRightHovered = Game.player.isHovered(block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.maxX, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
@@ -319,7 +314,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
         }
 
-        if (Game.input.justTouchedDown) {
+        if (Game.input.isButtonJustDown(0)) {
             isResizingFlag = if (isTopHovered) {
                 offsetX = 0.0f
                 offsetY = Game.player.inputY - block.minY
@@ -367,7 +362,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinY < block.minY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinY = collidingBlocks.minOf { getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
             }
 
             block.adjustHeight(newMinY, newMaxY)
@@ -380,7 +375,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMinX < block.minX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinX = collidingBlocks.minOf { getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
             }
 
             block.adjustWidth(newMinX, newMaxX)
@@ -393,7 +388,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxX > block.maxX) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxX = collidingBlocks.minOf { getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
             }
 
             block.adjustWidth(newMinX, newMaxX)
@@ -406,7 +401,7 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
             if (newMaxY > block.maxY) {
                 val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxY = collidingBlocks.minOf { getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
             }
 
             block.adjustHeight(newMinY, newMaxY)
@@ -419,15 +414,15 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
     }
 
     override fun process(delta: Float) {
-        val scene = this.scene ?: return
+        val scene = this.scene as? WorldScene ?: return
 
         if (editingId != null) {
             scene.findGameObjectsWithComponent<BlockComponent> {
                 val blockComponent = it.getComponent<BlockComponent>()!!
                 if (blockComponent.id == editingId) {
                     val isStillEditing = when (blockComponent) {
-                        is WorldBlockComponent -> editWorldBlock(blockComponent)
-                        is PlayerBlockComponent -> editPlayerBlock(blockComponent)
+                        is WorldBlockComponent -> editWorldBlock(scene, blockComponent)
+                        is PlayerBlockComponent -> editPlayerBlock(scene, blockComponent)
                     }
                     if (!isStillEditing)
                         editingId = null
@@ -444,8 +439,8 @@ class BlockEditProcessor(val world: World) : SceneProcessor() {
                 val blockComponent = it.getComponent<BlockComponent>()!!
                 if (blockComponent.id == hoveredId) {
                     when (blockComponent) {
-                        is WorldBlockComponent -> editWorldBlock(blockComponent)
-                        is PlayerBlockComponent -> editPlayerBlock(blockComponent)
+                        is WorldBlockComponent -> editWorldBlock(scene, blockComponent)
+                        is PlayerBlockComponent -> editPlayerBlock(scene, blockComponent)
                     }
                 }
             }

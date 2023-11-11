@@ -59,10 +59,51 @@ class WorldBlockComponent : BlockComponent()
 
 class PlayerBlockComponent : BlockComponent() {
     fun addSize(amount: Float) {
-        if ((maxX - minX) > (maxY - minY))
-            maxX += amount
-        else
-            maxY += amount
+        if ((maxX - minX) > (maxY - minY)) {
+            var remainingAmount = addWidth(amount)
+            if (remainingAmount > 0.0f) {
+                remainingAmount = addHeight(remainingAmount)
+                if (remainingAmount > 0.0f) {
+                    //TODO: Blow up player
+                }
+            }
+        } else {
+            var remainingAmount = addHeight(amount)
+            if (remainingAmount > 0.0f) {
+                remainingAmount = addWidth(remainingAmount)
+                if (remainingAmount > 0.0f) {
+                    //TODO: Blow up player
+                }
+            }
+        }
+    }
+
+    private fun addWidth(amount: Float): Float {
+        val widthToAdd = amount * ((maxX - minX) / (maxY - minY))
+
+        var newMaxX = maxX + widthToAdd
+        val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(maxX), WorldUtils.toCellCoord(minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(maxY)) { it != id }
+        if (collidingBlocks.isNotEmpty())
+            newMaxX = collidingBlocks.minOf { (gameObject.scene as? WorldScene)?.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+
+        val remainingAmount = (maxX + widthToAdd - newMaxX) * ((maxY - minY) / (maxX - minX))
+        maxX = newMaxX
+
+        return remainingAmount
+    }
+
+    private fun addHeight(amount: Float): Float {
+        val heightToAdd = amount * ((maxY - minY) / (maxX - minX))
+
+        var newMaxY = maxY + heightToAdd
+        val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(minX), WorldUtils.toCellCoord(maxY), WorldUtils.toCellCoord(maxX), WorldUtils.toCellCoord(newMaxY)) { it != id }
+        if (collidingBlocks.isNotEmpty())
+            newMaxY = collidingBlocks.minOf { (gameObject.scene as? WorldScene)?.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+
+        val remainingAmount = (maxY + heightToAdd - newMaxY) * ((maxX - minX) / (maxY - minY))
+        maxY = newMaxY
+
+        return remainingAmount
     }
 
     fun adjustWidth(newMinX: Float, newMaxX: Float) {

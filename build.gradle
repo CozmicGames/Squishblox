@@ -28,6 +28,7 @@ allprojects {
         gdxControllersVersion = '2.2.1'
         kotlinxSerializationVersion = '1.4.1'
         kotlinCsvVesion = '1.9.1'
+        jbumpVersion = 'v1.0.2'
     }
 
     repositories {
@@ -63,5 +64,6 @@ project(":core") {
         implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
         implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
         implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$kotlinCsvVesion"
+        implementation "com.github.implicit-invocation:jbump:$jbumpVersion"
     }
 }
