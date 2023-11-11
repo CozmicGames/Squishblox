@@ -5,36 +5,22 @@ import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
 import com.cozmicgames.game.scene.Scene
-import com.cozmicgames.game.scene.findGameObjectByComponent
 
 class WorldScene : Scene() {
     private val world = World()
     private var isInBlockCreationMode = false
 
+    private val blockEditProcessor = BlockEditProcessor(world)
+    private val blockCreateProcessor = BlockPreviewProcessor(this)
+    private val blockPreviewRenderProcessor = BlockPreviewRenderProcessor()
+
     init {
         addSceneProcessor(BlockRenderProcessor())
-        addSceneProcessor(BlockEditProcessor(world))
-        addSceneProcessor(BlockPreviewProcessor(this))
+        addSceneProcessor(blockEditProcessor)
 
         addGameObject {
-            addComponent<WorldBlockComponent> {
+            addComponent<BlockPreviewComponent> {
                 world = this@WorldScene.world
-                color.set(Color.LIME)
-                minX = 0.0f
-                minY = 0.0f
-                maxX = 64.0f
-                maxY = 64.0f
-            }
-        }
-
-        addGameObject {
-            addComponent<PlayerBlockComponent> {
-                world = this@WorldScene.world
-                color.set(Color.CHARTREUSE)
-                minX = -128.0f
-                minY = 0.0f
-                maxX = -64.0f
-                maxY = 64.0f
             }
         }
     }
@@ -53,18 +39,18 @@ class WorldScene : Scene() {
     }
 
     fun updateEditState() {
-        if (Game.input.isKeyJustDown(Input.Keys.SPACE))
+        if (Game.input.isKeyJustDown(Input.Keys.SPACE)) {
             isInBlockCreationMode = !isInBlockCreationMode
 
-        if (isInBlockCreationMode)
-            addGameObject {
-                addComponent<BlockPreviewComponent> {
-                    world = this@WorldScene.world
-                }
+            if (isInBlockCreationMode) {
+                addSceneProcessor(blockCreateProcessor)
+                addSceneProcessor(blockPreviewRenderProcessor)
+                removeSceneProcessor(blockEditProcessor)
+            } else {
+                addSceneProcessor(blockEditProcessor)
+                removeSceneProcessor(blockCreateProcessor)
+                removeSceneProcessor(blockPreviewRenderProcessor)
             }
-        else
-            findGameObjectByComponent<BlockPreviewComponent> { true }?.let {
-                removeGameObject(it)
-            }
+        }
     }
 }

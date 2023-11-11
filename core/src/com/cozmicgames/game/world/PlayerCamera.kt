@@ -49,7 +49,7 @@ class PlayerCamera {
 
             if (Game.input.isButtonDown(2)) {
                 position.x -= Game.input.deltaX * camera.zoom
-                position.y -= Game.input.deltaY * camera.zoom
+                position.y += Game.input.deltaY * camera.zoom
             }
         }
 

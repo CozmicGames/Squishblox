@@ -23,8 +23,18 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
         val blockPreviewComponent = scene.findGameObjectByComponent<BlockPreviewComponent> { true }?.getComponent<BlockPreviewComponent>() ?: return
 
         if (Game.input.isTouched) {
-            x1 = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR) + 1
-            y1 = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+            val cursorX = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR)
+            val cursorY = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+
+            y1 = if (cursorY < y0)
+                cursorY
+            else
+                cursorY + 1
+
+            x1 = if (cursorX < x0)
+                cursorX
+            else
+                cursorX + 1
 
             if (x1 == x0)
                 x1 = x0 + 1
@@ -32,10 +42,10 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
             if (y1 == y0)
                 y1 = y0 + 1
 
-            val minX = min(x0, x1)
-            val minY = min(y0, y1)
-            val maxX = max(x0, x1)
-            val maxY = max(y0, y1)
+            val minX = min(if (x1 < x0) x0 + 1 else x0, x1)
+            val minY = min(if (y1 < y0) y0 + 1 else y0, y1)
+            val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
+            val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
 
             blockPreviewComponent.minX = WorldUtils.toWorldCoord(minX)
             blockPreviewComponent.minY = WorldUtils.toWorldCoord(minY)
@@ -44,10 +54,10 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
         } else {
             if (Game.input.justTouchedUp)
                 if (blockPreviewComponent.isBuildable) {
-                    val minX = min(x0, x1)
-                    val minY = min(y0, y1)
-                    val maxX = max(x0, x1)
-                    val maxY = max(y0, y1)
+                    val minX = min(if (x1 < x0) x0 + 1 else x0, x1)
+                    val minY = min(if (y1 < y0) y0 + 1 else y0, y1)
+                    val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
+                    val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
                     world.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
                 }
 
