@@ -12,6 +12,8 @@ import com.cozmicgames.game.textures
 import com.cozmicgames.game.utils.maths.intersectRectRect
 import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.world.WorldConstants
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class WorldBackgroundRenderFunction : RenderFunction() {
     private class Cloud(val texture: String, var x: Float, var y: Float, var speedFactor: Float)
@@ -58,6 +60,36 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         attemptSpawn()
     }
 
+    private fun drawGrid() {
+        val backgroundTileWidth = 8 * WorldConstants.WORLD_CELL_SIZE
+        val backgroundTileHeight = 8 * WorldConstants.WORLD_CELL_SIZE
+
+        val numBackgroundTilesX = ceil(Game.player.camera.rectangle.width / backgroundTileWidth).toInt() + 1
+        val numBackgroundTilesY = ceil(Game.player.camera.rectangle.height / backgroundTileHeight).toInt() + 1
+
+        var backgroundTileX = floor((Game.player.camera.position.x - Game.player.camera.rectangle.width * 0.5f) / backgroundTileWidth) * backgroundTileWidth
+
+        repeat(numBackgroundTilesX) {
+            var backgroundTileY = floor((Game.player.camera.position.y - Game.player.camera.rectangle.height * 0.5f) / backgroundTileHeight) * backgroundTileHeight
+
+            repeat(numBackgroundTilesY) {
+                Game.graphics2d.submit<DirectRenderable2D> {
+                    it.layer = RenderLayers.WORLD_LAYER_BACKGROUND
+                    it.texture = "textures/grid_background_8x8.png"
+                    it.x = backgroundTileX
+                    it.y = backgroundTileY
+                    it.width = backgroundTileWidth
+                    it.height = backgroundTileHeight
+                    it.color = Color.LIGHT_GRAY
+                }
+
+                backgroundTileY += backgroundTileHeight
+            }
+
+            backgroundTileX += backgroundTileWidth
+        }
+    }
+
     override fun render(delta: Float) {
         if (isFirstRender) {
             clouds.forEach {
@@ -67,6 +99,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         }
 
         ScreenUtils.clear(Color.SKY)
+
+        drawGrid()
 
         for (cloud in clouds) {
             cloud.x -= cloud.speedFactor * delta * WorldConstants.CLOUD_SPEED
