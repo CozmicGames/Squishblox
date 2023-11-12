@@ -1,2 +1,3 @@
 shaders/msdf.shader2d
 shaders/sprite.shader2d
+shaders/sprite_shadow.shader2d

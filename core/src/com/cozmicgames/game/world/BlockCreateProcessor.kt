@@ -8,14 +8,14 @@ import com.cozmicgames.game.scene.findGameObjectByComponent
 import kotlin.math.max
 import kotlin.math.min
 
-class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
+class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private var x0 = 0
     private var y0 = 0
     private var x1 = 0
     private var y1 = 0
 
     override fun shouldProcess(delta: Float): Boolean {
-        return true
+        return worldScene.editState == WorldScene.EditState.CREATE
     }
 
     override fun process(delta: Float) {
@@ -23,8 +23,8 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
         val blockPreviewComponent = scene.findGameObjectByComponent<BlockPreviewComponent> { true }?.getComponent<BlockPreviewComponent>() ?: return
 
         if (Game.input.isButtonDown(0)) {
-            val cursorX = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR)
-            val cursorY = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+            val cursorX = WorldUtils.toCellCoord(Game.player.inputX, if (Game.player.inputX >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
+            val cursorY = WorldUtils.toCellCoord(Game.player.inputY, if (Game.player.inputY >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
 
             y1 = if (cursorY < y0)
                 cursorY
@@ -58,11 +58,11 @@ class BlockPreviewProcessor(val world: WorldScene) : SceneProcessor() {
                     val minY = min(if (y1 < y0) y0 + 1 else y0, y1)
                     val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
                     val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
-                    world.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
+                    worldScene.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
                 }
 
-            x0 = WorldUtils.toCellCoord(Game.player.inputX, WorldUtils.CoordRounding.FLOOR)
-            y0 = WorldUtils.toCellCoord(Game.player.inputY, WorldUtils.CoordRounding.FLOOR)
+            x0 = WorldUtils.toCellCoord(Game.player.inputX, if (Game.player.inputX >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
+            y0 = WorldUtils.toCellCoord(Game.player.inputY, if (Game.player.inputY >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
 
             blockPreviewComponent.minX = WorldUtils.toWorldCoord(x0)
             blockPreviewComponent.minY = WorldUtils.toWorldCoord(y0)

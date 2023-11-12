@@ -1,8 +1,10 @@
 textures/block.png
-textures/block_128.png
-textures/block_256.png
-textures/block_32.png
-textures/block_64.png
 textures/block_preview.png
-textures/grid_background_8x8.png
+textures/cloud_0.png
+textures/cloud_1.png
+textures/cloud_2.png
+textures/cloud_3.png
+textures/cloud_4.png
 textures/menu_button.png
+#Nearest
+textures/grid_background_8x8.png

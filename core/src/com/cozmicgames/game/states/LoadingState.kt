@@ -43,7 +43,7 @@ class LoadingState : GameState {
     private val infoLabel: Label
 
     init {
-        Game.textures.loadTextureSingle(Gdx.files.internal("branding/banner.png"), Texture.TextureFilter.Linear)
+        Game.textures.loadTextureSingle(Gdx.files.internal("branding/banner.png"), TextureFilter.Linear)
 
         if (Gdx.files.internal("fonts.txt").exists())
             Gdx.files.internal("fonts.txt").readString().lines().forEach {
@@ -78,7 +78,7 @@ class LoadingState : GameState {
             }
 
         if (Gdx.files.internal("textures.txt").exists()) {
-            var filter = TextureFilter.Nearest
+            var filter = TextureFilter.Linear
 
             Gdx.files.internal("textures.txt").readString().lines().forEach { line ->
                 if (line.startsWith("#")) {

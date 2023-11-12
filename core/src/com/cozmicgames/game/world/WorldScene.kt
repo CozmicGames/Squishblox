@@ -1,23 +1,31 @@
 package com.cozmicgames.game.world
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.input
 import com.cozmicgames.game.scene.Scene
 import com.cozmicgames.game.scene.findGameObjectByComponent
 
 class WorldScene : Scene() {
-    private val world = World()
-    private var isInBlockCreationMode = false
+    enum class EditState {
+        CREATE,
+        EDIT,
+        DELETE
+    }
 
-    private val blockEditProcessor = BlockEditProcessor(world)
-    private val blockCreateProcessor = BlockPreviewProcessor(this)
-    private val blockPreviewRenderProcessor = BlockPreviewRenderProcessor()
+    val world = World()
+
+    var editState = EditState.CREATE
+        private set
+
+    private val blockEditProcessor = BlockEditProcessor(this)
+    private val blockCreateProcessor = BlockCreateProcessor(this)
+    private val blockDeleteProcessor = BlockDeleteProcessor(this)
 
     init {
         addSceneProcessor(BlockRenderProcessor())
+        addSceneProcessor(BlockPreviewRenderProcessor(this))
+        addSceneProcessor(blockCreateProcessor)
         addSceneProcessor(blockEditProcessor)
+        addSceneProcessor(blockDeleteProcessor)
 
         addGameObject {
             addComponent<BlockPreviewComponent> {
@@ -39,23 +47,14 @@ class WorldScene : Scene() {
         }
     }
 
-    fun updateEditState() {
-        if (Game.input.isKeyJustDown(Input.Keys.SPACE)) {
-            isInBlockCreationMode = !isInBlockCreationMode
-
-            if (isInBlockCreationMode) {
-                addSceneProcessor(blockCreateProcessor)
-                addSceneProcessor(blockPreviewRenderProcessor)
-                removeSceneProcessor(blockEditProcessor)
-            } else {
-                addSceneProcessor(blockEditProcessor)
-                removeSceneProcessor(blockCreateProcessor)
-                removeSceneProcessor(blockPreviewRenderProcessor)
-            }
-        }
-    }
-
     fun getBlockFromId(id: Int): BlockComponent? = findGameObjectByComponent<BlockComponent> {
         it.getComponent<BlockComponent>()?.id == id
     }?.getComponent()
+
+    fun removeBlock(id: Int) {
+        getBlockFromId(id)?.let {
+            world.removeBlock(it.id)
+            removeGameObject(it.gameObject)
+        }
+    }
 }

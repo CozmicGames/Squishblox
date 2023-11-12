@@ -10,12 +10,12 @@ object WorldUtils {
         CEIL
     }
 
-    private const val COLOR_COUNT = 16
+    private const val COLOR_COUNT = 64
 
     private val colors = Array(COLOR_COUNT) {
         val h = it.toFloat() / COLOR_COUNT.toFloat() * 360.0f
-        val s = 0.85f
-        val v = 0.9f
+        val s = 0.75f
+        val v = 1.0f
         Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(h, s, v)
     }
 

@@ -11,7 +11,7 @@ import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.components.TransformComponent
 import com.cozmicgames.game.textures
 
-class BlockPreviewRenderProcessor : SceneProcessor() {
+class BlockPreviewRenderProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private val blockPreviewNinePatch: NinePatch
 
     init {
@@ -20,7 +20,7 @@ class BlockPreviewRenderProcessor : SceneProcessor() {
     }
 
     override fun shouldProcess(delta: Float): Boolean {
-        return true
+        return worldScene.editState == WorldScene.EditState.CREATE
     }
 
     override fun process(delta: Float) {

@@ -12,6 +12,7 @@ class Renderer2D {
     companion object {
         const val MENU = "menu"
 
+        const val WORLD_BACKGROUND = "worldBackground"
         const val WORLD = "world"
 
         const val INGAME_MENU_BLUR_HORIZONTAL = "inGameMenuBlurHorizontal"
@@ -35,7 +36,8 @@ class Renderer2D {
         /**
          * WORLD
          */
-        Game.renderGraph.onRender(WORLD, ColorRenderPass(), InGameRenderFunction())
+        Game.renderGraph.onRender(WORLD_BACKGROUND, ColorRenderPass(), WorldBackgroundRenderFunction())
+        Game.renderGraph.onRender(WORLD, ColorRenderPass(), WorldRenderFunction(WORLD_BACKGROUND, 0))
 
         /**
          * INGAME MENU

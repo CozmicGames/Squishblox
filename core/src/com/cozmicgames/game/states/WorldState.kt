@@ -21,6 +21,9 @@ class WorldState : SuspendableGameState {
     init {
         gui.isInteractionEnabled = false
         gui.pauseRenderingOnDisabled = true
+
+        Game.player.camera.getMaxZoom = { 1.5f }
+        Game.player.camera.getMinZoom = { 0.5f }
     }
 
     private fun drawBackground() {
@@ -58,7 +61,6 @@ class WorldState : SuspendableGameState {
             returnState = InGameMenuState(this)
 
         drawBackground()
-        scene.updateEditState()
         scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 
