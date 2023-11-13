@@ -2,11 +2,8 @@ package com.cozmicgames.game.states
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.cozmicgames.game.Version
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.fonts
+import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.absolute
 import com.cozmicgames.game.graphics.gui.aspect
 import com.cozmicgames.game.graphics.gui.center
@@ -18,11 +15,6 @@ import com.cozmicgames.game.graphics.gui.packed
 import com.cozmicgames.game.graphics.gui.relative
 import com.cozmicgames.game.graphics.gui.same
 import com.cozmicgames.game.graphics.gui.skin.ColorDrawableValue
-import com.cozmicgames.game.guis
-import com.cozmicgames.game.renderGraph
-import com.cozmicgames.game.shaders
-import com.cozmicgames.game.textures
-import com.cozmicgames.game.time
 import java.util.ArrayDeque
 import kotlin.system.measureTimeMillis
 
@@ -31,8 +23,8 @@ class LoadingState : GameState {
     private val loadingTasks = ArrayDeque<() -> Unit>()
     private var toLoadCount = 0
     private var loadedCount = 0
-    private var texturesToLoadCount = 0
-    private var texturesLoadedCount = 0
+    private var asyncToLoadCount = 0
+    private var asyncLoadedCount = 0
     private var isTexturePackingStarted = false
     private var isTexturePackingFinished = false
     private var currentInfoMessage = "Initializing"
@@ -92,20 +84,47 @@ class LoadingState : GameState {
                     val file = Gdx.files.internal(line)
                     if (file.exists()) {
                         toLoadCount++
-                        texturesToLoadCount++
+                        asyncToLoadCount++
                         loadingTasks += {
                             Gdx.app.log("LOADING", "Loading $file.")
                             currentInfoMessage = "Loading $file."
 
                             val isLoading = Game.textures.loadTextureAsync(file, filter) {
                                 loadedCount++
-                                texturesLoadedCount++
+                                asyncLoadedCount++
                             }
 
                             if (!isLoading) {
                                 Gdx.app.log("LOADING", "Failed to load $file.")
                                 toLoadCount--
-                                texturesToLoadCount--
+                                asyncToLoadCount--
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (Gdx.files.internal("sounds.txt").exists()) {
+            Gdx.files.internal("sounds.txt").readString().lines().forEach { line ->
+                if (line.isNotEmpty()) {
+                    val file = Gdx.files.internal(line)
+                    if (file.exists()) {
+                        toLoadCount++
+                        asyncToLoadCount++
+                        loadingTasks += {
+                            Gdx.app.log("LOADING", "Loading $file.")
+                            currentInfoMessage = "Loading $file."
+
+                            val isLoading = Game.audio.loadSoundAsync(file) {
+                                loadedCount++
+                                asyncLoadedCount++
+                            }
+
+                            if (!isLoading) {
+                                Gdx.app.log("LOADING", "Failed to load $file.")
+                                toLoadCount--
+                                asyncToLoadCount--
                             }
                         }
                     }
@@ -170,9 +189,9 @@ class LoadingState : GameState {
         progressBar.progress = loadedCount / toLoadCount.toFloat()
 
         val isLoadingFinished = loadedCount == toLoadCount
-        val isTextureLoadingFinished = texturesLoadedCount == texturesToLoadCount
+        val isAsyncLoadingFinished = asyncLoadedCount == asyncToLoadCount
 
-        if (isTextureLoadingFinished && !isTexturePackingStarted) {
+        if (isAsyncLoadingFinished && !isTexturePackingStarted) {
             Gdx.app.log("LOADING", "Packing textures.")
             currentInfoMessage = "Packing textures."
 

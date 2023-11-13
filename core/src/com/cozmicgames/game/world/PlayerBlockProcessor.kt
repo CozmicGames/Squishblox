@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Cursor
 import com.cozmicgames.game.Game
+import com.cozmicgames.game.audio
 import com.cozmicgames.game.input
 import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
@@ -195,8 +196,10 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
 
         if (jumpJustPressed) {
             worldScene.physicsWorld.project(playerBlockComponent.id, 0.0f, -0.1f, tempCollisions)
-            if (tempCollisions.size() > 0)
+            if (tempCollisions.size() > 0) {
+                Game.audio.getSound("sounds/jump.wav")?.play()
                 isJumping = true
+            }
         }
 
         if (jump && isJumping && jumpTime < WorldConstants.JUMP_MAX_TIME) {

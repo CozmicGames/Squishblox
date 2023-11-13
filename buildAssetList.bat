@@ -48,5 +48,10 @@ for %%f in ("assets/recipes/*.json") do (
 @echo Building languages asset list...
 break>"assets/languages.txt"
 for %%f in ("assets/languages/*.csv") do (
-	@echo recipes/%%f>> "assets/languages.txt"
+	@echo languages/%%f>> "assets/languages.txt"
+)
+@echo Building sounds asset list...
+break>"assets/sounds.txt"
+for %%f in ("assets/sounds/*.wav", "assets/sounds/*.ogg", "assets/sounds/*.mp3") do (
+	@echo sounds/%%f>> "assets/sounds.txt"
 )

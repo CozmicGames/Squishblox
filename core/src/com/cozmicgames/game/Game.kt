@@ -2,6 +2,7 @@ package com.cozmicgames.game
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.cozmicgames.game.audio.AudioManager
 import com.cozmicgames.game.localization.LocalizationManager
 import com.cozmicgames.game.graphics.engine.graphics2d.Graphics2D
 import com.cozmicgames.game.graphics.engine.graphics2d.fonts.FontManager
@@ -24,7 +25,7 @@ import kotlin.system.exitProcess
 
 class Game(gameSettings: GameSettings) : ApplicationAdapter() {
     companion object {
-        val context = com.cozmicgames.game.utils.Context()
+        val context = Context()
     }
 
     private lateinit var currentGameState: GameState
@@ -106,6 +107,7 @@ val Game.Companion.localization by Game.context.lazyInjector { LocalizationManag
 val Game.Companion.shaders by Game.context.injector { ShaderManager() }
 val Game.Companion.textures by Game.context.injector { TextureManager() }
 val Game.Companion.fonts by Game.context.injector { FontManager() }
+val Game.Companion.audio by Game.context.injector { AudioManager() }
 val Game.Companion.graphics2d by Game.context.injector { Graphics2D() }
 val Game.Companion.guis by Game.context.injector { GUIManager() }
 val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRenderFunction()) }
