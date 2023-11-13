@@ -8,9 +8,10 @@ import com.cozmicgames.game.input
 import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectByComponent
+import com.cozmicgames.game.utils.maths.intersectPointRect
 import com.dongbat.jbump.Collisions
 
-class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
+class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private var isEditing = false
     private var offsetX = 0.0f
     private var offsetY = 0.0f
@@ -85,7 +86,15 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
 
         if (isResizingFlag and (1 shl 0) != 0) {
             newMinY = Game.player.inputY - offsetY
-            if (newMinY >= block.maxY) newMinY = block.maxY - WorldConstants.WORLD_CELL_SIZE
+            if (newMinY >= block.maxY - WorldConstants.WORLD_CELL_SIZE) newMinY = block.maxY - WorldConstants.WORLD_CELL_SIZE
+
+            val area = (block.maxX - block.minX) * (block.maxY - block.minY)
+            val targetHeight = (block.maxY - newMinY)
+            val targetWidth = area / targetHeight
+            if (targetWidth < WorldConstants.WORLD_CELL_SIZE) {
+                val availableHeight = area / WorldConstants.WORLD_CELL_SIZE
+                newMinY = block.maxY - availableHeight
+            }
 
             if (newMinY < block.minY) {
                 val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
@@ -98,7 +107,15 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
 
         if (isResizingFlag and (1 shl 1) != 0) {
             newMinX = Game.player.inputX - offsetX
-            if (newMinX >= block.maxX) newMinX = block.maxX - WorldConstants.WORLD_CELL_SIZE
+            if (newMinX >= block.maxX - WorldConstants.WORLD_CELL_SIZE) newMinX = block.maxX - WorldConstants.WORLD_CELL_SIZE
+
+            val area = (block.maxX - block.minX) * (block.maxY - block.minY)
+            val targetWidth = (block.maxX - newMinX)
+            val targetHeight = area / targetWidth
+            if (targetHeight < WorldConstants.WORLD_CELL_SIZE) {
+                val availableWidth = area / WorldConstants.WORLD_CELL_SIZE
+                newMinX = block.maxX - availableWidth
+            }
 
             if (newMinX < block.minX) {
                 val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
@@ -111,7 +128,15 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
 
         if (isResizingFlag and (1 shl 2) != 0) {
             newMaxX = Game.player.inputX - offsetX + WorldConstants.WORLD_CELL_SIZE
-            if (newMaxX <= block.minX) newMaxX = block.minX + WorldConstants.WORLD_CELL_SIZE
+            if (newMaxX <= block.minX + WorldConstants.WORLD_CELL_SIZE) newMaxX = block.minX + WorldConstants.WORLD_CELL_SIZE
+
+            val area = (block.maxX - block.minX) * (block.maxY - block.minY)
+            val targetWidth = (newMaxX - block.minX)
+            val targetHeight = area / targetWidth
+            if (targetHeight < WorldConstants.WORLD_CELL_SIZE) {
+                val availableWidth = area / WorldConstants.WORLD_CELL_SIZE
+                newMaxX = block.minX + availableWidth
+            }
 
             if (newMaxX > block.maxX) {
                 val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
@@ -124,7 +149,15 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
 
         if (isResizingFlag and (1 shl 3) != 0) {
             newMaxY = Game.player.inputY - offsetY + WorldConstants.WORLD_CELL_SIZE
-            if (newMaxY <= block.minY) newMaxY = block.minY + WorldConstants.WORLD_CELL_SIZE
+            if (newMaxY <= block.minY + WorldConstants.WORLD_CELL_SIZE) newMaxY = block.minY + WorldConstants.WORLD_CELL_SIZE
+
+            val area = (block.maxX - block.minX) * (block.maxY - block.minY)
+            val targetHeight = (newMaxY - block.minY)
+            val targetWidth = area / targetHeight
+            if (targetWidth < WorldConstants.WORLD_CELL_SIZE) {
+                val availableHeight = area / WorldConstants.WORLD_CELL_SIZE
+                newMaxY = block.minY + availableHeight
+            }
 
             if (newMaxY > block.maxY) {
                 val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
@@ -136,7 +169,7 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
         }
 
         if (isResizingFlag != 0)
-            worldScene.world.updateBlock(block.id, WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.maxY))
+            worldScene.physicsWorld.updateBlock(block.id, block.minX, block.minY, block.maxX, block.maxY)
 
         return true
     }
@@ -216,11 +249,9 @@ class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
                 isEditing = false
         }
 
-        val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
-
-        if (hoveredId == playerBlockComponent.id) {
+        if (intersectPointRect(Game.player.inputX, Game.player.inputY, playerBlockComponent.minX, playerBlockComponent.minY, playerBlockComponent.maxX, playerBlockComponent.maxY))
             edit(playerBlockComponent)
-        } else
+        else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
     }
 }
