@@ -18,12 +18,20 @@ import kotlin.math.floor
 class WorldBackgroundRenderFunction : RenderFunction() {
     private class Cloud(val texture: String, var x: Float, var y: Float, var speedFactor: Float)
 
+    private class ParallaxLayer(val texture: String, val factor: Float, val color: Color)
+
     private val textures = arrayOf(
         "textures/cloud_0.png",
         "textures/cloud_1.png",
         "textures/cloud_2.png",
         "textures/cloud_3.png",
         "textures/cloud_4.png"
+    )
+
+    private val layers = arrayOf(
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 1.00f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.25f, 0.7f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.07f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.18f, 0.8f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.09f, 1.0f)),
     )
 
     private val clouds = Array(WorldConstants.CLOUDS_COUNT) {
@@ -90,18 +98,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         }
     }
 
-    override fun render(delta: Float) {
-        if (isFirstRender) {
-            clouds.forEach {
-                findCloudSpawnPosition(it, true)
-            }
-            isFirstRender = false
-        }
-
-        ScreenUtils.clear(Color.SKY)
-
-        drawGrid()
-
+    fun drawClouds(delta: Float) {
         for (cloud in clouds) {
             cloud.x -= cloud.speedFactor * delta * WorldConstants.CLOUD_SPEED
 
@@ -132,5 +129,48 @@ class WorldBackgroundRenderFunction : RenderFunction() {
                 it.height = WorldConstants.CLOUD_SIZE * texture.regionHeight.toFloat() / texture.regionWidth.toFloat()
             }
         }
+    }
+
+    private fun drawParallaxLayer(layer: ParallaxLayer, index: Int) {
+        val region = Game.textures.getTexture(layer.texture)
+        val camera = Game.player.camera
+
+        val backgroundTileWidth = region.regionWidth.toFloat()
+        val backgroundTileHeight = region.regionHeight.toFloat()
+
+        val numBackgroundTilesX = ceil(camera.rectangle.width / backgroundTileWidth).toInt() + 2
+        var backgroundTileX = (camera.position.x / layer.factor) % camera.rectangle.width - camera.rectangle.width * 0.5f - backgroundTileWidth
+
+        repeat(numBackgroundTilesX) {
+            Game.graphics2d.submit<DirectRenderable2D> {
+                it.layer = RenderLayers.WORLD_LAYER_BACKGROUND
+                it.texture = layer.texture
+                it.color = layer.color
+                it.x = backgroundTileX
+                it.y = -backgroundTileHeight * 0.5f + index * WorldConstants.WORLD_CELL_SIZE
+                it.width = backgroundTileWidth
+                it.height = backgroundTileHeight
+            }
+
+            backgroundTileX += backgroundTileWidth
+        }
+    }
+
+    override fun render(delta: Float) {
+        if (isFirstRender) {
+            clouds.forEach {
+                findCloudSpawnPosition(it, true)
+            }
+            isFirstRender = false
+        }
+
+        ScreenUtils.clear(Color.SKY)
+
+        for (i in layers.indices.reversed()) {
+            val layer = layers[i]
+            drawParallaxLayer(layer, i)
+        }
+        drawGrid()
+        drawClouds(delta)
     }
 }
