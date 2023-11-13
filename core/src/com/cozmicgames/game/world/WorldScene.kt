@@ -8,14 +8,14 @@ class WorldScene : Scene() {
     enum class EditState {
         CREATE,
         EDIT,
-        DELETE
+        DELETE,
+        NONE
     }
 
     val world = World()
     val physicsWorld = PhysicsWorld()
 
     var editState = EditState.CREATE
-        private set
 
     private val blockEditProcessor = BlockEditProcessor(this)
     private val blockCreateProcessor = BlockCreateProcessor(this)
@@ -23,18 +23,11 @@ class WorldScene : Scene() {
 
     init {
         addSceneProcessor(BlockRenderProcessor())
-        addSceneProcessor(BlockPreviewRenderProcessor(this))
         addSceneProcessor(blockCreateProcessor)
         addSceneProcessor(blockEditProcessor)
         addSceneProcessor(blockDeleteProcessor)
 
         addSceneProcessor(PlayerBlockProcessor(this))
-
-        addGameObject {
-            addComponent<BlockPreviewComponent> {
-                world = this@WorldScene.world
-            }
-        }
     }
 
     fun addBlock(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Color) {

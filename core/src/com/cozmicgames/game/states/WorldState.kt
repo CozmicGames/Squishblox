@@ -27,6 +27,15 @@ class WorldState : SuspendableGameState {
         scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 
+        if (Game.input.isKeyDown(Input.Keys.NUM_1))
+            scene.editState = WorldScene.EditState.CREATE
+        if (Game.input.isKeyDown(Input.Keys.NUM_2))
+            scene.editState = WorldScene.EditState.EDIT
+        if (Game.input.isKeyDown(Input.Keys.NUM_3))
+            scene.editState = WorldScene.EditState.DELETE
+        if (Game.input.isKeyDown(Input.Keys.NUM_4))
+            scene.editState = WorldScene.EditState.NONE
+
         if (Game.input.isKeyJustDown(Input.Keys.ENTER))
             scene.spawnPlayer(5, 5)
 
