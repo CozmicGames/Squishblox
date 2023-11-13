@@ -16,10 +16,11 @@ object WorldConstants {
 
     const val WORLD_MIN_X = -100 * WORLD_CELL_SIZE
     const val WORLD_MAX_X = 100 * WORLD_CELL_SIZE
+    const val WORLD_MIN_Y = 0.0f
     const val CLOUDS_COUNT = 100
 
-    const val FRICTION = 250.0f
-    const val RUN_ACCELERATION = 1800.0f
+    const val FRICTION = 800.0f
+    const val RUN_ACCELERATION = 1600.0f
     const val RUN_SPEED = 800.0f
     const val JUMP_SPEED = 1200.0f
     const val BOUNCE_SPEED = 800.0f

@@ -29,9 +29,9 @@ class WorldBackgroundRenderFunction : RenderFunction() {
     )
 
     private val layers = arrayOf(
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 1.00f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.25f, 0.7f)),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.07f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.18f, 0.8f)),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.09f, 1.0f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.25f, 0.7f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.1f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.18f, 0.8f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.5f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.09f, 1.0f)),
     )
 
     private val clouds = Array(WorldConstants.CLOUDS_COUNT) {
@@ -42,7 +42,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
 
     private fun findCloudSpawnPosition(cloud: Cloud, isInitialSpawn: Boolean) {
         fun attemptSpawn() {
-            cloud.x = WorldConstants.WORLD_MIN_X + randomFloat() * (WorldConstants.WORLD_MAX_X - WorldConstants.WORLD_MIN_X)
+            cloud.x = WorldConstants.WORLD_MIN_X + randomFloat() * (WorldConstants.WORLD_MAX_X * 2.0f - WorldConstants.WORLD_MIN_X * 2.0f)
             cloud.y = WorldConstants.CLOUD_Y + (randomFloat() - 0.5f) * WorldConstants.CLOUD_Y_SPREAD
             val texture = Game.textures.getTexture(cloud.texture)
 
@@ -102,7 +102,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         for (cloud in clouds) {
             cloud.x -= cloud.speedFactor * delta * WorldConstants.CLOUD_SPEED
 
-            if (cloud.x + WorldConstants.CLOUD_SIZE <= WorldConstants.WORLD_MIN_X) {
+            if (cloud.x + WorldConstants.CLOUD_SIZE <= WorldConstants.WORLD_MIN_X * 2.0f) {
                 findCloudSpawnPosition(cloud, false)
                 cloud.speedFactor = 1.0f + (randomFloat() * 0.5f - 0.5f) * WorldConstants.CLOUD_SPEED_SPREAD
                 while (cloud.x in (Game.player.camera.rectangle.x..Game.player.camera.rectangle.x + Game.player.camera.rectangle.width))
@@ -139,7 +139,9 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         val backgroundTileHeight = region.regionHeight.toFloat()
 
         val numBackgroundTilesX = ceil(camera.rectangle.width / backgroundTileWidth).toInt() + 2
-        var backgroundTileX = (camera.position.x / layer.factor) % camera.rectangle.width - camera.rectangle.width * 0.5f - backgroundTileWidth
+        var backgroundTileX = camera.rectangle.x - (camera.rectangle.x / layer.factor) % backgroundTileWidth - backgroundTileWidth
+        if (camera.position.x < backgroundTileWidth)
+            backgroundTileX -= backgroundTileWidth
 
         repeat(numBackgroundTilesX) {
             Game.graphics2d.submit<DirectRenderable2D> {
@@ -147,7 +149,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
                 it.texture = layer.texture
                 it.color = layer.color
                 it.x = backgroundTileX
-                it.y = -backgroundTileHeight * 0.5f + index * WorldConstants.WORLD_CELL_SIZE
+                it.y = -backgroundTileHeight * 0.75f + index * backgroundTileHeight * 0.15f
                 it.width = backgroundTileWidth
                 it.height = backgroundTileHeight
             }

@@ -1,9 +1,12 @@
 package com.cozmicgames.game.states
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.GUI
 import com.cozmicgames.game.graphics.renderer.Renderer2D
+import com.cozmicgames.game.utils.extensions.safeWidth
+import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 
 class WorldState : SuspendableGameState {
@@ -18,6 +21,9 @@ class WorldState : SuspendableGameState {
 
         Game.player.camera.getMaxZoom = { 1.5f }
         Game.player.camera.getMinZoom = { 0.5f }
+        Game.player.camera.getMinY = { WorldConstants.WORLD_MIN_Y }
+        Game.player.camera.getMinX = { WorldConstants.WORLD_MIN_X + Gdx.graphics.safeWidth * 0.5f }
+        Game.player.camera.getMaxX = { WorldConstants.WORLD_MAX_X - Gdx.graphics.safeWidth * 0.5f }
     }
 
     override fun render(delta: Float): () -> GameState {
