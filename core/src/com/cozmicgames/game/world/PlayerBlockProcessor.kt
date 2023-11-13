@@ -1,24 +1,29 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Cursor
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
 import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
-import com.cozmicgames.game.scene.findGameObjectsWithComponent
+import com.cozmicgames.game.scene.findGameObjectByComponent
+import com.dongbat.jbump.Collisions
 
-class PlayerBlockProcessor(val world: World) : SceneProcessor() {
-    private var editingId: Int? = null
+class PlayerBlockProcessor(val worldScene: WorldScene) : SceneProcessor() {
+    private var isEditing = false
     private var offsetX = 0.0f
     private var offsetY = 0.0f
     private var isResizingFlag = 0
+    private var jumpTime = 0.0f
+    private var isJumping = false
+    private val tempCollisions = Collisions()
 
     override fun shouldProcess(delta: Float): Boolean {
         return true
     }
 
-    private fun edit(scene: WorldScene, block: PlayerBlockComponent): Boolean {
+    private fun edit(block: PlayerBlockComponent): Boolean {
         val isTopHovered = Game.player.isHovered(block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY, block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
         val isLeftHovered = Game.player.isHovered(block.minX, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
         val isRightHovered = Game.player.isHovered(block.maxX - WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE, block.maxX, block.maxY - WorldConstants.RESIZE_BORDER_SIZE)
@@ -62,7 +67,7 @@ class PlayerBlockProcessor(val world: World) : SceneProcessor() {
                 0
 
             if (isResizingFlag != 0)
-                editingId = block.id
+                isEditing = true
         }
 
         if (Game.input.justTouchedUp) {
@@ -83,9 +88,9 @@ class PlayerBlockProcessor(val world: World) : SceneProcessor() {
             if (newMinY >= block.maxY) newMinY = block.maxY - WorldConstants.WORLD_CELL_SIZE
 
             if (newMinY < block.minY) {
-                val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
+                val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(newMinY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinY = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
+                    newMinY = collidingBlocks.minOf { worldScene.getBlockFromId(it)?.maxY ?: -Float.MAX_VALUE }
             }
 
             block.adjustHeight(newMinY, newMaxY)
@@ -96,9 +101,9 @@ class PlayerBlockProcessor(val world: World) : SceneProcessor() {
             if (newMinX >= block.maxX) newMinX = block.maxX - WorldConstants.WORLD_CELL_SIZE
 
             if (newMinX < block.minX) {
-                val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
+                val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(newMinX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMinX = collidingBlocks.minOf { scene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
+                    newMinX = collidingBlocks.minOf { worldScene.getBlockFromId(it)?.maxX ?: -Float.MAX_VALUE }
             }
 
             block.adjustWidth(newMinX, newMaxX)
@@ -109,9 +114,9 @@ class PlayerBlockProcessor(val world: World) : SceneProcessor() {
             if (newMaxX <= block.minX) newMaxX = block.minX + WorldConstants.WORLD_CELL_SIZE
 
             if (newMaxX > block.maxX) {
-                val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
+                val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(block.maxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxX = collidingBlocks.minOf { scene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+                    newMaxX = collidingBlocks.minOf { worldScene.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
             }
 
             block.adjustWidth(newMinX, newMaxX)
@@ -122,44 +127,99 @@ class PlayerBlockProcessor(val world: World) : SceneProcessor() {
             if (newMaxY <= block.minY) newMaxY = block.minY + WorldConstants.WORLD_CELL_SIZE
 
             if (newMaxY > block.maxY) {
-                val collidingBlocks = world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
+                val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.maxY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(newMaxY)) { it != block.id }
                 if (collidingBlocks.isNotEmpty())
-                    newMaxY = collidingBlocks.minOf { scene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+                    newMaxY = collidingBlocks.minOf { worldScene.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
             }
 
             block.adjustHeight(newMinY, newMaxY)
         }
 
         if (isResizingFlag != 0)
-            world.updateBlock(block.id, WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.maxY))
+            worldScene.world.updateBlock(block.id, WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.maxY))
 
         return true
     }
 
     override fun process(delta: Float) {
-        val scene = this.scene as? WorldScene ?: return
+        val playerBlockComponent = worldScene.findGameObjectByComponent<PlayerBlockComponent> { true }?.getComponent<PlayerBlockComponent>() ?: return
 
-        if (editingId != null) {
-            scene.findGameObjectsWithComponent<PlayerBlockComponent> {
-                val blockComponent = it.getComponent<PlayerBlockComponent>()!!
-                if (blockComponent.id == editingId) {
-                    val isStillEditing = edit(scene, blockComponent)
-                    if (!isStillEditing)
-                        editingId = null
-                }
-            }
+        playerBlockComponent.deltaX = WorldUtils.approach(playerBlockComponent.deltaX, 0.0f, WorldConstants.FRICTION * delta)
+        val left = Game.input.isKeyDown(Input.Keys.A)
+        val right = Game.input.isKeyDown(Input.Keys.D)
+        val jump = Game.input.isKeyDown(Input.Keys.SPACE)
+        val jumpJustPressed = Game.input.isKeyJustDown(Input.Keys.SPACE)
 
-            return
+        if (right)
+            playerBlockComponent.deltaX = WorldUtils.approach(playerBlockComponent.deltaX, WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
+        else if (left)
+            playerBlockComponent.deltaX = WorldUtils.approach(playerBlockComponent.deltaX, -WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
+        else
+            playerBlockComponent.deltaX = WorldUtils.approach(playerBlockComponent.deltaX, 0.0f, WorldConstants.RUN_ACCELERATION * delta)
+
+        if (!jump)
+            isJumping = false
+
+        if (jumpJustPressed) {
+            worldScene.physicsWorld.project(playerBlockComponent.id, 0.0f, -0.1f, tempCollisions)
+            if (tempCollisions.size() > 0)
+                isJumping = true
         }
 
-        val hoveredId = world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
+        if (jump && isJumping && jumpTime < WorldConstants.JUMP_MAX_TIME) {
+            playerBlockComponent.deltaY = WorldConstants.JUMP_SPEED
+            jumpTime += delta
+        }
 
-        if (hoveredId != null) {
-            scene.findGameObjectsWithComponent<PlayerBlockComponent> {
-                val blockComponent = it.getComponent<PlayerBlockComponent>()!!
-                if (blockComponent.id == hoveredId)
-                    edit(scene, blockComponent)
+        playerBlockComponent.deltaX += delta * playerBlockComponent.gravityX
+        playerBlockComponent.deltaY += if (playerBlockComponent.deltaY < 0.0f) delta * playerBlockComponent.gravityY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * playerBlockComponent.gravityY
+        val amountX = delta * playerBlockComponent.deltaX
+        val amountY = delta * playerBlockComponent.deltaY
+
+        var isInAir = true
+        var hitWall = false
+        worldScene.physicsWorld.move(playerBlockComponent.id, amountX, amountY)?.let { result ->
+            repeat(result.projectedCollisions.size()) {
+                val collision = result.projectedCollisions[it]
+
+                if (collision.other.userData is Int) {
+                    //TODO: Differentiate based on the other block type (consume, hurting, ...)
+
+                    if (collision.normal.x != 0) {
+                        playerBlockComponent.deltaX = 0.0f
+                        hitWall = true
+                    }
+                    if (collision.normal.y != 0) {
+                        playerBlockComponent.deltaY = 0.0f
+                        jumpTime = WorldConstants.JUMP_MAX_TIME
+                        if (collision.normal.y == 1) {
+                            jumpTime = 0.0f
+                            isJumping = false
+                            isInAir = false
+                        }
+                    }
+                }
             }
+        }
+
+        val playerWidth = playerBlockComponent.maxX - playerBlockComponent.minX
+        val playerHeight = playerBlockComponent.maxY - playerBlockComponent.minY
+        val playerRect = worldScene.physicsWorld.getRect(playerBlockComponent.id)!!
+        playerBlockComponent.minX = playerRect.x
+        playerBlockComponent.minY = playerRect.y
+        playerBlockComponent.maxX = playerBlockComponent.minX + playerWidth
+        playerBlockComponent.maxY = playerBlockComponent.minY + playerHeight
+
+        if (isEditing) {
+            val isStillEditing = edit(playerBlockComponent)
+            if (!isStillEditing)
+                isEditing = false
+        }
+
+        val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
+
+        if (hoveredId == playerBlockComponent.id) {
+            edit(playerBlockComponent)
         } else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
     }

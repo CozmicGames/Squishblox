@@ -12,6 +12,7 @@ class WorldScene : Scene() {
     }
 
     val world = World()
+    val physicsWorld = PhysicsWorld()
 
     var editState = EditState.CREATE
         private set
@@ -27,6 +28,8 @@ class WorldScene : Scene() {
         addSceneProcessor(blockEditProcessor)
         addSceneProcessor(blockDeleteProcessor)
 
+        addSceneProcessor(PlayerBlockProcessor(this))
+
         addGameObject {
             addComponent<BlockPreviewComponent> {
                 world = this@WorldScene.world
@@ -37,12 +40,23 @@ class WorldScene : Scene() {
     fun addBlock(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Color) {
         addGameObject {
             addComponent<WorldBlockComponent> {
-                world = this@WorldScene.world
                 this.color.set(color)
                 this.minX = WorldUtils.toWorldCoord(minX)
                 this.minY = WorldUtils.toWorldCoord(minY)
                 this.maxX = WorldUtils.toWorldCoord(maxX)
                 this.maxY = WorldUtils.toWorldCoord(maxY)
+            }
+        }
+    }
+
+    fun spawnPlayer(x: Int, y: Int) {
+        addGameObject {
+            addComponent<PlayerBlockComponent> {
+                this.color.set(Color.WHITE)
+                this.minX = WorldUtils.toWorldCoord(x)
+                this.minY = WorldUtils.toWorldCoord(y)
+                this.maxX = WorldUtils.toWorldCoord(x + 1)
+                this.maxY = WorldUtils.toWorldCoord(y + 2)
             }
         }
     }

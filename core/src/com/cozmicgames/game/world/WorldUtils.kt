@@ -39,4 +39,19 @@ object WorldUtils {
     }
 
     fun roundWorldToCellCoord(value: Float) = toWorldCoord(toCellCoord(value))
+
+    fun approach(start: Float, target: Float, increment: Float): Float {
+        var value = start
+        val absoluteIncrement = abs(increment)
+        if (value < target) {
+            value += absoluteIncrement
+            if (value > target)
+                value = target
+        } else {
+            value -= absoluteIncrement
+            if (value < target)
+                value = target
+        }
+        return value
+    }
 }

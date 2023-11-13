@@ -27,6 +27,9 @@ class WorldState : SuspendableGameState {
         scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 
+        if (Game.input.isKeyJustDown(Input.Keys.ENTER))
+            scene.spawnPlayer(5, 5)
+
         return { returnState }
     }
 

@@ -1,9 +1,11 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.utils.IntMap
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
 import com.cozmicgames.game.graphics2d
+import com.cozmicgames.game.utils.collections.DynamicStack
 import com.cozmicgames.game.utils.maths.intersectPointRect
 
 class World {
@@ -11,21 +13,21 @@ class World {
         private const val DEBUG_INTERSECTION = false
     }
 
-    private class Block(var id: Int, var minX: Int, var minY: Int, var maxX: Int, var maxY: Int)
+    private class Block(var minX: Int, var minY: Int, var maxX: Int, var maxY: Int)
 
-    private val blocks = arrayListOf<Block>()
-
+    private val blocks = IntMap<Block>()
+    private val freeIds = DynamicStack<Int>()
     private var currentId = 0
 
     fun createBlock(minX: Int, minY: Int, maxX: Int, maxY: Int): Int {
-        val id = currentId++
-        val block = Block(id, minX, minY, maxX, maxY)
-        blocks += block
+        val id = if (!freeIds.isEmpty) freeIds.pop() else currentId++
+        val block = Block(minX, minY, maxX, maxY)
+        blocks.put(id, block)
         return id
     }
 
     fun updateBlock(id: Int, minX: Int, minY: Int, maxX: Int, maxY: Int) {
-        val block = blocks.find { it.id == id } ?: return
+        val block = blocks.get(id) ?: return
         block.minX = minX
         block.minY = minY
         block.maxX = maxX
@@ -33,7 +35,11 @@ class World {
     }
 
     fun getBlock(x: Int, y: Int): Int? {
-        return blocks.find { intersectPointRect(x.toFloat(), y.toFloat(), it.minX.toFloat(), it.minY.toFloat(), it.maxX.toFloat(), it.maxY.toFloat()) }?.id
+        blocks.forEach {
+            if (intersectPointRect(x.toFloat(), y.toFloat(), it.value.minX.toFloat(), it.value.minY.toFloat(), it.value.maxX.toFloat(), it.value.maxY.toFloat()))
+                return it.key
+        }
+        return null
     }
 
     fun getBlocks(minX: Int, minY: Int, maxX: Int, maxY: Int, idFilter: (Int) -> Boolean = { true }): List<Int> {
@@ -51,7 +57,7 @@ class World {
         var list: ArrayList<Int>? = null
         forEachBlock(minX, minY, maxX, maxY, idFilter) {
             if (DEBUG_INTERSECTION) {
-                val block = blocks.find { b -> b.id == it }!!
+                val block = blocks.get(it)!!
                 Game.graphics2d.submit<DirectRenderable2D> {
                     it.layer = 80
                     it.texture = "blank"
@@ -76,21 +82,13 @@ class World {
         }
 
         blocks.forEach {
-            if (idFilter(it.id) && intersectBlocks(minX, minY, maxX, maxY, it.minX, it.minY, it.maxX, it.maxY))
-                block(it.id)
+            if (idFilter(it.key) && intersectBlocks(minX, minY, maxX, maxY, it.value.minX, it.value.minY, it.value.maxX, it.value.maxY))
+                block(it.key)
         }
     }
 
     fun removeBlock(id: Int) {
-        blocks.removeIf { it.id == id }
-    }
-
-    fun isCellFilled(x: Int, y: Int, idFilter: (Int) -> Boolean = { true }): Boolean {
-        return blocks.any {
-            if (idFilter(it.id))
-                intersectPointRect(x, y, it.minX, it.minY, it.maxX, it.maxY)
-            else
-                false
-        }
+        if (blocks.remove(id) != null)
+            freeIds.push(id)
     }
 }
