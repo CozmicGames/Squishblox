@@ -32,18 +32,20 @@ class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor(
             scene.findGameObjectsWithComponent<WorldBlockComponent> {
                 val blockComponent = it.getComponent<WorldBlockComponent>()!!
 
-                Game.graphics2d.submit<NinepatchRenderable2D> {
-                    it.layer = RenderLayers.WORLD_LAYER_BLOCK_PREVIEW
-                    it.ninePatch = blockPreviewNinePatch
-                    it.color = Color.RED
-                    it.x = blockComponent.minX
-                    it.y = blockComponent.minY
-                    it.width = blockComponent.maxX - blockComponent.minX
-                    it.height = blockComponent.maxY - blockComponent.minY
-                }
+                if (blockComponent.id == hoveredId) {
+                    Game.graphics2d.submit<NinepatchRenderable2D> {
+                        it.layer = RenderLayers.WORLD_LAYER_BLOCK_PREVIEW
+                        it.ninePatch = blockPreviewNinePatch
+                        it.color = Color.RED
+                        it.x = blockComponent.minX
+                        it.y = blockComponent.minY
+                        it.width = blockComponent.maxX - blockComponent.minX
+                        it.height = blockComponent.maxY - blockComponent.minY
+                    }
 
-                if (blockComponent.id == hoveredId && Game.input.isButtonJustDown(0))
-                    scene.removeBlock(hoveredId)
+                    if (Game.input.isButtonJustDown(0))
+                        scene.removeBlock(hoveredId)
+                }
             }
         } else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
