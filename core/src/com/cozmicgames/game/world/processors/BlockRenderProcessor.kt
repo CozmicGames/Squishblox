@@ -1,4 +1,4 @@
-package com.cozmicgames.game.world
+package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -10,6 +10,8 @@ import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.components.TransformComponent
 import com.cozmicgames.game.textures
+import com.cozmicgames.game.world.BlockComponent
+import com.cozmicgames.game.world.WorldConstants
 
 class BlockRenderProcessor : SceneProcessor() {
     private val blockNinePatch: NinePatch

@@ -1,4 +1,4 @@
-package com.cozmicgames.game.world
+package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -10,6 +10,10 @@ import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
+import com.cozmicgames.game.world.PlayState
+import com.cozmicgames.game.world.WorldBlock
+import com.cozmicgames.game.world.WorldScene
+import com.cozmicgames.game.world.WorldUtils
 
 class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private val blockPreviewNinePatch: NinePatch
@@ -20,7 +24,7 @@ class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor(
     }
 
     override fun shouldProcess(delta: Float): Boolean {
-        return worldScene.editState == WorldScene.EditState.DELETE
+        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.DELETE
     }
 
     override fun process(delta: Float) {
@@ -29,8 +33,8 @@ class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor(
         val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
 
         if (hoveredId != null) {
-            scene.findGameObjectsWithComponent<WorldBlockComponent> {
-                val blockComponent = it.getComponent<WorldBlockComponent>()!!
+            scene.findGameObjectsWithComponent<WorldBlock> {
+                val blockComponent = it.getComponent<WorldBlock>()!!
 
                 if (blockComponent.id == hoveredId) {
                     Game.graphics2d.submit<NinepatchRenderable2D> {
@@ -44,7 +48,9 @@ class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor(
                     }
 
                     if (Game.input.isButtonJustDown(0))
-                        scene.removeBlock(hoveredId)
+                        Game.tasks.submit({
+                            scene.removeBlock(hoveredId)
+                        })
                 }
             }
         } else

@@ -1,4 +1,4 @@
-package com.cozmicgames.game.world
+package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
@@ -7,6 +7,10 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.scene.SceneProcessor
+import com.cozmicgames.game.world.PlayState
+import com.cozmicgames.game.world.WorldConstants
+import com.cozmicgames.game.world.WorldScene
+import com.cozmicgames.game.world.WorldUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -24,7 +28,7 @@ class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor(
     }
 
     override fun shouldProcess(delta: Float): Boolean {
-        return worldScene.editState == WorldScene.EditState.CREATE
+        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.CREATE
     }
 
     private fun isBuildable(minX: Int, minY: Int, maxX: Int, maxY: Int): Boolean {

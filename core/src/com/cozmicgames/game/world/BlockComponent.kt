@@ -3,6 +3,10 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.components.TransformComponent
+import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.game.utils.Reflection
+import com.cozmicgames.game.utils.serialization.Readable
+import kotlin.reflect.KClass
 
 sealed class BlockComponent : Component() {
     private val transformComponent by lazy { gameObject.getOrAddComponent<TransformComponent>() }
@@ -60,9 +64,56 @@ sealed class BlockComponent : Component() {
     }
 }
 
-class WorldBlockComponent : BlockComponent()
+open class WorldBlock : BlockComponent() {
+    private var dataValues: MutableMap<KClass<*>, Readable>? = null
 
-class PlayerBlockComponent : BlockComponent() {
+    inline fun <reified T : Readable> getData() = getData(T::class)
+
+    fun <T : Readable> getData(type: KClass<T>): T? {
+        return dataValues?.get(type) as? T
+    }
+
+    inline fun <reified T : Readable> setData(value: T) = setData(value, T::class)
+
+    fun <T : Readable> setData(value: T, type: KClass<T>) {
+        if (dataValues == null)
+            dataValues = hashMapOf()
+        dataValues!![type] = value
+    }
+
+    inline fun <reified T : Readable> removeData() = removeData(T::class)
+
+    fun <T : Readable> removeData(type: KClass<T>) {
+        dataValues?.remove(type)
+    }
+
+    override fun read(properties: Properties) {
+        properties.getPropertiesArray("dataValues")?.let {
+            for (dataValueProperties in it) {
+                val typeName = dataValueProperties.getString("typeName") ?: continue
+                val type = Reflection.getClassByName(typeName) as? KClass<Readable> ?: continue
+                val dataValue = Reflection.createInstance(type) ?: continue
+                dataValue.read(dataValueProperties)
+                setData(dataValue, type)
+            }
+        }
+    }
+
+    override fun write(properties: Properties) {
+        dataValues?.let {
+            val dataValuesProperties = arrayListOf<Properties>()
+            it.forEach { (_, value) ->
+                val dataValueProperties = Properties()
+                dataValueProperties.setString("typeName", Reflection.getClassName(value::class))
+                value.write(dataValueProperties)
+                dataValuesProperties += dataValueProperties
+            }
+            properties.setPropertiesArray("dataValues", dataValuesProperties.toTypedArray())
+        }
+    }
+}
+
+class PlayerBlock : BlockComponent() {
     var deltaX = 0.0f
     var deltaY = 0.0f
     var gravityX = 0.0f

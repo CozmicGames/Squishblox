@@ -6,6 +6,7 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.GUI
 import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.utils.extensions.safeWidth
+import com.cozmicgames.game.world.PlayState
 import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 
@@ -33,14 +34,18 @@ class WorldState : SuspendableGameState {
         scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 
-        if (Game.input.isKeyDown(Input.Keys.NUM_1))
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_1))
             scene.editState = WorldScene.EditState.CREATE
-        if (Game.input.isKeyDown(Input.Keys.NUM_2))
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_2))
             scene.editState = WorldScene.EditState.EDIT
-        if (Game.input.isKeyDown(Input.Keys.NUM_3))
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_3))
             scene.editState = WorldScene.EditState.DELETE
-        if (Game.input.isKeyDown(Input.Keys.NUM_4))
-            scene.editState = WorldScene.EditState.NONE
+        if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
+            if (Game.player.playState == PlayState.EDIT)
+                Game.player.playState = PlayState.PLAY
+            else
+                Game.player.playState = PlayState.EDIT
+        }
 
         if (Game.input.isKeyJustDown(Input.Keys.ENTER))
             scene.spawnPlayer(5, 5)

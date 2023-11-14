@@ -16,6 +16,8 @@ class Player: Updatable {
     var inputY = -Float.MAX_VALUE
         private set
 
+    var playState = PlayState.EDIT
+
     fun isHovered(minX: Float, minY: Float, maxX: Float, maxY: Float): Boolean {
         return intersectPointRect(inputX, inputY, minX, minY, maxX, maxY)
     }

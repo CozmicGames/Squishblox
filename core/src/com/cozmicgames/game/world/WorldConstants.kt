@@ -27,4 +27,6 @@ object WorldConstants {
     const val GRAVITY = 3000.0f
     const val GRAVITY_FALLING_FACTOR = 2.0f
     const val JUMP_MAX_TIME = 0.25f
+
+    const val PLATFORM_MOVE_SPEED = 10.0f
 }

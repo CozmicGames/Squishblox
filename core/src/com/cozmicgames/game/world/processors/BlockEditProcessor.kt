@@ -1,4 +1,4 @@
-package com.cozmicgames.game.world
+package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Cursor
@@ -7,6 +7,7 @@ import com.cozmicgames.game.input
 import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
+import com.cozmicgames.game.world.*
 import kotlin.math.abs
 
 class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() {
@@ -16,10 +17,10 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
     private var isResizingFlag = 0
 
     override fun shouldProcess(delta: Float): Boolean {
-        return worldScene.editState == WorldScene.EditState.EDIT
+        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.EDIT
     }
 
-    private fun edit(block: WorldBlockComponent): Boolean {
+    private fun edit(block: WorldBlock): Boolean {
         val world = worldScene.world
 
         val isTopLeftHovered = Game.player.isHovered(block.minX, block.minY, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
@@ -302,8 +303,8 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         val scene = this.scene as? WorldScene ?: return
 
         if (editingId != null) {
-            scene.findGameObjectsWithComponent<WorldBlockComponent> {
-                val blockComponent = it.getComponent<WorldBlockComponent>()!!
+            scene.findGameObjectsWithComponent<WorldBlock> {
+                val blockComponent = it.getComponent<WorldBlock>()!!
                 if (blockComponent.id == editingId) {
                     val isStillEditing = edit(blockComponent)
                     if (!isStillEditing)
@@ -317,8 +318,8 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
 
         if (hoveredId != null) {
-            scene.findGameObjectsWithComponent<WorldBlockComponent> {
-                val blockComponent = it.getComponent<WorldBlockComponent>()!!
+            scene.findGameObjectsWithComponent<WorldBlock> {
+                val blockComponent = it.getComponent<WorldBlock>()!!
                 if (blockComponent.id == hoveredId)
                     edit(blockComponent)
             }

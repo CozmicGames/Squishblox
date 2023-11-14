@@ -3,13 +3,13 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.scene.Scene
 import com.cozmicgames.game.scene.findGameObjectByComponent
+import com.cozmicgames.game.world.processors.*
 
 class WorldScene : Scene() {
     enum class EditState {
         CREATE,
         EDIT,
-        DELETE,
-        NONE
+        DELETE
     }
 
     val world = World()
@@ -32,7 +32,7 @@ class WorldScene : Scene() {
 
     fun addBlock(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Color) {
         addGameObject {
-            addComponent<WorldBlockComponent> {
+            addComponent<WorldBlock> {
                 this.color.set(color)
                 this.minX = WorldUtils.toWorldCoord(minX)
                 this.minY = WorldUtils.toWorldCoord(minY)
@@ -44,7 +44,7 @@ class WorldScene : Scene() {
 
     fun spawnPlayer(x: Int, y: Int) {
         addGameObject {
-            addComponent<PlayerBlockComponent> {
+            addComponent<PlayerBlock> {
                 this.color.set(Color.WHITE)
                 this.minX = WorldUtils.toWorldCoord(x)
                 this.minY = WorldUtils.toWorldCoord(y)
