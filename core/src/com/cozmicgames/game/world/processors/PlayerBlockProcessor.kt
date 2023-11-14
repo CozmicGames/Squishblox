@@ -195,26 +195,38 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         if (!jump)
             isJumping = false
 
-        if (jumpJustPressed) {
-            worldScene.physicsWorld.project(playerBlock.id, 0.0f, -0.1f, tempCollisions)
-            if (tempCollisions.size() > 0) {
+        worldScene.physicsWorld.project(playerBlock.id, 0.0f, -0.1f, tempCollisions)
+        if (tempCollisions.size() > 0) {
+            if (jumpJustPressed) {
                 Game.audio.getSound("sounds/jump.wav")?.play()
                 isJumping = true
             }
-        }
+        } else
+            playerBlock.standingOnBlock = null
 
         if (jump && isJumping && jumpTime < WorldConstants.JUMP_MAX_TIME) {
             playerBlock.deltaY = WorldConstants.JUMP_SPEED
             jumpTime += delta
         }
 
-        playerBlock.deltaX += delta * playerBlock.gravityX
-        playerBlock.deltaY += if (playerBlock.deltaY < 0.0f) delta * playerBlock.gravityY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * playerBlock.gravityY
-        val amountX = delta * playerBlock.deltaX
-        val amountY = delta * playerBlock.deltaY
+        playerBlock.deltaY += if (playerBlock.deltaY < 0.0f) delta * WorldConstants.GRAVITY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * WorldConstants.GRAVITY
+        var amountX = delta * playerBlock.deltaX
+        var amountY = delta * playerBlock.deltaY
 
         var isInAir = true
         var hitWall = false
+
+        playerBlock.standingOnBlock?.let {
+            val deltaX = it.minX - playerBlock.previousStandingBlockX
+            val deltaY = it.minY - playerBlock.previousStandingBlockY
+
+            amountX += deltaX
+            amountY += deltaY
+
+            playerBlock.previousStandingBlockX = it.minX
+            playerBlock.previousStandingBlockY = it.minY
+        }
+
         worldScene.physicsWorld.move(playerBlock.id, amountX, amountY)?.let { result ->
             repeat(result.projectedCollisions.size()) {
                 val collision = result.projectedCollisions[it]
@@ -233,6 +245,10 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
                             jumpTime = 0.0f
                             isJumping = false
                             isInAir = false
+
+                            (worldScene.getBlockFromId(collision.other.userData as Int) as? WorldBlock)?.let {
+                                playerBlock.standingOnBlock = it
+                            }
                         }
                     }
                 }

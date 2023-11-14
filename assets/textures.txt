@@ -5,6 +5,11 @@ textures/cloud_1.png
 textures/cloud_2.png
 textures/cloud_3.png
 textures/cloud_4.png
+textures/create_block_icon.png
+textures/delete_block_icon.png
+textures/edit_block_icon.png
 textures/grid_background_8x8.png
 textures/menu_button.png
 textures/parallax_background.png
+textures/platform_path.png
+textures/play_icon.png

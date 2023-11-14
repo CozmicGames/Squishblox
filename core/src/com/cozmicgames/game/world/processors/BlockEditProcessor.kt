@@ -8,6 +8,7 @@ import com.cozmicgames.game.player
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.world.*
+import com.cozmicgames.game.world.dataValues.PlatformData
 import kotlin.math.abs
 
 class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() {
@@ -287,6 +288,9 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         }
 
         if (isResizingFlag != 0) {
+            if (block.minX != newMinX || block.minY != newMinY || block.maxX != newMaxX || block.maxY != newMaxY)
+                block.removeData<PlatformData>()
+
             block.minX = newMinX
             block.minY = newMinY
             block.maxX = newMaxX
@@ -304,9 +308,9 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
 
         if (editingId != null) {
             scene.findGameObjectsWithComponent<WorldBlock> {
-                val blockComponent = it.getComponent<WorldBlock>()!!
-                if (blockComponent.id == editingId) {
-                    val isStillEditing = edit(blockComponent)
+                val block = it.getComponent<WorldBlock>()!!
+                if (block.id == editingId) {
+                    val isStillEditing = edit(block)
                     if (!isStillEditing)
                         editingId = null
                 }
@@ -319,9 +323,9 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
 
         if (hoveredId != null) {
             scene.findGameObjectsWithComponent<WorldBlock> {
-                val blockComponent = it.getComponent<WorldBlock>()!!
-                if (blockComponent.id == hoveredId)
-                    edit(blockComponent)
+                val block = it.getComponent<WorldBlock>()!!
+                if (block.id == hoveredId)
+                    edit(block)
             }
         } else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)

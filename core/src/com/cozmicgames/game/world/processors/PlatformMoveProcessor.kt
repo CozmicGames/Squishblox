@@ -13,7 +13,7 @@ import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 import com.cozmicgames.game.world.dataValues.PlatformData
 
-class PlatformMoveProcessor : SceneProcessor() {
+class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     override fun shouldProcess(delta: Float): Boolean {
         return Game.player.playState == PlayState.PLAY
     }
@@ -39,12 +39,12 @@ class PlatformMoveProcessor : SceneProcessor() {
         block.minY = currentMinY
         block.maxX = currentMinX + blockWidth
         block.maxY = currentMinY + blockHeight
+
+        worldScene.physicsWorld.updateBlock(block.id, block.minX, block.minY, block.maxX, block.maxY)
     }
 
     override fun process(delta: Float) {
-        val scene = this.scene as? WorldScene ?: return
-
-        scene.findGameObjectsWithComponent<WorldBlock> {
+        worldScene.findGameObjectsWithComponent<WorldBlock> {
             it.getComponent<WorldBlock>()?.let { block ->
                 block.getData<PlatformData>()?.let { platformData ->
                     updatePlatform(delta, block, platformData)

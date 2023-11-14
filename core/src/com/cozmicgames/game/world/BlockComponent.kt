@@ -5,11 +5,12 @@ import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.components.TransformComponent
 import com.cozmicgames.game.utils.Properties
 import com.cozmicgames.game.utils.Reflection
+import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.serialization.Readable
 import kotlin.reflect.KClass
 
 sealed class BlockComponent : Component() {
-    private val transformComponent by lazy { gameObject.getOrAddComponent<TransformComponent>() }
+    protected val transformComponent by lazy { gameObject.getOrAddComponent<TransformComponent>() }
 
     val color = Color()
     var id = -1
@@ -113,11 +114,37 @@ open class WorldBlock : BlockComponent() {
     }
 }
 
-class PlayerBlock : BlockComponent() {
+class PlayerBlock : Updatable, BlockComponent() {
     var deltaX = 0.0f
     var deltaY = 0.0f
-    var gravityX = 0.0f
-    var gravityY = -WorldConstants.GRAVITY
+
+    var standingOnBlock: WorldBlock? = null
+        set(value) {
+            if (value != null) {
+                previousStandingBlockX = value.minX
+                previousStandingBlockY = value.minY
+            }
+            field = value
+        }
+
+    var previousStandingBlockX = 0.0f
+    var previousStandingBlockY = 0.0f
+
+
+    override fun update(delta: Float) {
+        worldScene.physicsWorld.updateBlock(id, minX, minY, maxX, maxY)
+
+        standingOnBlock?.let {
+            val deltaX = it.minX - previousStandingBlockX
+            val deltaY = it.minY - previousStandingBlockY
+
+            minX += deltaX
+            minY += deltaY
+
+            previousStandingBlockX = it.minX
+            previousStandingBlockY = it.minY
+        }
+    }
 
     fun addSize(amount: Float) {
         if ((maxX - minX) > (maxY - minY)) {

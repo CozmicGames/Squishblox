@@ -40,6 +40,8 @@ class WorldState : SuspendableGameState {
             scene.editState = WorldScene.EditState.EDIT
         if (Game.input.isKeyJustDown(Input.Keys.NUM_3))
             scene.editState = WorldScene.EditState.DELETE
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_4))
+            scene.editState = WorldScene.EditState.PLATFORM
         if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
             if (Game.player.playState == PlayState.EDIT)
                 Game.player.playState = PlayState.PLAY

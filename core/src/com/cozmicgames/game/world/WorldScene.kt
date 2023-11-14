@@ -9,7 +9,8 @@ class WorldScene : Scene() {
     enum class EditState {
         CREATE,
         EDIT,
-        DELETE
+        DELETE,
+        PLATFORM
     }
 
     val world = World()
@@ -17,16 +18,16 @@ class WorldScene : Scene() {
 
     var editState = EditState.CREATE
 
-    private val blockEditProcessor = BlockEditProcessor(this)
-    private val blockCreateProcessor = BlockCreateProcessor(this)
-    private val blockDeleteProcessor = BlockDeleteProcessor(this)
-
     init {
         addSceneProcessor(BlockRenderProcessor())
-        addSceneProcessor(blockCreateProcessor)
-        addSceneProcessor(blockEditProcessor)
-        addSceneProcessor(blockDeleteProcessor)
+        addSceneProcessor(PlatformRenderProcessor(this))
 
+        addSceneProcessor(BlockCreateProcessor(this))
+        addSceneProcessor(BlockEditProcessor(this))
+        addSceneProcessor(BlockDeleteProcessor(this))
+        addSceneProcessor(PlatformEditProcessor(this))
+
+        addSceneProcessor(PlatformMoveProcessor(this))
         addSceneProcessor(PlayerBlockProcessor(this))
     }
 
