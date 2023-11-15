@@ -118,32 +118,8 @@ class PlayerBlock : Updatable, BlockComponent() {
     var deltaX = 0.0f
     var deltaY = 0.0f
 
-    var standingOnBlock: WorldBlock? = null
-        set(value) {
-            if (value != null) {
-                previousStandingBlockX = value.minX
-                previousStandingBlockY = value.minY
-            }
-            field = value
-        }
-
-    var previousStandingBlockX = 0.0f
-    var previousStandingBlockY = 0.0f
-
-
     override fun update(delta: Float) {
         worldScene.physicsWorld.updateBlock(id, minX, minY, maxX, maxY)
-
-        standingOnBlock?.let {
-            val deltaX = it.minX - previousStandingBlockX
-            val deltaY = it.minY - previousStandingBlockY
-
-            minX += deltaX
-            minY += deltaY
-
-            previousStandingBlockX = it.minX
-            previousStandingBlockY = it.minY
-        }
     }
 
     fun addSize(amount: Float) {

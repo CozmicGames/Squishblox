@@ -11,6 +11,7 @@ import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.utils.maths.intersectPointRect
 import com.cozmicgames.game.world.*
+import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.Collisions
 
 class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor() {
@@ -190,7 +191,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         else if (left)
             playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, -WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
         else
-            playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, 0.0f, WorldConstants.RUN_ACCELERATION * delta)
+            playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, 0.0f, WorldConstants.RUN_DECELERATION * delta)
 
         if (!jump)
             isJumping = false
@@ -201,8 +202,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
                 Game.audio.getSound("sounds/jump.wav")?.play()
                 isJumping = true
             }
-        } else
-            playerBlock.standingOnBlock = null
+        }
 
         if (jump && isJumping && jumpTime < WorldConstants.JUMP_MAX_TIME) {
             playerBlock.deltaY = WorldConstants.JUMP_SPEED
@@ -215,17 +215,6 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
 
         var isInAir = true
         var hitWall = false
-
-        playerBlock.standingOnBlock?.let {
-            val deltaX = it.minX - playerBlock.previousStandingBlockX
-            val deltaY = it.minY - playerBlock.previousStandingBlockY
-
-            amountX += deltaX
-            amountY += deltaY
-
-            playerBlock.previousStandingBlockX = it.minX
-            playerBlock.previousStandingBlockY = it.minY
-        }
 
         worldScene.physicsWorld.move(playerBlock.id, amountX, amountY)?.let { result ->
             repeat(result.projectedCollisions.size()) {
@@ -247,7 +236,9 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
                             isInAir = false
 
                             (worldScene.getBlockFromId(collision.other.userData as Int) as? WorldBlock)?.let {
-                                playerBlock.standingOnBlock = it
+                                it.getData<PlatformData>()?.let {
+                                    it.playerBlockId = playerBlock.id
+                                }
                             }
                         }
                     }

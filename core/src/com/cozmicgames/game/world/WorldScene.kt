@@ -62,6 +62,7 @@ class WorldScene : Scene() {
     fun removeBlock(id: Int) {
         getBlockFromId(id)?.let {
             world.removeBlock(it.id)
+            physicsWorld.removeBlock(it.id)
             removeGameObject(it.gameObject)
         }
     }

@@ -10,6 +10,7 @@ class PlatformData : Readable {
     var toMinY = 0.0f
     var currentPosition = 0.0f
     var currentMoveDirection = 1.0f
+    var playerBlockId: Int? = null
 
     override fun read(properties: Properties) {
         properties.getFloat("fromMinX")?.let { fromMinX = it }

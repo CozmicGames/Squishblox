@@ -21,6 +21,7 @@ object WorldConstants {
 
     const val FRICTION = 800.0f
     const val RUN_ACCELERATION = 1600.0f
+    const val RUN_DECELERATION = 3200.0f
     const val RUN_SPEED = 800.0f
     const val JUMP_SPEED = 1200.0f
     const val BOUNCE_SPEED = 800.0f
@@ -28,5 +29,5 @@ object WorldConstants {
     const val GRAVITY_FALLING_FACTOR = 2.0f
     const val JUMP_MAX_TIME = 0.25f
 
-    const val PLATFORM_MOVE_SPEED = 25.0f
+    const val PLATFORM_MOVE_SPEED = 20.0f
 }

@@ -7,13 +7,13 @@ import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.utils.extensions.clamp
 import com.cozmicgames.game.utils.maths.distance
 import com.cozmicgames.game.utils.maths.lerp
-import com.cozmicgames.game.world.PlayState
-import com.cozmicgames.game.world.WorldBlock
-import com.cozmicgames.game.world.WorldConstants
-import com.cozmicgames.game.world.WorldScene
+import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
+import com.dongbat.jbump.Collisions
 
 class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor() {
+    private val tempCollisions = Collisions()
+
     override fun shouldProcess(delta: Float): Boolean {
         return Game.player.playState == PlayState.PLAY
     }
@@ -35,12 +35,40 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         val blockWidth = block.maxX - block.minX
         val blockHeight = block.maxY - block.minY
 
+        val deltaX = currentMinX - block.minX
+        val deltaY = currentMinY - block.minY
+
+        platformData.playerBlockId?.let {
+            worldScene.getBlockFromId(it)?.let {
+                val playerBlockWidth = it.maxX - it.minX
+                val playerBlockHeight = it.maxY - it.minY
+
+                it.minX += deltaX
+                it.minY += deltaY
+                it.maxX = it.minX + playerBlockWidth
+                it.maxY = it.minY + playerBlockHeight
+
+                it.updatePhysicsBlock()
+            }
+        }
+
         block.minX = currentMinX
         block.minY = currentMinY
         block.maxX = currentMinX + blockWidth
         block.maxY = currentMinY + blockHeight
 
         worldScene.physicsWorld.updateBlock(block.id, block.minX, block.minY, block.maxX, block.maxY)
+
+        platformData.playerBlockId = null
+        worldScene.physicsWorld.project(block.id, 0.0f, 0.1f, tempCollisions)
+        if (tempCollisions.size() > 0)
+            repeat(tempCollisions.size()) {
+                val collision = tempCollisions[it]
+                val id = collision.other.userData as Int
+                val collidingBlock = worldScene.getBlockFromId(id)
+                if (collidingBlock is PlayerBlock)
+                    platformData.playerBlockId = collidingBlock.id
+            }
     }
 
     override fun process(delta: Float) {
