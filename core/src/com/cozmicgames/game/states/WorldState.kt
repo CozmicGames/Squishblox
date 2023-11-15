@@ -19,6 +19,8 @@ class WorldState : SuspendableGameState {
     init {
         scene.initialize()
 
+        Game.player.currentState = this
+
         gui.isInteractionEnabled = false
         gui.pauseRenderingOnDisabled = true
 

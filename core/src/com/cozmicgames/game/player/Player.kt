@@ -3,6 +3,9 @@ package com.cozmicgames.game.player
 import com.badlogic.gdx.Gdx
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
+import com.cozmicgames.game.states.MenuState
+import com.cozmicgames.game.states.TransitionGameState
+import com.cozmicgames.game.states.WorldState
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.extensions.unproject
 import com.cozmicgames.game.utils.maths.intersectPointRect
@@ -18,6 +21,8 @@ class Player : Updatable {
 
     var playState = PlayState.EDIT
 
+    lateinit var currentState: WorldState
+
     fun isHovered(minX: Float, minY: Float, maxX: Float, maxY: Float): Boolean {
         return intersectPointRect(inputX, inputY, minX, minY, maxX, maxY)
     }
@@ -28,5 +33,9 @@ class Player : Updatable {
             inputX = x
             inputY = y
         }
+    }
+
+    fun onCompleteLevel() {
+        currentState.returnState = MenuState()
     }
 }

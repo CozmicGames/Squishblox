@@ -220,7 +220,8 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
                 val collision = result.projectedCollisions[it]
 
                 if (collision.other.userData is Int) {
-                    //TODO: Differentiate based on the other block type (consume, hurting, ...)
+                    if (worldScene.getBlockFromId(collision.other.userData as Int) is GoalBlock)
+                        Game.player.onCompleteLevel()
 
                     if (collision.normal.x != 0)
                         playerBlock.deltaX = 0.0f
@@ -256,7 +257,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
 
-        if(Game.input.isKeyDown(Keys.E))
-        playerBlock.addSize(1.0f)
+        if (Game.input.isKeyDown(Keys.E))
+            playerBlock.addSize(1.0f)
     }
 }
