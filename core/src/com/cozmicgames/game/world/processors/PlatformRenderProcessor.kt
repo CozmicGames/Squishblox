@@ -28,7 +28,7 @@ class PlatformRenderProcessor(private val worldScene: WorldScene) : SceneProcess
         blockPreviewNinePatch = NinePatch(blockPreviewTexture, blockPreviewTexture.regionWidth / 3, blockPreviewTexture.regionWidth / 3, blockPreviewTexture.regionHeight / 3, blockPreviewTexture.regionHeight / 3)
 
         val pathTexture = TextureRegion(Game.textures.getTexture("textures/platform_path.png"))
-        pathNinePatch = NinePatch(pathTexture, pathTexture.regionWidth / 2 - 1, pathTexture.regionWidth / 2 - 1, pathTexture.regionHeight / 2 + 1, pathTexture.regionHeight / 2 + 1)
+        pathNinePatch = NinePatch(pathTexture, pathTexture.regionWidth / 2 - 1, pathTexture.regionWidth / 2 - 1, pathTexture.regionHeight / 2 - 1, pathTexture.regionHeight / 2 - 1)
     }
 
     override fun shouldProcess(delta: Float): Boolean {
