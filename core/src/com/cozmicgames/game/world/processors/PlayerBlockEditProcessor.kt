@@ -9,20 +9,19 @@ import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.world.*
-import com.cozmicgames.game.world.dataValues.PlatformData
 import kotlin.math.abs
 
-class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() {
+class PlayerBlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private var editingId: Int? = null
     private var offsetX = 0.0f
     private var offsetY = 0.0f
     private var isResizingFlag = 0
 
     override fun shouldProcess(delta: Float): Boolean {
-        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.EDIT
+        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.EDIT_PLAYER
     }
 
-    private fun edit(block: WorldBlock): Boolean {
+    private fun edit(block: PlayerBlock): Boolean {
         val world = worldScene.world
 
         val isTopLeftHovered = Game.player.isHovered(block.minX, block.minY, block.minX + WorldConstants.RESIZE_BORDER_SIZE, block.minY + WorldConstants.RESIZE_BORDER_SIZE)
@@ -289,9 +288,6 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         }
 
         if (isResizingFlag != 0) {
-            if (block.minX != newMinX || block.minY != newMinY || block.maxX != newMaxX || block.maxY != newMaxY)
-                block.removeData<PlatformData>()
-
             block.minX = newMinX
             block.minY = newMinY
             block.maxX = newMaxX
@@ -308,8 +304,8 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         val scene = this.scene as? WorldScene ?: return
 
         if (editingId != null) {
-            scene.findGameObjectsWithComponent<WorldBlock> {
-                val block = it.getComponent<WorldBlock>()!!
+            scene.findGameObjectsWithComponent<PlayerBlock> {
+                val block = it.getComponent<PlayerBlock>()!!
                 if (block.id == editingId) {
                     val isStillEditing = edit(block)
                     if (!isStillEditing)
@@ -323,8 +319,8 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
         val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
 
         if (hoveredId != null) {
-            scene.findGameObjectsWithComponent<WorldBlock> {
-                val block = it.getComponent<WorldBlock>()!!
+            scene.findGameObjectsWithComponent<PlayerBlock> {
+                val block = it.getComponent<PlayerBlock>()!!
                 if (block.id == hoveredId)
                     edit(block)
             }

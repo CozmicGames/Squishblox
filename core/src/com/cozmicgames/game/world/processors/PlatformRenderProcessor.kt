@@ -8,6 +8,7 @@ import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.textures

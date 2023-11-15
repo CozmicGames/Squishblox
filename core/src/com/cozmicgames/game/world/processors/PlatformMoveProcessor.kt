@@ -2,6 +2,7 @@ package com.cozmicgames.game.world.processors
 
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.utils.extensions.clamp

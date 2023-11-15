@@ -2,11 +2,13 @@ package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Cursor
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.audio
 import com.cozmicgames.game.input
 import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.utils.maths.intersectPointRect
@@ -181,10 +183,10 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         val playerBlock = worldScene.findGameObjectByComponent<PlayerBlock> { true }?.getComponent<PlayerBlock>() ?: return
 
         playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, 0.0f, WorldConstants.FRICTION * delta)
-        val left = Game.input.isKeyDown(Input.Keys.A)
-        val right = Game.input.isKeyDown(Input.Keys.D)
-        val jump = Game.input.isKeyDown(Input.Keys.SPACE)
-        val jumpJustPressed = Game.input.isKeyJustDown(Input.Keys.SPACE)
+        val left = Game.input.isKeyDown(Keys.A)
+        val right = Game.input.isKeyDown(Keys.D)
+        val jump = Game.input.isKeyDown(Keys.SPACE)
+        val jumpJustPressed = Game.input.isKeyJustDown(Keys.SPACE)
 
         if (right)
             playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
@@ -210,11 +212,8 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         }
 
         playerBlock.deltaY += if (playerBlock.deltaY < 0.0f) delta * WorldConstants.GRAVITY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * WorldConstants.GRAVITY
-        var amountX = delta * playerBlock.deltaX
-        var amountY = delta * playerBlock.deltaY
-
-        var isInAir = true
-        var hitWall = false
+        val amountX = delta * playerBlock.deltaX
+        val amountY = delta * playerBlock.deltaY
 
         worldScene.physicsWorld.move(playerBlock.id, amountX, amountY)?.let { result ->
             repeat(result.projectedCollisions.size()) {
@@ -223,23 +222,15 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
                 if (collision.other.userData is Int) {
                     //TODO: Differentiate based on the other block type (consume, hurting, ...)
 
-                    if (collision.normal.x != 0) {
+                    if (collision.normal.x != 0)
                         playerBlock.deltaX = 0.0f
-                        hitWall = true
-                    }
+
                     if (collision.normal.y != 0) {
                         playerBlock.deltaY = 0.0f
                         jumpTime = WorldConstants.JUMP_MAX_TIME
                         if (collision.normal.y == 1) {
                             jumpTime = 0.0f
                             isJumping = false
-                            isInAir = false
-
-                            (worldScene.getBlockFromId(collision.other.userData as Int) as? WorldBlock)?.let {
-                                it.getData<PlatformData>()?.let {
-                                    it.playerBlockId = playerBlock.id
-                                }
-                            }
                         }
                     }
                 }
@@ -264,5 +255,8 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
             edit(playerBlock)
         else
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow)
+
+        if(Game.input.isKeyDown(Keys.E))
+        playerBlock.addSize(1.0f)
     }
 }

@@ -1,4 +1,4 @@
-package com.cozmicgames.game.world
+package com.cozmicgames.game.player
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera

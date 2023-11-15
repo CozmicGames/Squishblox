@@ -10,17 +10,21 @@ object WorldUtils {
         CEIL
     }
 
-    private const val COLOR_COUNT = 64
+    private const val COLOR_COUNT = 16
 
-    private val colors = Array(COLOR_COUNT) {
-        val h = it.toFloat() / COLOR_COUNT.toFloat() * 360.0f
-        val s = 0.75f
-        val v = 1.0f
-        Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(h, s, v)
+    private val blockColors = Array(COLOR_COUNT) {
+        val hue = it.toFloat() / COLOR_COUNT.toFloat() * 360.0f
+        getColor(hue)
     }
 
     fun getRandomBlockColor(): Color {
-        return colors.random()
+        return blockColors.random()
+    }
+
+    fun getColor(hue: Float): Color {
+        val s = 0.75f
+        val v = 1.0f
+        return Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(hue, s, v)
     }
 
     fun toCellCoord(value: Float, rounding: CoordRounding = CoordRounding.ROUND): Int {

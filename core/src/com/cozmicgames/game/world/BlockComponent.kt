@@ -1,11 +1,15 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.graphics.Color
+import com.cozmicgames.game.Game
+import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.components.TransformComponent
 import com.cozmicgames.game.utils.Properties
 import com.cozmicgames.game.utils.Reflection
 import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.utils.serialization.Readable
 import kotlin.reflect.KClass
 
@@ -114,13 +118,29 @@ open class WorldBlock : BlockComponent() {
     }
 }
 
-class PlayerBlock : Updatable, BlockComponent() {
-    var deltaX = 0.0f
-    var deltaY = 0.0f
+abstract class EntityBlock : Updatable, BlockComponent() {
+    var isBlinking = false
+        private set
+
+    private var blinkTimer = 5.0f
 
     override fun update(delta: Float) {
-        worldScene.physicsWorld.updateBlock(id, minX, minY, maxX, maxY)
+        if (Game.player.playState != PlayState.EDIT)
+            blinkTimer -= delta
+
+        if (blinkTimer <= 0.15f)
+            isBlinking = true
+
+        if (blinkTimer <= 0.0f) {
+            isBlinking = false
+            blinkTimer = 0.5f + randomFloat() * 5.0f
+        }
     }
+}
+
+class PlayerBlock : EntityBlock() {
+    var deltaX = 0.0f
+    var deltaY = 0.0f
 
     fun addSize(amount: Float) {
         if ((maxX - minX) > (maxY - minY)) {
@@ -188,3 +208,5 @@ class PlayerBlock : Updatable, BlockComponent() {
         maxY = newMaxY
     }
 }
+
+class GoalBlock : EntityBlock()

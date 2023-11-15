@@ -6,7 +6,7 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.GUI
 import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.utils.extensions.safeWidth
-import com.cozmicgames.game.world.PlayState
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 
@@ -17,6 +17,8 @@ class WorldState : SuspendableGameState {
     val scene = WorldScene()
 
     init {
+        scene.initialize()
+
         gui.isInteractionEnabled = false
         gui.pauseRenderingOnDisabled = true
 
@@ -41,7 +43,10 @@ class WorldState : SuspendableGameState {
         if (Game.input.isKeyJustDown(Input.Keys.NUM_3))
             scene.editState = WorldScene.EditState.DELETE
         if (Game.input.isKeyJustDown(Input.Keys.NUM_4))
-            scene.editState = WorldScene.EditState.PLATFORM
+            scene.editState = WorldScene.EditState.EDIT_PLATFORM
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_5))
+            scene.editState = WorldScene.EditState.EDIT_PLAYER
+
         if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
             if (Game.player.playState == PlayState.EDIT)
                 Game.player.playState = PlayState.PLAY

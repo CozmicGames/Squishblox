@@ -9,6 +9,8 @@ object WorldConstants {
     const val CLOUD_SIZE = 256.0f
     val SHADOW_COLOR = Color(0.2f, 0.2f, 0.2f, 0.5f)
     val SHADOW_OFFSET = Vector2(6.0f, 8.0f)
+    val PLAYER_COLOR = Color.WHITE
+    val GOAL_COLOR = WorldUtils.getColor(42.0f)
     const val CLOUD_SPEED = 10.0f
     const val CLOUD_Y = 1000.0f
     const val CLOUD_Y_SPREAD = 600.0f
@@ -24,10 +26,9 @@ object WorldConstants {
     const val RUN_DECELERATION = 3200.0f
     const val RUN_SPEED = 800.0f
     const val JUMP_SPEED = 1200.0f
-    const val BOUNCE_SPEED = 800.0f
     const val GRAVITY = -3000.0f
     const val GRAVITY_FALLING_FACTOR = 2.0f
     const val JUMP_MAX_TIME = 0.25f
 
-    const val PLATFORM_MOVE_SPEED = 20.0f
+    const val PLATFORM_MOVE_SPEED = 30.0f
 }

@@ -3,6 +3,7 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.scene.Scene
 import com.cozmicgames.game.scene.findGameObjectByComponent
+import com.cozmicgames.game.utils.Properties
 import com.cozmicgames.game.world.processors.*
 
 class WorldScene : Scene() {
@@ -10,7 +11,8 @@ class WorldScene : Scene() {
         CREATE,
         EDIT,
         DELETE,
-        PLATFORM
+        EDIT_PLATFORM,
+        EDIT_PLAYER
     }
 
     val world = World()
@@ -21,7 +23,9 @@ class WorldScene : Scene() {
     init {
         addSceneProcessor(BlockRenderProcessor())
         addSceneProcessor(PlatformRenderProcessor(this))
+        addSceneProcessor(DebugRenderProcessor(this))
 
+        addSceneProcessor(PlayerBlockEditProcessor(this))
         addSceneProcessor(BlockCreateProcessor(this))
         addSceneProcessor(BlockEditProcessor(this))
         addSceneProcessor(BlockDeleteProcessor(this))
@@ -29,6 +33,38 @@ class WorldScene : Scene() {
 
         addSceneProcessor(PlatformMoveProcessor(this))
         addSceneProcessor(PlayerBlockProcessor(this))
+    }
+
+    fun initialize(data: String) {
+        val properties = Properties()
+        properties.read(data)
+        read(properties)
+    }
+
+    fun initialize() {
+        addBlock(0, 0, 3, 1, WorldUtils.getRandomBlockColor())
+
+        addGameObject {
+            addComponent<PlayerBlock> {
+                this.color.set(WorldConstants.PLAYER_COLOR)
+                this.minX = WorldUtils.toWorldCoord(1)
+                this.minY = WorldUtils.toWorldCoord(1)
+                this.maxX = WorldUtils.toWorldCoord(2)
+                this.maxY = WorldUtils.toWorldCoord(3)
+            }
+        }
+
+        addBlock(20, 0, 23, 1, WorldUtils.getRandomBlockColor())
+
+        addGameObject {
+            addComponent<GoalBlock> {
+                this.color.set(WorldConstants.GOAL_COLOR)
+                this.minX = WorldUtils.toWorldCoord(21)
+                this.minY = WorldUtils.toWorldCoord(1)
+                this.maxX = WorldUtils.toWorldCoord(22)
+                this.maxY = WorldUtils.toWorldCoord(3)
+            }
+        }
     }
 
     fun addBlock(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Color) {

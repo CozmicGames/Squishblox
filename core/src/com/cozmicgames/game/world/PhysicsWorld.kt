@@ -8,11 +8,15 @@ import com.dongbat.jbump.Rect
 import com.dongbat.jbump.Response
 import com.dongbat.jbump.World
 
-class PhysicsWorld {
+class PhysicsWorld : Iterable<Int> {
     private val world = World<Int>(WorldConstants.WORLD_CELL_SIZE)
     private val items = IntMap<Item<Int>>()
     private val collisionFilter = CollisionFilter { item, other ->
         Response.slide
+    }
+
+    override fun iterator(): Iterator<Int> {
+        return items.values().map { it.userData }.iterator()
     }
 
     fun createBlock(id: Int, minX: Float, minY: Float, maxX: Float, maxY: Float) {
@@ -40,7 +44,7 @@ class PhysicsWorld {
     fun project(id: Int, amountX: Float, amountY: Float, collisions: Collisions) {
         val item = items.get(id) ?: return
         val rect = world.getRect(item)
-        world.project(item, rect.x, rect.y, rect.w, rect.h, if (amountX < 0.0f) rect.x + amountX else rect.x + rect.w + amountX, if (amountY < 0.0f) rect.y + amountY else rect.y + rect.w + amountY, collisionFilter, collisions)
+        world.project(item, rect.x, rect.y, rect.w, rect.h, if (amountX <= 0.0f) rect.x + amountX else rect.x + rect.w + amountX, if (amountY <= 0.0f) rect.y + amountY else rect.y + rect.w + amountY, collisionFilter, collisions)
     }
 
     fun getRect(id: Int): Rect? {

@@ -7,7 +7,7 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.scene.SceneProcessor
-import com.cozmicgames.game.world.PlayState
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 import com.cozmicgames.game.world.WorldUtils

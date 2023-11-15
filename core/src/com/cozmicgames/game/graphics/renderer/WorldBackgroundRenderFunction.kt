@@ -8,6 +8,7 @@ import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
 import com.cozmicgames.game.graphics.engine.rendergraph.RenderFunction
 import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.textures
 import com.cozmicgames.game.utils.maths.intersectRectRect
 import com.cozmicgames.game.utils.maths.randomFloat
@@ -135,7 +136,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         val region = Game.textures.getTexture(layer.texture)
         val camera = Game.player.camera
 
-        val backgroundTileWidth = region.regionWidth.toFloat()
+        val backgroundTileWidth = region.regionWidth.toFloat() * 1.001f
         val backgroundTileHeight = region.regionHeight.toFloat()
 
         val numBackgroundTilesX = ceil(camera.rectangle.width / backgroundTileWidth).toInt() + 2
@@ -172,7 +173,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             val layer = layers[i]
             drawParallaxLayer(layer, i)
         }
-        drawGrid()
+        if (Game.player.playState == PlayState.EDIT)
+            drawGrid()
         drawClouds(delta)
     }
 }

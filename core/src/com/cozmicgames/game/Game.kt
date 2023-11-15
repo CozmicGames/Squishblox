@@ -20,7 +20,7 @@ import com.cozmicgames.game.states.SuspendGameState
 import com.cozmicgames.game.states.SuspendableGameState
 import com.cozmicgames.game.states.TransitionGameState
 import com.cozmicgames.game.utils.*
-import com.cozmicgames.game.world.Player
+import com.cozmicgames.game.player.Player
 import kotlin.system.exitProcess
 
 class Game(gameSettings: GameSettings) : ApplicationAdapter() {

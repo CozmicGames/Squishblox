@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.utils.maths.distance
@@ -39,7 +40,7 @@ class PlatformEditProcessor(private val worldScene: WorldScene) : SceneProcessor
     }
 
     override fun shouldProcess(delta: Float): Boolean {
-        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.PLATFORM
+        return Game.player.playState == PlayState.EDIT && worldScene.editState == WorldScene.EditState.EDIT_PLATFORM
     }
 
     private fun isPathClear(minX: Int, minY: Int, maxX: Int, maxY: Int, block: WorldBlock): Boolean {
