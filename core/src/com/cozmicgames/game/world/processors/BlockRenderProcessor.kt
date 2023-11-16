@@ -73,7 +73,7 @@ class BlockRenderProcessor : SceneProcessor() {
                             val playerEyesTexture = TextureRegion(Game.textures.getTexture("textures/player_eyes.png"))
                             Game.graphics2d.submit<DirectRenderable2D> {
                                 it.layer = RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND
-                                it.texture = "textures/player_eyes.png"
+                                it.texture = if(block.isFacingRight) "textures/player_eyes_right.png" else "textures/player_eyes_left.png"
                                 it.color = block.color
                                 it.x = transformComponent.transform.x + (transformComponent.transform.scaleX - playerEyesTexture.regionWidth) * 0.5f
                                 it.y = transformComponent.transform.y + (transformComponent.transform.scaleY - playerEyesTexture.regionHeight) * 0.5f

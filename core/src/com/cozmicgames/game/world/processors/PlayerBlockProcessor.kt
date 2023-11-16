@@ -1,7 +1,6 @@
 package com.cozmicgames.game.world.processors
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Cursor
 import com.cozmicgames.game.Game
@@ -13,8 +12,8 @@ import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.utils.maths.intersectPointRect
 import com.cozmicgames.game.world.*
-import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.Collisions
+import kotlin.math.abs
 
 class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private var isEditing = false
@@ -214,6 +213,9 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         playerBlock.deltaY += if (playerBlock.deltaY < 0.0f) delta * WorldConstants.GRAVITY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * WorldConstants.GRAVITY
         val amountX = delta * playerBlock.deltaX
         val amountY = delta * playerBlock.deltaY
+
+        if (abs(amountX) > 0.0f)
+            playerBlock.isFacingRight = amountX > 0.0f
 
         worldScene.physicsWorld.move(playerBlock.id, amountX, amountY)?.let { result ->
             repeat(result.projectedCollisions.size()) {

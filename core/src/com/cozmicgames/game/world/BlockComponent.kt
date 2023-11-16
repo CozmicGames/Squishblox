@@ -6,6 +6,7 @@ import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.components.TransformComponent
+import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.utils.Properties
 import com.cozmicgames.game.utils.Reflection
 import com.cozmicgames.game.utils.Updatable
@@ -119,6 +120,8 @@ open class WorldBlock : BlockComponent() {
 }
 
 abstract class EntityBlock : Updatable, BlockComponent() {
+    var isFacingRight = true
+
     var isBlinking = false
         private set
 
@@ -209,4 +212,11 @@ class PlayerBlock : EntityBlock() {
     }
 }
 
-class GoalBlock : EntityBlock()
+class GoalBlock : EntityBlock() {
+    override fun update(delta: Float) {
+        super.update(delta)
+
+        val playerBlock = worldScene.findGameObjectByComponent<PlayerBlock> { true }
+        isFacingRight = (playerBlock?.getComponent<PlayerBlock>()?.minX ?: Float.MAX_VALUE) >= minX
+    }
+}
