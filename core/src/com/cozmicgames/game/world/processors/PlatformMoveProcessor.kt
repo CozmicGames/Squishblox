@@ -5,9 +5,7 @@ import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
-import com.cozmicgames.game.utils.extensions.clamp
-import com.cozmicgames.game.utils.maths.distance
-import com.cozmicgames.game.utils.maths.lerp
+import com.cozmicgames.game.utils.maths.length
 import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.Collisions
@@ -20,24 +18,27 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
     }
 
     private fun updatePlatform(delta: Float, block: WorldBlock, platformData: PlatformData) {
-        platformData.currentPosition += platformData.currentMoveDirection * delta * WorldConstants.PLATFORM_MOVE_SPEED / distance(platformData.fromMinX, platformData.fromMinY, platformData.toMinX, platformData.toMinY)
+        val amountX = (block.minX - platformData.fromMinX) / (platformData.toMinX - platformData.fromMinX)
+        val amountY = (block.minY - platformData.fromMinY) / (platformData.toMinY - platformData.fromMinY)
 
-        if (platformData.currentPosition >= 1.0f)
-            platformData.currentMoveDirection = -1.0f
-
-        if (platformData.currentPosition <= 0.0f)
+        if ((platformData.fromMinX == platformData.toMinX || amountX <= 0.0f) && (platformData.fromMinY == platformData.toMinY || amountY <= 0.0f))
             platformData.currentMoveDirection = 1.0f
 
-        platformData.currentPosition = platformData.currentPosition.clamp(0.0f, 1.0f)
-
-        val currentMinX = lerp(platformData.fromMinX, platformData.toMinX, platformData.currentPosition)
-        val currentMinY = lerp(platformData.fromMinY, platformData.toMinY, platformData.currentPosition)
+        if ((platformData.fromMinX == platformData.toMinX || amountX >= 1.0f) && (platformData.fromMinY == platformData.toMinY || amountY >= 1.0f))
+            platformData.currentMoveDirection = -1.0f
 
         val blockWidth = block.maxX - block.minX
         val blockHeight = block.maxY - block.minY
 
-        val deltaX = currentMinX - block.minX
-        val deltaY = currentMinY - block.minY
+        var deltaX = (platformData.toMinX - platformData.fromMinX) * platformData.currentMoveDirection
+        var deltaY = (platformData.toMinY - platformData.fromMinY) * platformData.currentMoveDirection
+
+        val normalizationFactor = 1.0f / length(deltaX, deltaY)
+        deltaX *= normalizationFactor
+        deltaY *= normalizationFactor
+
+        deltaX *= delta * WorldConstants.PLATFORM_MOVE_SPEED
+        deltaY *= delta * WorldConstants.PLATFORM_MOVE_SPEED
 
         val result = worldScene.physicsWorld.move(block.id, deltaX, deltaY)
         if (result != null) {

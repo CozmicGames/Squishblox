@@ -2,14 +2,20 @@ package com.cozmicgames.game.world
 
 import com.badlogic.gdx.utils.IntMap
 import com.cozmicgames.game.world.dataValues.PlatformData
-import com.dongbat.jbump.CollisionFilter
-import com.dongbat.jbump.Collisions
-import com.dongbat.jbump.Item
-import com.dongbat.jbump.Rect
-import com.dongbat.jbump.Response
+import com.dongbat.jbump.*
 import com.dongbat.jbump.World
 
 class PhysicsWorld(private val worldScene: WorldScene) : Iterable<Int> {
+    private val deform = object : Response {
+        override fun response(world: World<*>, collision: Collision, x: Float, y: Float, w: Float, h: Float, goalX: Float, goalY: Float, filter: CollisionFilter, result: Response.Result): Response.Result {
+            return Response.touch.response(world, collision, x, y, w, h, goalX, goalY, filter, result)
+
+
+
+            return result
+        }
+    }
+
     private val world = World<Int>(WorldConstants.WORLD_CELL_SIZE)
     private val items = IntMap<Item<Int>>()
     private val collisionFilter = CollisionFilter { item, other ->
@@ -21,7 +27,7 @@ class PhysicsWorld(private val worldScene: WorldScene) : Iterable<Int> {
                         if (block is WorldBlock)
                             block.getData<PlatformData>()?.let { platformData ->
                                 result = if (platformData.playerBlockId != otherBlock.id) {
-                                    Response.touch //TODO: Replace with squish response
+                                    deform
                                 } else
                                     null
                             }
