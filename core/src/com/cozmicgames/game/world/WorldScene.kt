@@ -16,7 +16,7 @@ class WorldScene : Scene() {
     }
 
     val world = World()
-    val physicsWorld = PhysicsWorld()
+    val physicsWorld = PhysicsWorld(this)
 
     var editState = EditState.CREATE
 

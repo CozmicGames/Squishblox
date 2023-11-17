@@ -39,26 +39,28 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         val deltaX = currentMinX - block.minX
         val deltaY = currentMinY - block.minY
 
-        platformData.playerBlockId?.let {
-            worldScene.getBlockFromId(it)?.let {
-                val playerBlockWidth = it.maxX - it.minX
-                val playerBlockHeight = it.maxY - it.minY
+        val result = worldScene.physicsWorld.move(block.id, deltaX, deltaY)
+        if (result != null) {
+            platformData.playerBlockId?.let {
+                worldScene.getBlockFromId(it)?.let {
+                    val playerBlockWidth = it.maxX - it.minX
+                    val playerBlockHeight = it.maxY - it.minY
 
-                it.minX += deltaX
-                it.minY += deltaY
-                it.maxX = it.minX + playerBlockWidth
-                it.maxY = it.minY + playerBlockHeight
+                    it.minX += result.goalX - block.minX
+                    it.minY += result.goalY - block.minY
+                    it.maxX = it.minX + playerBlockWidth
+                    it.maxY = it.minY + playerBlockHeight
 
-                it.updatePhysicsBlock()
+                    it.updatePhysicsBlock()
+                }
             }
         }
 
-        block.minX = currentMinX
-        block.minY = currentMinY
-        block.maxX = currentMinX + blockWidth
-        block.maxY = currentMinY + blockHeight
-
-        worldScene.physicsWorld.updateBlock(block.id, block.minX, block.minY, block.maxX, block.maxY)
+        val blockRect = worldScene.physicsWorld.getRect(block.id)!!
+        block.minX = blockRect.x
+        block.minY = blockRect.y
+        block.maxX = block.minX + blockWidth
+        block.maxY = block.minY + blockHeight
 
         platformData.playerBlockId = null
         worldScene.physicsWorld.project(block.id, 0.0f, 0.1f, tempCollisions)

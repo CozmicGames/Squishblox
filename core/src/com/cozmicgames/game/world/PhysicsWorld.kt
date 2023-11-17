@@ -1,6 +1,7 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.utils.IntMap
+import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.CollisionFilter
 import com.dongbat.jbump.Collisions
 import com.dongbat.jbump.Item
@@ -8,11 +9,27 @@ import com.dongbat.jbump.Rect
 import com.dongbat.jbump.Response
 import com.dongbat.jbump.World
 
-class PhysicsWorld : Iterable<Int> {
+class PhysicsWorld(private val worldScene: WorldScene) : Iterable<Int> {
     private val world = World<Int>(WorldConstants.WORLD_CELL_SIZE)
     private val items = IntMap<Item<Int>>()
     private val collisionFilter = CollisionFilter { item, other ->
-        Response.slide
+        var result = Response.slide
+        if (other.userData is Int)
+            worldScene.getBlockFromId(other.userData as Int)?.let { otherBlock ->
+                if (otherBlock is PlayerBlock) {
+                    worldScene.getBlockFromId(item.userData as Int)?.let { block ->
+                        if (block is WorldBlock)
+                            block.getData<PlatformData>()?.let { platformData ->
+                                result = if (platformData.playerBlockId != otherBlock.id) {
+                                    Response.touch //TODO: Replace with squish response
+                                } else
+                                    null
+                            }
+                    }
+                }
+            }
+
+        result
     }
 
     override fun iterator(): Iterator<Int> {
