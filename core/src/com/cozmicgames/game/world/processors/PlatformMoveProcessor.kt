@@ -9,6 +9,7 @@ import com.cozmicgames.game.utils.maths.length
 import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.Collisions
+import kotlin.math.abs
 
 class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private val tempCollisions = Collisions()
@@ -27,8 +28,8 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         if ((platformData.fromMinX == platformData.toMinX || amountX >= 1.0f) && (platformData.fromMinY == platformData.toMinY || amountY >= 1.0f))
             platformData.currentMoveDirection = -1.0f
 
-        val blockWidth = block.maxX - block.minX
-        val blockHeight = block.maxY - block.minY
+        val blockWidth = block.width
+        val blockHeight = block.height
 
         var deltaX = (platformData.toMinX - platformData.fromMinX) * platformData.currentMoveDirection
         var deltaY = (platformData.toMinY - platformData.fromMinY) * platformData.currentMoveDirection
@@ -44,8 +45,8 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         if (result != null) {
             platformData.playerBlockId?.let {
                 worldScene.getBlockFromId(it)?.let {
-                    val playerBlockWidth = it.maxX - it.minX
-                    val playerBlockHeight = it.maxY - it.minY
+                    val playerBlockWidth = it.width
+                    val playerBlockHeight = it.height
 
                     it.minX += result.goalX - block.minX
                     it.minY += result.goalY - block.minY

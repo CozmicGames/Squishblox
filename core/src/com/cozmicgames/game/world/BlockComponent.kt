@@ -12,6 +12,10 @@ import com.cozmicgames.game.utils.Reflection
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.utils.serialization.Readable
+import com.dongbat.jbump.Collisions
+import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.sign
 import kotlin.reflect.KClass
 
 sealed class BlockComponent : Component() {
@@ -45,6 +49,10 @@ sealed class BlockComponent : Component() {
         set(value) {
             transformComponent.transform.scaleY = value - transformComponent.transform.y
         }
+
+    val width get() = maxX - minX
+
+    val height get() = maxY - minY
 
     override fun onAdded() {
         if (id >= 0)
@@ -145,6 +153,9 @@ class PlayerBlock : EntityBlock() {
     var deltaX = 0.0f
     var deltaY = 0.0f
 
+    private val tempCollisionsA = Collisions()
+    private val tempCollisionsB = Collisions()
+
     fun addSize(amount: Float) {
         if ((maxX - minX) > (maxY - minY)) {
             var remainingAmount = addWidth(amount)
@@ -176,6 +187,8 @@ class PlayerBlock : EntityBlock() {
         val remainingAmount = (maxX + widthToAdd - newMaxX) * ((maxY - minY) / (maxX - minX))
         maxX = newMaxX
 
+        updatePhysicsBlock()
+
         return remainingAmount
     }
 
@@ -190,6 +203,8 @@ class PlayerBlock : EntityBlock() {
         val remainingAmount = (maxY + heightToAdd - newMaxY) * ((maxX - minX) / (maxY - minY))
         maxY = newMaxY
 
+        updatePhysicsBlock()
+
         return remainingAmount
     }
 
@@ -200,6 +215,7 @@ class PlayerBlock : EntityBlock() {
         maxY = minY + height
         minX = newMinX
         maxX = newMaxX
+        updatePhysicsBlock()
     }
 
     fun adjustHeight(newMinY: Float, newMaxY: Float) {
@@ -209,6 +225,48 @@ class PlayerBlock : EntityBlock() {
         maxX = minX + width
         minY = newMinY
         maxY = newMaxY
+        updatePhysicsBlock()
+    }
+
+    fun deformY(amount: Float): Float {
+        val availableDeformY = height - WorldConstants.WORLD_CELL_SIZE
+        val adjustedAmount = min(abs(amount), availableDeformY)
+
+        val widthDeformFactor = width / height
+
+        val amountLeft = -adjustedAmount * widthDeformFactor
+        val amountRight = adjustedAmount * widthDeformFactor
+
+        worldScene.physicsWorld.project(id, amountLeft, 0.0f, tempCollisionsA)
+        worldScene.physicsWorld.project(id, amountRight, 0.0f, tempCollisionsB)
+
+        if (tempCollisionsA.size() == 0 && tempCollisionsB.size() == 0) {
+            adjustWidth(minX + amountLeft, maxX + amountRight)
+            return adjustedAmount * sign(amount)
+        } else {
+
+        }
+
+        return 0.0f
+    }
+
+    fun deformX(amount: Float): Float {
+        val availableDeformX = width - WorldConstants.WORLD_CELL_SIZE
+        val adjustedAmount = min(abs(amount), availableDeformX)
+
+        val heightDeformFactor = height / width
+        val heightAmount = adjustedAmount * heightDeformFactor
+
+        worldScene.physicsWorld.project(id, 0.0f, heightAmount, tempCollisionsA)
+
+        if (tempCollisionsA.size() == 0) {
+            adjustHeight(minY, maxY + heightAmount)
+            return adjustedAmount * sign(amount)
+        } else {
+
+        }
+
+        return 0.0f
     }
 }
 

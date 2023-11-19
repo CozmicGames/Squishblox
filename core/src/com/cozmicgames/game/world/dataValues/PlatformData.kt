@@ -8,7 +8,6 @@ class PlatformData : Readable {
     var fromMinY = 0.0f
     var toMinX = 0.0f
     var toMinY = 0.0f
-    var currentPosition = 0.0f
     var currentMoveDirection = 1.0f
     var playerBlockId: Int? = null
 

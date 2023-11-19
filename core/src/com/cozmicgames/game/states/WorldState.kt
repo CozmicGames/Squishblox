@@ -56,9 +56,6 @@ class WorldState : SuspendableGameState {
                 Game.player.playState = PlayState.EDIT
         }
 
-        if (Game.input.isKeyJustDown(Input.Keys.ENTER))
-            scene.spawnPlayer(5, 5)
-
         return { returnState }
     }
 
