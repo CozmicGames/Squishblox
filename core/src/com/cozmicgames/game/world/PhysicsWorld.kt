@@ -1,12 +1,7 @@
 package com.cozmicgames.game.world
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.IntMap
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.graphics.RenderLayers
-import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
-import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.world.dataValues.PlatformData
 import com.dongbat.jbump.*
 import com.dongbat.jbump.World
@@ -94,7 +89,7 @@ class PhysicsWorld(private val worldScene: WorldScene) : Iterable<Int> {
 
                         moveX += playerBlock.deformX(moveAmountX - moveX)
 
-                        if (!MathUtils.isEqual(x + moveX, goalX))
+                        if (!MathUtils.isEqual(x + moveX, goalX, 1.0f))
                             (block as? WorldBlock)?.let {
                                 it.getData<PlatformData>()?.let {
                                     it.currentMoveDirection *= -1.0f
