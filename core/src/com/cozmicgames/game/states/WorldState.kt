@@ -14,10 +14,9 @@ class WorldState : SuspendableGameState {
     internal var returnState: GameState = this
 
     val gui: GUI = Game.guis.create()
-    val scene = WorldScene()
 
     init {
-        scene.initialize()
+        Game.player.scene.initialize()
 
         Game.player.currentState = this
 
@@ -35,19 +34,19 @@ class WorldState : SuspendableGameState {
         if (gui.isInteractionEnabled && Game.input.isKeyJustDown(Input.Keys.ESCAPE))
             returnState = InGameMenuState(this)
 
-        scene.update(delta)
+        Game.player.scene.update(delta)
         Game.renderGraph.render(Game.time.delta)
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_1))
-            scene.editState = WorldScene.EditState.CREATE
+            Game.player.scene.editState = WorldScene.EditState.CREATE
         if (Game.input.isKeyJustDown(Input.Keys.NUM_2))
-            scene.editState = WorldScene.EditState.EDIT
+            Game.player.scene.editState = WorldScene.EditState.EDIT
         if (Game.input.isKeyJustDown(Input.Keys.NUM_3))
-            scene.editState = WorldScene.EditState.DELETE
+            Game.player.scene.editState = WorldScene.EditState.DELETE
         if (Game.input.isKeyJustDown(Input.Keys.NUM_4))
-            scene.editState = WorldScene.EditState.EDIT_PLATFORM
+            Game.player.scene.editState = WorldScene.EditState.EDIT_PLATFORM
         if (Game.input.isKeyJustDown(Input.Keys.NUM_5))
-            scene.editState = WorldScene.EditState.EDIT_PLAYER
+            Game.player.scene.editState = WorldScene.EditState.EDIT_PLAYER
 
         if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
             if (Game.player.playState == PlayState.EDIT)

@@ -1,6 +1,7 @@
 package com.cozmicgames.game.world.processors
 
 import com.cozmicgames.game.Game
+import com.cozmicgames.game.physics
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
@@ -8,11 +9,8 @@ import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.utils.maths.length
 import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
-import com.dongbat.jbump.Collisions
 
 class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor() {
-    private val tempCollisions = Collisions()
-
     override fun shouldProcess(delta: Float): Boolean {
         return Game.player.playState == PlayState.PLAY
     }
@@ -27,9 +25,6 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         if ((platformData.fromMinX == platformData.toMinX || amountX >= 1.0f) && (platformData.fromMinY == platformData.toMinY || amountY >= 1.0f))
             platformData.currentMoveDirection = -1.0f
 
-        val blockWidth = block.width
-        val blockHeight = block.height
-
         var deltaX = (platformData.toMinX - platformData.fromMinX) * platformData.currentMoveDirection
         var deltaY = (platformData.toMinY - platformData.fromMinY) * platformData.currentMoveDirection
 
@@ -40,28 +35,24 @@ class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor
         deltaX *= delta * WorldConstants.PLATFORM_MOVE_SPEED
         deltaY *= delta * WorldConstants.PLATFORM_MOVE_SPEED
 
-        val result = worldScene.physicsWorld.move(block.id, deltaX, deltaY)
-        if (result != null)
-            platformData.playerBlockId?.let { id ->
-                worldScene.physicsWorld.move(id, result.goalX - block.minX, result.goalY - block.minY)
-            }
+        platformData.currentDeltaX = deltaX
+        platformData.currentDeltaY = deltaY
 
-        val blockRect = worldScene.physicsWorld.getRect(block.id)!!
-        block.minX = blockRect.x
-        block.minY = blockRect.y
-        block.maxX = block.minX + blockWidth
-        block.maxY = block.minY + blockHeight
+        block.body.positionX += deltaX
+        block.body.positionY += deltaY
+
+        platformData.playerBlockId?.let { id ->
+            val playerBlock = worldScene.getBlockFromId(id)!!
+            playerBlock.body.positionX += deltaX
+            playerBlock.body.positionY += deltaY
+        }
 
         platformData.playerBlockId = null
-        worldScene.physicsWorld.project(block.id, 0.0f, 1.0f, tempCollisions)
-        if (tempCollisions.size() > 0)
-            repeat(tempCollisions.size()) {
-                val collision = tempCollisions[it]
-                val id = collision.other.userData as Int
-                val collidingBlock = worldScene.getBlockFromId(id)
-                if (collidingBlock is PlayerBlock)
-                    platformData.playerBlockId = collidingBlock.id
-            }
+
+        Game.physics.forEachOverlappingRectangle(block.minX, block.maxY, block.width, 1.0f) {
+            if (it.userData is PlayerBlock)
+                platformData.playerBlockId = it.userData.id
+        }
     }
 
     override fun process(delta: Float) {

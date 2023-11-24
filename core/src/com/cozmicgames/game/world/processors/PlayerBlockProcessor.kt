@@ -3,16 +3,12 @@ package com.cozmicgames.game.world.processors
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Cursor
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.audio
-import com.cozmicgames.game.input
-import com.cozmicgames.game.player
+import com.cozmicgames.game.*
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.game.utils.maths.intersectPointRect
 import com.cozmicgames.game.world.*
-import com.dongbat.jbump.Collisions
 import kotlin.math.abs
 
 class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor() {
@@ -20,9 +16,6 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
     private var offsetX = 0.0f
     private var offsetY = 0.0f
     private var isResizingFlag = 0
-    private var jumpTime = 0.0f
-    private var isJumping = false
-    private val tempCollisions = Collisions()
 
     override fun shouldProcess(delta: Float): Boolean {
         return Game.player.playState == PlayState.PLAY
@@ -172,81 +165,32 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
             block.adjustHeight(newMinY, newMaxY)
         }
 
-        if (isResizingFlag != 0)
-            worldScene.physicsWorld.updateBlock(block.id, block.minX, block.minY, block.maxX, block.maxY)
-
         return true
     }
 
     override fun process(delta: Float) {
         val playerBlock = worldScene.findGameObjectByComponent<PlayerBlock> { true }?.getComponent<PlayerBlock>() ?: return
 
-        playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, 0.0f, WorldConstants.FRICTION * delta)
         val left = Game.input.isKeyDown(Keys.A)
         val right = Game.input.isKeyDown(Keys.D)
         val jump = Game.input.isKeyDown(Keys.SPACE)
         val jumpJustPressed = Game.input.isKeyJustDown(Keys.SPACE)
 
+        var moveAmount = 0.0f
+
+        if (left)
+            moveAmount -= 1.0f
+
         if (right)
-            playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
-        else if (left)
-            playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, -WorldConstants.RUN_SPEED, WorldConstants.RUN_ACCELERATION * delta)
-        else
-            playerBlock.deltaX = WorldUtils.approach(playerBlock.deltaX, 0.0f, WorldConstants.RUN_DECELERATION * delta)
+            moveAmount += 1.0f
 
-        if (!jump)
-            isJumping = false
+        if (abs(moveAmount) > 0.0f)
+            playerBlock.isFacingRight = moveAmount > 0.0f
 
-        worldScene.physicsWorld.project(playerBlock.id, 0.0f, -0.1f, tempCollisions)
-        if (tempCollisions.size() > 0) {
-            if (jumpJustPressed) {
-                Game.audio.getSound("sounds/jump.wav")?.play()
-                isJumping = true
-            }
-        }
+        if (playerBlock.controller.isOnGround && jumpJustPressed)
+            Game.audio.getSound("sounds/jump.wav")?.play()
 
-        if (jump && isJumping && jumpTime < WorldConstants.JUMP_MAX_TIME) {
-            playerBlock.deltaY = WorldConstants.JUMP_SPEED
-            jumpTime += delta
-        }
-
-        playerBlock.deltaY += if (playerBlock.deltaY < 0.0f) delta * WorldConstants.GRAVITY * WorldConstants.GRAVITY_FALLING_FACTOR else delta * WorldConstants.GRAVITY
-        val amountX = delta * playerBlock.deltaX
-        val amountY = delta * playerBlock.deltaY
-
-        if (abs(amountX) > 0.0f)
-            playerBlock.isFacingRight = amountX > 0.0f
-
-        worldScene.physicsWorld.move(playerBlock.id, amountX, amountY)?.let { result ->
-            repeat(result.projectedCollisions.size()) {
-                val collision = result.projectedCollisions[it]
-
-                if (collision.other.userData is Int) {
-                    if (worldScene.getBlockFromId(collision.other.userData as Int) is GoalBlock)
-                        Game.player.onCompleteLevel()
-
-                    if (collision.normal.x != 0)
-                        playerBlock.deltaX = 0.0f
-
-                    if (collision.normal.y != 0) {
-                        playerBlock.deltaY = 0.0f
-                        jumpTime = WorldConstants.JUMP_MAX_TIME
-                        if (collision.normal.y == 1) {
-                            jumpTime = 0.0f
-                            isJumping = false
-                        }
-                    }
-                }
-            }
-        }
-
-        val playerWidth = playerBlock.maxX - playerBlock.minX
-        val playerHeight = playerBlock.maxY - playerBlock.minY
-        val playerRect = worldScene.physicsWorld.getRect(playerBlock.id)!!
-        playerBlock.minX = playerRect.x
-        playerBlock.minY = playerRect.y
-        playerBlock.maxX = playerBlock.minX + playerWidth
-        playerBlock.maxY = playerBlock.minY + playerHeight
+        playerBlock.controller.move(moveAmount, false, jump, delta)
 
         if (isEditing) {
             val isStillEditing = edit(playerBlock)

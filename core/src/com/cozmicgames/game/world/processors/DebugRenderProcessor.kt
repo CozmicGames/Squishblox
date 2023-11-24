@@ -8,9 +8,8 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.RenderLayers
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.scene.SceneProcessor
-import com.cozmicgames.game.world.*
 
-class DebugRenderProcessor(private val worldScene: WorldScene) : SceneProcessor() {
+class DebugRenderProcessor : SceneProcessor() {
     private val blockPreviewNinePatch: NinePatch
 
     private val pathColor = Color(0.0f, 0.0f, 1.0f, 0.66f)
@@ -30,17 +29,15 @@ class DebugRenderProcessor(private val worldScene: WorldScene) : SceneProcessor(
     }
 
     override fun process(delta: Float) {
-        worldScene.physicsWorld.forEach {
-            worldScene.physicsWorld.getRect(it)?.let { rect ->
-                Game.graphics2d.submit<NinepatchRenderable2D> {
-                    it.layer = RenderLayers.WORLD_LAYER_END
-                    it.ninePatch = blockPreviewNinePatch
-                    it.color = pathColor
-                    it.x = rect.x
-                    it.y = rect.y
-                    it.width = rect.w
-                    it.height = rect.h
-                }
+        Game.physics.forEachOverlappingRectangle(Game.player.camera.rectangle.x, Game.player.camera.rectangle.y, Game.player.camera.rectangle.width, Game.player.camera.rectangle.height) { body ->
+            Game.graphics2d.submit<NinepatchRenderable2D> {
+                it.layer = RenderLayers.WORLD_LAYER_END
+                it.ninePatch = blockPreviewNinePatch
+                it.color = pathColor
+                it.x = body.positionX
+                it.y = body.positionY
+                it.width = body.scaleX
+                it.height = body.scaleY
             }
         }
     }

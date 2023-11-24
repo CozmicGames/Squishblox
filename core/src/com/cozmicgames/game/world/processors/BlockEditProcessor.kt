@@ -296,7 +296,6 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
             block.minY = newMinY
             block.maxX = newMaxX
             block.maxY = newMaxY
-            block.updatePhysicsBlock()
 
             world.updateBlock(block.id, WorldUtils.toCellCoord(block.minX), WorldUtils.toCellCoord(block.minY), WorldUtils.toCellCoord(block.maxX), WorldUtils.toCellCoord(block.maxY))
         }

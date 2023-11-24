@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.input
 import com.cozmicgames.game.states.MenuState
-import com.cozmicgames.game.states.TransitionGameState
 import com.cozmicgames.game.states.WorldState
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.extensions.unproject
 import com.cozmicgames.game.utils.maths.intersectPointRect
+import com.cozmicgames.game.world.WorldScene
 
 class Player : Updatable {
     val camera = PlayerCamera()
@@ -20,6 +20,8 @@ class Player : Updatable {
         private set
 
     var playState = PlayState.EDIT
+
+    val scene = WorldScene()
 
     lateinit var currentState: WorldState
 
@@ -36,6 +38,7 @@ class Player : Updatable {
     }
 
     fun onCompleteLevel() {
+        scene.clearGameObjects()
         currentState.returnState = MenuState()
     }
 }

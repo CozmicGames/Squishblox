@@ -16,14 +16,18 @@ class WorldScene : Scene() {
     }
 
     val world = World()
-    val physicsWorld = PhysicsWorld(this)
 
     var editState = EditState.CREATE
 
-    init {
+    private var isFirstInitialize = true
+
+    private fun addSceneProcessors() {
+        if (!isFirstInitialize)
+            return
+
         addSceneProcessor(BlockRenderProcessor())
         addSceneProcessor(PlatformRenderProcessor(this))
-        addSceneProcessor(DebugRenderProcessor(this))
+        addSceneProcessor(DebugRenderProcessor())
 
         addSceneProcessor(PlayerBlockEditProcessor(this))
         addSceneProcessor(BlockCreateProcessor(this))
@@ -33,15 +37,21 @@ class WorldScene : Scene() {
 
         addSceneProcessor(PlatformMoveProcessor(this))
         addSceneProcessor(PlayerBlockProcessor(this))
+
+        isFirstInitialize = false
     }
 
     fun initialize(data: String) {
+        addSceneProcessors()
+
         val properties = Properties()
         properties.read(data)
         read(properties)
     }
 
     fun initialize() {
+        addSceneProcessors()
+
         addBlock(0, 0, 3, 1, WorldUtils.getRandomBlockColor())
 
         addGameObject {
@@ -98,7 +108,6 @@ class WorldScene : Scene() {
     fun removeBlock(id: Int) {
         getBlockFromId(id)?.let {
             world.removeBlock(it.id)
-            physicsWorld.removeBlock(it.id)
             removeGameObject(it.gameObject)
         }
     }

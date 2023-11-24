@@ -73,8 +73,8 @@ class PlatformEditProcessor(private val worldScene: WorldScene) : SceneProcessor
 
         if (Game.input.isButtonDown(0)) {
             editingId = block.id
-            targetMinX = WorldUtils.toCellCoord(Game.player.inputX - offsetX, WorldUtils.CoordRounding.FLOOR)
-            targetMinY = WorldUtils.toCellCoord(Game.player.inputY - offsetY, WorldUtils.CoordRounding.FLOOR)
+            targetMinX = WorldUtils.toCellCoord(Game.player.inputX - offsetX, WorldUtils.CoordRounding.ROUND)
+            targetMinY = WorldUtils.toCellCoord(Game.player.inputY - offsetY, WorldUtils.CoordRounding.ROUND)
             return true
         }
 

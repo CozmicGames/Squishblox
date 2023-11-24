@@ -1,7 +1,12 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.MathUtils
 import com.cozmicgames.game.Game
+import com.cozmicgames.game.physics
+import com.cozmicgames.game.physics.AxisAlignedRectangleShape
+import com.cozmicgames.game.physics.Body
+import com.cozmicgames.game.physics.PlatformerController
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.Component
@@ -12,7 +17,6 @@ import com.cozmicgames.game.utils.Reflection
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.utils.serialization.Readable
-import com.dongbat.jbump.Collisions
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
@@ -54,6 +58,10 @@ sealed class BlockComponent : Component() {
 
     val height get() = maxY - minY
 
+    private var bodyInternal: Body? = null
+
+    val body get() = bodyInternal!!
+
     override fun onAdded() {
         if (id >= 0)
             worldScene.world.removeBlock(id)
@@ -64,22 +72,35 @@ sealed class BlockComponent : Component() {
         val cellMaxY = WorldUtils.toCellCoord(maxY)
 
         id = worldScene.world.createBlock(cellMinX, cellMinY, cellMaxX, cellMaxY)
-        worldScene.physicsWorld.createBlock(id, minX, minY, maxX, maxY)
+
+        var body = this.bodyInternal
+        if (body != null)
+            Game.physics.removeBody(body)
+
+        body = Body(transformComponent.transform, this)
+        body.setShape(AxisAlignedRectangleShape(), 100.0f)
+        body.calculateMassAndInertia()
+
+        Game.physics.addBody(body)
+        this.bodyInternal = body
     }
 
     override fun onRemoved() {
         worldScene.world.removeBlock(id)
-        worldScene.physicsWorld.updateBlock(id, minX, minY, maxX, maxY)
+        bodyInternal?.let {
+            Game.physics.removeBody(it)
+        }
         id = -1
-    }
-
-    fun updatePhysicsBlock() {
-        worldScene.physicsWorld.updateBlock(id, minX, minY, maxX, maxY)
     }
 }
 
 open class WorldBlock : BlockComponent() {
     private var dataValues: MutableMap<KClass<*>, Readable>? = null
+
+    override fun onAdded() {
+        super.onAdded()
+        body.setStatic()
+    }
 
     inline fun <reified T : Readable> getData() = getData(T::class)
 
@@ -153,8 +174,16 @@ class PlayerBlock : EntityBlock() {
     var deltaX = 0.0f
     var deltaY = 0.0f
 
-    private val tempCollisionsA = Collisions()
-    private val tempCollisionsB = Collisions()
+    lateinit var controller: PlatformerController
+
+    override fun onAdded() {
+        super.onAdded()
+
+        body.calculateMassAndInertia()
+        body.restitution = 0.0f
+
+        controller = PlatformerController(body)
+    }
 
     fun addSize(amount: Float) {
         if ((maxX - minX) > (maxY - minY)) {
@@ -187,8 +216,6 @@ class PlayerBlock : EntityBlock() {
         val remainingAmount = (maxX + widthToAdd - newMaxX) * ((maxY - minY) / (maxX - minX))
         maxX = newMaxX
 
-        updatePhysicsBlock()
-
         return remainingAmount
     }
 
@@ -203,8 +230,6 @@ class PlayerBlock : EntityBlock() {
         val remainingAmount = (maxY + heightToAdd - newMaxY) * ((maxX - minX) / (maxY - minY))
         maxY = newMaxY
 
-        updatePhysicsBlock()
-
         return remainingAmount
     }
 
@@ -215,7 +240,6 @@ class PlayerBlock : EntityBlock() {
         maxY = minY + height
         minX = newMinX
         maxX = newMaxX
-        updatePhysicsBlock()
     }
 
     fun adjustHeight(newMinY: Float, newMaxY: Float) {
@@ -225,7 +249,6 @@ class PlayerBlock : EntityBlock() {
         maxX = minX + width
         minY = newMinY
         maxY = newMaxY
-        updatePhysicsBlock()
     }
 
     fun deformY(amount: Float): Float {
@@ -234,14 +257,17 @@ class PlayerBlock : EntityBlock() {
 
         val widthDeformFactor = width / height
 
-        val amountLeft = -adjustedAmount * widthDeformFactor
-        val amountRight = adjustedAmount * widthDeformFactor
+        var amountLeft = adjustedAmount * widthDeformFactor
+        var amountRight = adjustedAmount * widthDeformFactor
 
-        worldScene.physicsWorld.project(id, amountLeft, 0.0f, tempCollisionsA)
-        worldScene.physicsWorld.project(id, amountRight, 0.0f, tempCollisionsB)
+        val checkY = minY + WorldConstants.WORLD_CELL_SIZE * 0.5f
+        val checkHeight = height - WorldConstants.WORLD_CELL_SIZE
 
-        if (tempCollisionsA.size() == 0 && tempCollisionsB.size() == 0) {
-            adjustWidth(minX + amountLeft, maxX + amountRight)
+        val collisionsLeft = Game.physics.getAllOverlappingRectangle(minX - amountLeft, checkY, amountLeft, checkHeight, { it != body })
+        val collisionsRight = Game.physics.getAllOverlappingRectangle(maxX, checkY, amountRight, checkHeight, { it != body })
+
+        if (collisionsLeft.isEmpty() && collisionsRight.isEmpty()) {
+            adjustWidth(minX - amountLeft, maxX + amountRight)
             return adjustedAmount * sign(amount)
         } else {
 
@@ -252,15 +278,35 @@ class PlayerBlock : EntityBlock() {
 
     fun deformX(amount: Float): Float {
         val availableDeformX = width - WorldConstants.WORLD_CELL_SIZE
+
         val adjustedAmount = min(abs(amount), availableDeformX)
 
-        val heightDeformFactor = height / width
+        if (MathUtils.isZero(adjustedAmount))
+            return 0.0f
+
+        val heightDeformFactor = 1.05f * height / width
         val heightAmount = adjustedAmount * heightDeformFactor
 
-        worldScene.physicsWorld.project(id, 0.0f, heightAmount, tempCollisionsA)
+        val checkX = minX + WorldConstants.WORLD_CELL_SIZE * 0.5f
+        val checkWidth = width - WorldConstants.WORLD_CELL_SIZE
 
-        if (tempCollisionsA.size() == 0) {
-            adjustHeight(minY, maxY + heightAmount)
+        val collisions = Game.physics.getAllOverlappingRectangle(checkX, maxY + heightAmount, checkWidth, heightAmount, { it != body })
+
+        if (collisions.isEmpty()) {
+            //adjustHeight(minY, maxY + heightAmount)
+
+            val newMaxY = maxY + heightAmount
+            val area = width * height
+            val newHeight = newMaxY - minY
+            val newWidth = area / newHeight
+
+            if (amount < 0.0f)
+                maxX = minX + newWidth
+            else
+                minX = maxX - newWidth
+
+            maxY = newMaxY
+
             return adjustedAmount * sign(amount)
         } else {
 
@@ -271,6 +317,11 @@ class PlayerBlock : EntityBlock() {
 }
 
 class GoalBlock : EntityBlock() {
+    override fun onAdded() {
+        super.onAdded()
+        body.setStatic()
+    }
+
     override fun update(delta: Float) {
         super.update(delta)
 

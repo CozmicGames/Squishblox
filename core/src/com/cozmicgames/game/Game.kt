@@ -21,6 +21,7 @@ import com.cozmicgames.game.states.SuspendableGameState
 import com.cozmicgames.game.states.TransitionGameState
 import com.cozmicgames.game.utils.*
 import com.cozmicgames.game.player.Player
+import com.cozmicgames.game.physics.Physics
 import kotlin.system.exitProcess
 
 class Game(gameSettings: GameSettings) : ApplicationAdapter() {
@@ -113,3 +114,4 @@ val Game.Companion.guis by Game.context.injector { GUIManager() }
 val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRenderFunction()) }
 val Game.Companion.renderer2d by Game.context.injector { Renderer2D() }
 val Game.Companion.player by Game.context.injector { Player() }
+val Game.Companion.physics by Game.context.injector { Physics() }
