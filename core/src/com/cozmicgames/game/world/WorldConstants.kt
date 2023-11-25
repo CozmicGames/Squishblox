@@ -23,15 +23,15 @@ object WorldConstants {
     val PLAYER_COLOR = Color.WHITE
     val GOAL_COLOR = WorldUtils.getColor(42.0f)
     const val CLOUD_SPEED = 10.0f
-    const val CLOUD_Y = 1000.0f
-    const val CLOUD_Y_SPREAD = 600.0f
+    const val CLOUD_Y = 750.0f
+    const val CLOUD_Y_SPREAD = 800.0f
     const val CLOUD_SPEED_SPREAD = 0.5f
+    const val CLOUDS_COUNT = 100
 
     const val WORLD_MIN_X = -100 * WORLD_CELL_SIZE
     const val WORLD_MAX_X = 100 * WORLD_CELL_SIZE
     const val WORLD_MIN_Y = 0.0f
-    const val CLOUDS_COUNT = 100
-
+    const val WORLD_WATER_Y = -WORLD_CELL_SIZE * 13.0f
     const val PLATFORM_MOVE_SPEED = 45.0f
 
     init {
@@ -99,14 +99,12 @@ object WorldConstants {
                         var deformAmount = 0.0f
 
                         collisions.forEach {
-                            (it.userData as? BlockComponent)?.let { block ->
+                            (it.userData as? WorldBlock)?.let { block ->
                                 deformAmount = max(deformAmount, block.minY - playerBlock.maxY)
                             }
                         }
 
-                        val deformedAmount = playerBlock.deformY(deformAmount)
-
-                        if (collisions.isNotEmpty() && deformedAmount != deformAmount)
+                        if (deformAmount != 0.0f && !playerBlock.deformY(deformAmount))
                             platformData.currentMoveDirection *= -1.0f
                     }
 
@@ -123,14 +121,12 @@ object WorldConstants {
                         var deformAmount = 0.0f
 
                         collisions.forEach {
-                            (it.userData as? BlockComponent)?.let { block ->
+                            (it.userData as? WorldBlock)?.let { block ->
                                 deformAmount = min(deformAmount, playerBlock.minY - block.maxY)
                             }
                         }
 
-                        val deformedAmount = playerBlock.deformY(deformAmount)
-
-                        if (collisions.isNotEmpty() && deformedAmount != deformAmount)
+                        if (deformAmount != 0.0f && !playerBlock.deformY(deformAmount))
                             platformData.currentMoveDirection *= -1.0f
                     }
 
@@ -147,14 +143,12 @@ object WorldConstants {
                         var deformAmount = 0.0f
 
                         collisions.forEach {
-                            (it.userData as? BlockComponent)?.let { block ->
+                            (it.userData as? WorldBlock)?.let { block ->
                                 deformAmount = min(deformAmount, playerBlock.maxX - block.minX)
                             }
                         }
 
-                        val deformedAmount = playerBlock.deformX(deformAmount)
-
-                        if (collisions.isNotEmpty() && deformedAmount != deformAmount)
+                        if (deformAmount != 0.0f && !playerBlock.deformX(deformAmount))
                             platformData.currentMoveDirection *= -1.0f
                     }
 
@@ -171,14 +165,12 @@ object WorldConstants {
                         var deformAmount = 0.0f
 
                         collisions.forEach {
-                            (it.userData as? BlockComponent)?.let { block ->
+                            (it.userData as? WorldBlock)?.let { block ->
                                 deformAmount = min(deformAmount, playerBlock.minX - block.maxX)
                             }
                         }
 
-                        val deformedAmount = playerBlock.deformX(deformAmount)
-
-                        if (collisions.isNotEmpty() && deformedAmount != deformAmount)
+                        if (deformAmount != 0.0f && !playerBlock.deformX(deformAmount))
                             platformData.currentMoveDirection *= -1.0f
                     }
                 }

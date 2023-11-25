@@ -19,6 +19,8 @@ class WorldScene : Scene() {
 
     var editState = EditState.CREATE
 
+    var playerBlock: PlayerBlock? = null
+
     private var isFirstInitialize = true
 
     private fun addSceneProcessors() {
@@ -47,6 +49,10 @@ class WorldScene : Scene() {
         val properties = Properties()
         properties.read(data)
         read(properties)
+
+        findGameObjectByComponent<PlayerBlock> { true }.let {
+            playerBlock = it?.getComponent<PlayerBlock>()
+        }
     }
 
     fun initialize() {
@@ -61,6 +67,7 @@ class WorldScene : Scene() {
                 this.minY = WorldUtils.toWorldCoord(1)
                 this.maxX = WorldUtils.toWorldCoord(2)
                 this.maxY = WorldUtils.toWorldCoord(3)
+                playerBlock = this
             }
         }
 

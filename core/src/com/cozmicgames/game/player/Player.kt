@@ -8,6 +8,7 @@ import com.cozmicgames.game.states.WorldState
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.extensions.unproject
 import com.cozmicgames.game.utils.maths.intersectPointRect
+import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 
 class Player : Updatable {
@@ -23,6 +24,8 @@ class Player : Updatable {
 
     val scene = WorldScene()
 
+    private var currentLevelData = ""
+
     lateinit var currentState: WorldState
 
     fun isHovered(minX: Float, minY: Float, maxX: Float, maxY: Float): Boolean {
@@ -35,6 +38,20 @@ class Player : Updatable {
             inputX = x
             inputY = y
         }
+
+        scene.playerBlock?.let {
+            if (it.minY <= WorldConstants.WORLD_WATER_Y)
+                resetLevel()
+        }
+    }
+
+    fun startLevel(data: String) {
+        currentLevelData = data
+        scene.initialize(data)
+    }
+
+    fun resetLevel() {
+        scene.initialize(currentLevelData)
     }
 
     fun onCompleteLevel() {

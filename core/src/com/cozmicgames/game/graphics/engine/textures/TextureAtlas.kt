@@ -91,6 +91,16 @@ class TextureAtlas(private val filter: TextureFilter) : Disposable {
             val subImage = images[name] ?: continue
 
             image.drawPixmap(subImage, x, y)
+
+            image.drawPixel(x - 1, y - 1, subImage.getPixel(0, 0))
+            image.drawPixel(x + subImage.width, y - 1, subImage.getPixel(subImage.width - 1, 0))
+            image.drawPixel(x - 1, y + subImage.height, subImage.getPixel(0, subImage.height - 1))
+            image.drawPixel(x + subImage.width, y + subImage.height, subImage.getPixel(subImage.width - 1, subImage.height - 1))
+
+            image.drawPixmap(subImage, x - 1, y, 0, 0, 1, subImage.height)
+            image.drawPixmap(subImage, x, y - 1, 0, 0, subImage.width, 1)
+            image.drawPixmap(subImage, x + subImage.width, y, subImage.width - 1, 0, 1, subImage.height)
+            image.drawPixmap(subImage, x, y + subImage.height, 0, subImage.height - 1, subImage.width, 1)
         }
 
         textureInternal?.dispose()

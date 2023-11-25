@@ -1,7 +1,6 @@
 package com.cozmicgames.game.world
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.MathUtils
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.physics
 import com.cozmicgames.game.physics.AxisAlignedRectangleShape
@@ -19,7 +18,6 @@ import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.utils.serialization.Readable
 import kotlin.math.abs
 import kotlin.math.min
-import kotlin.math.sign
 import kotlin.reflect.KClass
 
 sealed class BlockComponent : Component() {
@@ -251,7 +249,7 @@ class PlayerBlock : EntityBlock() {
         maxY = newMaxY
     }
 
-    fun deformY(amount: Float): Float {
+    fun deformY(amount: Float): Boolean {
         val availableDeformY = height - WorldConstants.WORLD_CELL_SIZE
         val adjustedAmount = min(abs(amount), availableDeformY)
 
@@ -266,53 +264,62 @@ class PlayerBlock : EntityBlock() {
         val collisionsLeft = Game.physics.getAllOverlappingRectangle(minX - amountLeft, checkY, amountLeft, checkHeight, { it != body })
         val collisionsRight = Game.physics.getAllOverlappingRectangle(maxX, checkY, amountRight, checkHeight, { it != body })
 
-        if (collisionsLeft.isEmpty() && collisionsRight.isEmpty()) {
-            adjustWidth(minX - amountLeft, maxX + amountRight)
-            return adjustedAmount * sign(amount)
-        } else {
-
+        collisionsLeft.forEach {
+            (it.userData as? WorldBlock)?.let {
+                amountLeft = min(amountLeft, minX - it.maxX)
+            }
         }
 
-        return 0.0f
+        collisionsRight.forEach {
+            (it.userData as? WorldBlock)?.let {
+                amountRight = min(amountRight, it.minX - maxX)
+            }
+        }
+
+        val newMinX = minX - amountLeft
+        val newMaxX = maxX + amountRight
+        val area = (maxX - minX) * (maxY - minY)
+        val newWidth = newMaxX - newMinX
+        val newHeight = area / newWidth
+        maxY = minY + newHeight
+        minX = newMinX
+        maxX = newMaxX
+
+        return amountLeft == adjustedAmount * widthDeformFactor || amountRight == adjustedAmount * widthDeformFactor
     }
 
-    fun deformX(amount: Float): Float {
+    fun deformX(amount: Float): Boolean {
         val availableDeformX = width - WorldConstants.WORLD_CELL_SIZE
 
         val adjustedAmount = min(abs(amount), availableDeformX)
 
-        if (MathUtils.isZero(adjustedAmount))
-            return 0.0f
-
         val heightDeformFactor = 1.05f * height / width
-        val heightAmount = adjustedAmount * heightDeformFactor
+        var heightAmount = adjustedAmount * heightDeformFactor
 
         val checkX = minX + WorldConstants.WORLD_CELL_SIZE * 0.5f
         val checkWidth = width - WorldConstants.WORLD_CELL_SIZE
 
         val collisions = Game.physics.getAllOverlappingRectangle(checkX, maxY + heightAmount, checkWidth, heightAmount, { it != body })
 
-        if (collisions.isEmpty()) {
-            //adjustHeight(minY, maxY + heightAmount)
-
-            val newMaxY = maxY + heightAmount
-            val area = width * height
-            val newHeight = newMaxY - minY
-            val newWidth = area / newHeight
-
-            if (amount < 0.0f)
-                maxX = minX + newWidth
-            else
-                minX = maxX - newWidth
-
-            maxY = newMaxY
-
-            return adjustedAmount * sign(amount)
-        } else {
-
+        collisions.forEach {
+            (it.userData as? WorldBlock)?.let {
+                heightAmount = min(heightAmount, it.minY - maxY)
+            }
         }
 
-        return 0.0f
+        val newMaxY = maxY + heightAmount
+        val area = width * height
+        val newHeight = newMaxY - minY
+        val newWidth = area / newHeight
+
+        if (amount < 0.0f)
+            maxX = minX + newWidth
+        else
+            minX = maxX - newWidth
+
+        maxY = newMaxY
+
+        return heightAmount == adjustedAmount * heightDeformFactor
     }
 }
 

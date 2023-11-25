@@ -13,6 +13,7 @@ textures/edit_player_icon.png
 textures/grid_background_8x8.png
 textures/menu_button.png
 textures/parallax_background.png
+textures/parallax_water.png
 textures/platform_path.png
 textures/player.png
 textures/player_eyes.png

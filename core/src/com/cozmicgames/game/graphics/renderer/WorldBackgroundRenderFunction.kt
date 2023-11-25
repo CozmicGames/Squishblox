@@ -10,6 +10,7 @@ import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.textures
+import com.cozmicgames.game.utils.extensions.isEven
 import com.cozmicgames.game.utils.maths.intersectRectRect
 import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.world.WorldConstants
@@ -136,7 +137,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         val region = Game.textures.getTexture(layer.texture)
         val camera = Game.player.camera
 
-        val backgroundTileWidth = region.regionWidth.toFloat() * 1.001f
+        val backgroundTileWidth = region.regionWidth.toFloat()
         val backgroundTileHeight = region.regionHeight.toFloat()
 
         val numBackgroundTilesX = ceil(camera.rectangle.width / backgroundTileWidth).toInt() + 2
@@ -151,8 +152,9 @@ class WorldBackgroundRenderFunction : RenderFunction() {
                 it.color = layer.color
                 it.x = backgroundTileX
                 it.y = -backgroundTileHeight * 0.75f + index * backgroundTileHeight * 0.15f
-                it.width = backgroundTileWidth
+                it.width = backgroundTileWidth + 1.0f
                 it.height = backgroundTileHeight
+                it.flipX = index.isEven
             }
 
             backgroundTileX += backgroundTileWidth
