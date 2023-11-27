@@ -1,6 +1,9 @@
 package com.cozmicgames.game.physics
 
 import com.badlogic.gdx.math.Vector2
+import com.cozmicgames.game.Game
+import com.cozmicgames.game.player
+import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.maths.*
 import kotlin.math.*
@@ -21,9 +24,10 @@ class Physics : Updatable {
     private val manifolds = arrayListOf<Manifold>()
 
     override fun update(delta: Float) {
-        repeat(subSteps) {
-            step(delta / subSteps)
-        }
+        if (Game.player.playState != PlayState.EDIT)
+            repeat(subSteps) {
+                step(delta / subSteps)
+            }
     }
 
     private fun step(delta: Float) {

@@ -14,9 +14,12 @@ textures/grid_background_8x8.png
 textures/menu_button.png
 textures/parallax_background.png
 textures/parallax_water.png
+textures/platform_block_icon.png
 textures/platform_path.png
 textures/player.png
 textures/player_eyes.png
 textures/player_eyes_left.png
 textures/player_eyes_right.png
 textures/play_icon.png
+textures/scale_down_block_icon.png
+textures/scale_up_block_icon.png

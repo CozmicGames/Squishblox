@@ -46,7 +46,9 @@ class WorldState : SuspendableGameState {
         if (Game.input.isKeyJustDown(Input.Keys.NUM_4))
             Game.player.scene.editState = WorldScene.EditState.EDIT_PLATFORM
         if (Game.input.isKeyJustDown(Input.Keys.NUM_5))
-            Game.player.scene.editState = WorldScene.EditState.EDIT_PLAYER
+            Game.player.scene.editState = WorldScene.EditState.EDIT_SCALE_UP
+        if (Game.input.isKeyJustDown(Input.Keys.NUM_6))
+            Game.player.scene.editState = WorldScene.EditState.EDIT_SCALE_DOWN
 
         if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
             if (Game.player.playState == PlayState.EDIT)

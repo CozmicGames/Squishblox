@@ -5,7 +5,6 @@ import com.cozmicgames.game.Game
 import com.cozmicgames.game.physics
 import com.cozmicgames.game.physics.AxisAlignedRectangleShape
 import com.cozmicgames.game.physics.Body
-import com.cozmicgames.game.physics.PlatformerController
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.Component
@@ -17,6 +16,7 @@ import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.maths.randomFloat
 import com.cozmicgames.game.utils.serialization.Readable
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass
 
@@ -76,6 +76,8 @@ sealed class BlockComponent : Component() {
             Game.physics.removeBody(body)
 
         body = Body(transformComponent.transform, this)
+        body.dynamicFriction = 0.0f
+        body.staticFriction = 0.0f
         body.setShape(AxisAlignedRectangleShape(), 100.0f)
         body.calculateMassAndInertia()
 
@@ -169,94 +171,125 @@ abstract class EntityBlock : Updatable, BlockComponent() {
 }
 
 class PlayerBlock : EntityBlock() {
-    var deltaX = 0.0f
-    var deltaY = 0.0f
-
-    lateinit var controller: PlatformerController
-
     override fun onAdded() {
         super.onAdded()
 
         body.calculateMassAndInertia()
         body.restitution = 0.0f
-
-        controller = PlatformerController(body)
     }
 
-    fun addSize(amount: Float) {
+    fun calculateJumpForce(baseJumpForce: Float): Float {
+        return baseJumpForce //TODO: Change regarding width to height ratio, but not too extremely
+    }
+
+    fun scale(amount: Float) {
         if ((maxX - minX) > (maxY - minY)) {
-            var remainingAmount = addWidth(amount)
-            if (remainingAmount > 0.0f) {
-                remainingAmount = addHeight(remainingAmount)
-                if (remainingAmount > 0.0f) {
-                    //TODO: Blow up player
-                }
-            }
+            val remainingAmount = scaleWidth(amount)
+            if (remainingAmount > 0.0f)
+                scaleHeight(remainingAmount)
         } else {
-            var remainingAmount = addHeight(amount)
-            if (remainingAmount > 0.0f) {
-                remainingAmount = addWidth(remainingAmount)
-                if (remainingAmount > 0.0f) {
-                    //TODO: Blow up player
-                }
-            }
+            val remainingAmount = scaleHeight(amount)
+            if (remainingAmount > 0.0f)
+                scaleWidth(remainingAmount)
         }
     }
 
-    private fun addWidth(amount: Float): Float {
-        val widthToAdd = amount * ((maxX - minX) / (maxY - minY))
+    private fun scaleWidth(amount: Float): Float {
+        val scaleFactor = width / height
+        var adjustedAmount = amount * scaleFactor
 
-        var newMaxX = maxX + widthToAdd
-        val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(maxX), WorldUtils.toCellCoord(minY), WorldUtils.toCellCoord(newMaxX), WorldUtils.toCellCoord(maxY)) { it != id }
-        if (collidingBlocks.isNotEmpty())
-            newMaxX = collidingBlocks.minOf { (gameObject.scene as? WorldScene)?.getBlockFromId(it)?.minX ?: Float.MAX_VALUE }
+        if (amount < 0.0f) {
+            val minWidth = (WorldConstants.WORLD_CELL_SIZE * WorldConstants.WORLD_CELL_SIZE) / height
+            adjustedAmount = max(adjustedAmount, width - minWidth)
+            minX += adjustedAmount * 0.5f
+            maxX -= adjustedAmount * 0.5f
+            return 0.0f
+        }
 
-        val remainingAmount = (maxX + widthToAdd - newMaxX) * ((maxY - minY) / (maxX - minX))
-        maxX = newMaxX
+        val checkY = minY + WorldConstants.WORLD_CELL_SIZE * 0.5f
+        val checkHeight = height - WorldConstants.WORLD_CELL_SIZE
 
-        return remainingAmount
+        var amountLeft = adjustedAmount * 0.5f
+        var amountRight = adjustedAmount * 0.5f
+
+        val collisionsLeft = Game.physics.getAllOverlappingRectangle(minX - amountLeft, checkY, amountLeft, checkHeight, { it != body })
+        val collisionsRight = Game.physics.getAllOverlappingRectangle(maxX, checkY, amountRight, checkHeight, { it != body })
+
+        var maxAmountLeft = amountLeft
+        var maxAmountRight = amountLeft
+
+        collisionsLeft.forEach {
+            (it.userData as? WorldBlock)?.let {
+                maxAmountLeft = min(maxAmountLeft, minX - it.maxX)
+            }
+        }
+
+        collisionsRight.forEach {
+            (it.userData as? WorldBlock)?.let {
+                maxAmountRight = min(maxAmountRight, it.minX - maxX)
+            }
+        }
+
+        val additionalAmountRight = if (amountLeft > maxAmountLeft) amountLeft - maxAmountLeft else 0.0f
+        val additionalAmountLeft = if (amountRight > maxAmountRight) amountRight - maxAmountRight else 0.0f
+
+        amountLeft += additionalAmountLeft
+        amountRight += additionalAmountRight
+
+        amountLeft = min(amountLeft, maxAmountLeft)
+        amountRight = min(amountRight, maxAmountRight)
+
+        val minX = this.minX
+        val maxX = this.maxX
+
+        this.minX = minX - amountLeft
+        this.maxX = maxX + amountRight
+
+        return amount - (amountLeft + amountRight) / scaleFactor
     }
 
-    private fun addHeight(amount: Float): Float {
-        val heightToAdd = amount * ((maxY - minY) / (maxX - minX))
+    private fun scaleHeight(amount: Float): Float {
+        val scaleFactor = height/ width
+        var adjustedAmount = amount * scaleFactor
 
-        var newMaxY = maxY + heightToAdd
-        val collidingBlocks = worldScene.world.getBlocks(WorldUtils.toCellCoord(minX), WorldUtils.toCellCoord(maxY), WorldUtils.toCellCoord(maxX), WorldUtils.toCellCoord(newMaxY)) { it != id }
-        if (collidingBlocks.isNotEmpty())
-            newMaxY = collidingBlocks.minOf { (gameObject.scene as? WorldScene)?.getBlockFromId(it)?.minY ?: Float.MAX_VALUE }
+        if (amount < 0.0f) {
+            val minHeight = (WorldConstants.WORLD_CELL_SIZE * WorldConstants.WORLD_CELL_SIZE) / width
+            adjustedAmount = max(adjustedAmount, height - minHeight)
+            maxY -= adjustedAmount
+            return 0.0f
+        }
 
-        val remainingAmount = (maxY + heightToAdd - newMaxY) * ((maxX - minX) / (maxY - minY))
-        maxY = newMaxY
 
-        return remainingAmount
-    }
+        val checkX = minX + WorldConstants.WORLD_CELL_SIZE * 0.5f
+        val checkWidth = width - WorldConstants.WORLD_CELL_SIZE
 
-    fun adjustWidth(newMinX: Float, newMaxX: Float) {
-        val area = (maxX - minX) * (maxY - minY)
-        val width = newMaxX - newMinX
-        val height = area / width
-        maxY = minY + height
-        minX = newMinX
-        maxX = newMaxX
-    }
+        var heightAmount = adjustedAmount
 
-    fun adjustHeight(newMinY: Float, newMaxY: Float) {
-        val area = (maxX - minX) * (maxY - minY)
-        val height = newMaxY - newMinY
-        val width = area / height
-        maxX = minX + width
-        minY = newMinY
-        maxY = newMaxY
+        val collisions = Game.physics.getAllOverlappingRectangle(checkX, maxY + heightAmount, checkWidth, heightAmount, { it != body })
+
+        var maxHeightAmount = heightAmount
+
+        collisions.forEach {
+            (it.userData as? WorldBlock)?.let {
+                maxHeightAmount = min(maxHeightAmount, it.minY - maxY)
+            }
+        }
+
+        heightAmount = min(heightAmount, maxHeightAmount)
+
+        maxY += heightAmount
+
+        return amount - heightAmount / scaleFactor
     }
 
     fun deformY(amount: Float): Boolean {
         val availableDeformY = height - WorldConstants.WORLD_CELL_SIZE
         val adjustedAmount = min(abs(amount), availableDeformY)
 
-        val widthDeformFactor = width / height
+        val deformFactor = width / height
 
-        var amountLeft = adjustedAmount * widthDeformFactor
-        var amountRight = adjustedAmount * widthDeformFactor
+        var amountLeft = adjustedAmount * deformFactor
+        var amountRight = adjustedAmount * deformFactor
 
         val checkY = minY + WorldConstants.WORLD_CELL_SIZE * 0.5f
         val checkHeight = height - WorldConstants.WORLD_CELL_SIZE
@@ -285,7 +318,7 @@ class PlayerBlock : EntityBlock() {
         minX = newMinX
         maxX = newMaxX
 
-        return amountLeft == adjustedAmount * widthDeformFactor || amountRight == adjustedAmount * widthDeformFactor
+        return amountLeft == abs(amount) * deformFactor || amountRight == abs(amount) * deformFactor
     }
 
     fun deformX(amount: Float): Boolean {
@@ -319,7 +352,7 @@ class PlayerBlock : EntityBlock() {
 
         maxY = newMaxY
 
-        return heightAmount == adjustedAmount * heightDeformFactor
+        return heightAmount == abs(amount) * heightDeformFactor
     }
 }
 

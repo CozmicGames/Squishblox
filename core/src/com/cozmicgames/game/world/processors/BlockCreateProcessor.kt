@@ -75,14 +75,15 @@ class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor(
                 it.height = WorldUtils.toWorldCoord(maxY) - WorldUtils.toWorldCoord(minY)
             }
         } else {
-            if (Game.input.isButtonJustUp(0))
-                if (isBuildable(x0, y0, x1, y1)) {
-                    val minX = min(if (x1 < x0) x0 + 1 else x0, x1)
-                    val minY = min(if (y1 < y0) y0 + 1 else y0, y1)
-                    val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
-                    val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
+            if (Game.input.isButtonJustUp(0)) {
+                val minX = min(if (x1 < x0) x0 + 1 else x0, x1)
+                val minY = min(if (y1 < y0) y0 + 1 else y0, y1)
+                val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
+                val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
+
+                if (isBuildable(minX, minY, maxX, maxY))
                     worldScene.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
-                }
+            }
 
             x0 = WorldUtils.toCellCoord(Game.player.inputX, if (Game.player.inputX >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
             y0 = WorldUtils.toCellCoord(Game.player.inputY, if (Game.player.inputY >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)

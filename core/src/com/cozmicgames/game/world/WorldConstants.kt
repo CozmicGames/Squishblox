@@ -34,6 +34,8 @@ object WorldConstants {
     const val WORLD_WATER_Y = -WORLD_CELL_SIZE * 13.0f
     const val PLATFORM_MOVE_SPEED = 45.0f
 
+    const val SCALE_AMOUNT = WORLD_CELL_SIZE / 5.0f
+
     init {
         Game.physics.collisionListener = object : CollisionListener {
             override fun onCollision(collisionPair: CollisionPair) {

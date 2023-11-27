@@ -12,7 +12,8 @@ class WorldScene : Scene() {
         EDIT,
         DELETE,
         EDIT_PLATFORM,
-        EDIT_PLAYER
+        EDIT_SCALE_UP,
+        EDIT_SCALE_DOWN
     }
 
     val world = World()
@@ -31,11 +32,12 @@ class WorldScene : Scene() {
         addSceneProcessor(PlatformRenderProcessor(this))
         addSceneProcessor(DebugRenderProcessor())
 
-        addSceneProcessor(PlayerBlockEditProcessor(this))
         addSceneProcessor(BlockCreateProcessor(this))
         addSceneProcessor(BlockEditProcessor(this))
         addSceneProcessor(BlockDeleteProcessor(this))
         addSceneProcessor(PlatformEditProcessor(this))
+        addSceneProcessor(ScaleEditProcessor(this))
+        addSceneProcessor(BlockDataRemoveProcessor(this))
 
         addSceneProcessor(PlatformMoveProcessor(this))
         addSceneProcessor(PlayerBlockProcessor(this))

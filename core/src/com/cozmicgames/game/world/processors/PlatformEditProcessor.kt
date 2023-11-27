@@ -15,6 +15,7 @@ import com.cozmicgames.game.utils.maths.distance
 import com.cozmicgames.game.utils.maths.toDegrees
 import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
+import com.cozmicgames.game.world.dataValues.ScaleData
 import kotlin.math.atan2
 
 class PlatformEditProcessor(private val worldScene: WorldScene) : SceneProcessor() {
@@ -46,7 +47,7 @@ class PlatformEditProcessor(private val worldScene: WorldScene) : SceneProcessor
     private fun isPathClear(minX: Int, minY: Int, maxX: Int, maxY: Int, block: WorldBlock): Boolean {
         var result = true
         worldScene.world.forEachBlock(minX, minY, maxX, maxY) {
-            if (it != block.id)
+            if (it != block.id && worldScene.getBlockFromId(it) !is PlayerBlock)
                 result = false
         }
         return result
@@ -69,6 +70,7 @@ class PlatformEditProcessor(private val worldScene: WorldScene) : SceneProcessor
             offsetX = Game.player.inputX - block.minX
             offsetY = Game.player.inputY - block.minY
             block.removeData<PlatformData>()
+            block.removeData<ScaleData>()
         }
 
         if (Game.input.isButtonDown(0)) {
