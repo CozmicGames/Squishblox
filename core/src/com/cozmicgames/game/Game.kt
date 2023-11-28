@@ -20,6 +20,7 @@ import com.cozmicgames.game.states.SuspendGameState
 import com.cozmicgames.game.states.SuspendableGameState
 import com.cozmicgames.game.states.TransitionGameState
 import com.cozmicgames.common.utils.*
+import com.cozmicgames.game.networking.NetworkManager
 import com.cozmicgames.game.player.Player
 import com.cozmicgames.game.physics.Physics
 import kotlin.system.exitProcess
@@ -115,3 +116,4 @@ val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRende
 val Game.Companion.renderer2d by Game.context.injector { Renderer2D() }
 val Game.Companion.player by Game.context.injector { Player() }
 val Game.Companion.physics by Game.context.injector { Physics() }
+val Game.Companion.networking by Game.context.injector { NetworkManager() }

@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 
 class NetworkManager : Updatable, Disposable {
     companion object {
-        private const val CONNECTION_RETRY_DELAY = 0.5f
+        private const val CONNECTION_RETRY_DELAY = 1.0f
         private const val MAX_RECEIVE_QUEUE_TIME = 1000L * 60 // One minute
     }
 
@@ -45,7 +45,6 @@ class NetworkManager : Updatable, Disposable {
         }
 
     private val writeMessageQueue get() = (readMessageQueue + 1) % messageQueues.size
-    private val onlineServerAddress get() = InetAddress.getByName(NetworkConstants.SERVER_ADDRESS)
 
     var connectionState = ConnectionState.NOT_CONNECTED
         private set
@@ -71,13 +70,22 @@ class NetworkManager : Updatable, Disposable {
         })
 
         client.kryo.isRegistrationRequired = false
-    }
 
-    fun connectToServer(address: InetAddress, maxAttempts: Int, onSuccess: (Boolean) -> Unit) {
         client.start()
 
+        connectToServer {
+            Gdx.app.log(
+                "CLIENT", if (it)
+                    "Connected to server."
+                else
+                    "Failed to connect to server."
+            )
+        }
+    }
+
+    fun connectToServer(onSuccess: (Boolean) -> Unit) {
         Game.tasks.submitAsync({
-            tryConnection(address, 0, maxAttempts, onSuccess)
+            tryConnection(InetAddress.getByName(NetworkConstants.SERVER_ADDRESS), 0, 10, onSuccess)
         })
     }
 
@@ -173,16 +181,16 @@ class NetworkManager : Updatable, Disposable {
         }
     }
 
-    fun reconnectToOnlineServer() {
+    fun reconnectToServer() {
         client.reconnect()
     }
 
-    fun disconnectFromOnlineServer() {
+    fun disconnectFromServer() {
         client.stop()
     }
 
     override fun dispose() {
-        disconnectFromOnlineServer()
+        disconnectFromServer()
         client.dispose()
     }
 }
