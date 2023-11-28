@@ -67,7 +67,7 @@ class MenuState : GameState {
 
         val buttonStyle = TextButton.TextButtonStyle().also {
             it.font = FontValue().also {
-                it.font = "fonts/ChakraPetch-MediumItalic.fnt"
+                it.font = "fonts/VinaSans-Regular.fnt"
             }
             it.isFixedTextSize.value = false
             it.align.value = Align.center

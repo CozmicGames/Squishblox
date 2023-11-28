@@ -20,8 +20,8 @@ object WorldConstants {
     const val CLOUD_SIZE = 256.0f
     val SHADOW_COLOR = Color(0.2f, 0.2f, 0.2f, 0.5f)
     val SHADOW_OFFSET = Vector2(6.0f, 8.0f)
-    val PLAYER_COLOR = Color.WHITE
-    val GOAL_COLOR = WorldUtils.getColor(42.0f)
+    val PLAYER_COLOR = Color(0x80E8D2FF.toInt())
+    val GOAL_COLOR = Color(0xFF5AF5FF.toInt())
     const val CLOUD_SPEED = 10.0f
     const val CLOUD_Y = 750.0f
     const val CLOUD_Y_SPREAD = 800.0f
@@ -76,16 +76,6 @@ object WorldConstants {
                 val platformData = platformBlock.getData<PlatformData>() ?: return
                 val playerCenterX = playerBlock.minX + playerBlock.width * 0.5f
                 val playerCenterY = playerBlock.minY + playerBlock.height * 0.5f
-
-                fun debugDraw(blockComponent: BlockComponent) = Game.graphics2d.submit<DirectRenderable2D> {
-                    it.layer = RenderLayers.WORLD_LAYER_END
-                    it.texture = "blank"
-                    it.color = Color.RED
-                    it.x = blockComponent.minX
-                    it.y = blockComponent.minY
-                    it.width = blockComponent.width
-                    it.height = blockComponent.height
-                }
 
                 when {
                     playerCenterY > platformBlock.maxY && platformData.currentDeltaY > 0.0f -> {

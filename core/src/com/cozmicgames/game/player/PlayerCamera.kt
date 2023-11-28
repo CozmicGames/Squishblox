@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.input
 import com.cozmicgames.game.utils.extensions.clamp
 import com.cozmicgames.game.utils.extensions.safeHeight
 import com.cozmicgames.game.utils.extensions.safeWidth
@@ -43,16 +41,7 @@ class PlayerCamera {
         camera.setToOrtho(false)
     }
 
-    fun update(updateMovement: Boolean = true) {
-        if (!updateMovement || !isLocked) {
-            zoom *= 1.0f + (Game.input.scrollY * 0.1f)
-
-            if (Game.input.isButtonDown(2)) {
-                position.x -= Game.input.deltaX * camera.zoom
-                position.y += Game.input.deltaY * camera.zoom
-            }
-        }
-
+    fun update() {
         camera.viewportWidth = Gdx.graphics.safeWidth.toFloat()
         camera.viewportHeight = Gdx.graphics.safeHeight.toFloat()
 

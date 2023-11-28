@@ -23,9 +23,9 @@ class WorldRenderFunction(dependencyName: String, dependencyIndex: Int) : Fullsc
     private class ParallaxLayer(val texture: String, var x: Float, var y: Float, val color: Color)
 
     private val layers = arrayOf(
-        ParallaxLayer("textures/parallax_water.png", 64.0f, 16.0f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(195.0f, 0.69f, 1.0f)),
-        ParallaxLayer("textures/parallax_water.png", 32.0f, 12.0f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(226.0f, 0.57f, 0.7f)),
-        ParallaxLayer("textures/parallax_water.png", 0.0f, 8.0f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(209.0f, 0.66f, 0.9f)),
+        ParallaxLayer("textures/parallax_water.png", 64.0f, 16.0f, Color(0xBAF0FFFF.toInt())),
+        ParallaxLayer("textures/parallax_water.png", 32.0f, 12.0f, Color(0x005DBDFF)),
+        ParallaxLayer("textures/parallax_water.png", 0.0f, 8.0f, Color(0x228FE5FF))
     )
 
     private val colorInput = colorRenderTargetDependency(dependencyName, dependencyIndex)

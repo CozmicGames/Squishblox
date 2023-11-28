@@ -31,14 +31,16 @@ class WorldBackgroundRenderFunction : RenderFunction() {
     )
 
     private val layers = arrayOf(
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.25f, 0.7f)),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.1f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.18f, 0.8f)),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.5f, Color(1.0f, 1.0f, 1.0f, 1.0f).fromHsv(48.0f, 0.09f, 1.0f)),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(0xF2B877FF.toInt())),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.1f, Color(0xE47F3CFF.toInt())),
+        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.5f, Color(0xB15A29FF.toInt()))
     )
 
     private val clouds = Array(WorldConstants.CLOUDS_COUNT) {
         Cloud(textures.random(), 0.0f, 0.0f, 1.0f + (randomFloat() - 0.5f) * WorldConstants.CLOUD_SPEED_SPREAD)
     }
+
+    private val skyColor = Color(0x6FC0F2FF)
 
     private var isFirstRender = true
 
@@ -169,7 +171,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             isFirstRender = false
         }
 
-        ScreenUtils.clear(Color.SKY)
+        ScreenUtils.clear(skyColor)
 
         for (i in layers.indices.reversed()) {
             val layer = layers[i]
