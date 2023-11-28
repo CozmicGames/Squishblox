@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.ScreenUtils
-import com.cozmicgames.game.utils.Resizable
+import com.cozmicgames.common.utils.Resizable
 
 class RenderGraph(presentRenderFunction: RenderFunction?) : Resizable, Disposable {
     sealed class Node(val pass: RenderPass, renderFunction: RenderFunction) : Disposable {

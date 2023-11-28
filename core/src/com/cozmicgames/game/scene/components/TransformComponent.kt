@@ -1,8 +1,8 @@
 package com.cozmicgames.game.scene.components
 
 import com.cozmicgames.game.scene.Component
-import com.cozmicgames.game.utils.maths.Transform
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.maths.Transform
+import com.cozmicgames.common.utils.Properties
 
 class TransformComponent : Component() {
     val transform = Transform()

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.GameObject
 import com.cozmicgames.game.scene.Scene
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 class NameComponent : Component() {
     var name = ""

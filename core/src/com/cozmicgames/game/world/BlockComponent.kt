@@ -10,11 +10,11 @@ import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.components.TransformComponent
 import com.cozmicgames.game.scene.findGameObjectByComponent
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Reflection
-import com.cozmicgames.game.utils.Updatable
-import com.cozmicgames.game.utils.maths.randomFloat
-import com.cozmicgames.game.utils.serialization.Readable
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Reflection
+import com.cozmicgames.common.utils.Updatable
+import com.cozmicgames.common.utils.maths.randomFloat
+import com.cozmicgames.common.utils.serialization.Readable
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

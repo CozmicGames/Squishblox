@@ -1,6 +1,6 @@
 package com.cozmicgames.game.graphics.gui.skin
 
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 class StringValue : GUIStyleValue {
     override val type get() = GUIStyleValue.Type.BOOLEAN

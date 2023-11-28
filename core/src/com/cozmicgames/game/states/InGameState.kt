@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input
 import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.GUI
 import com.cozmicgames.game.graphics.renderer.Renderer2D
-import com.cozmicgames.game.utils.extensions.safeWidth
+import com.cozmicgames.common.utils.extensions.safeWidth
 import com.cozmicgames.game.world.WorldConstants
 
 abstract class InGameState : SuspendableGameState {

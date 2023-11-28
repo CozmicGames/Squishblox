@@ -1,7 +1,7 @@
 package com.cozmicgames.game.input
 
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Updatable
 
 class Controls : Updatable {
     private val actionsInternal = arrayListOf<ControlAction>()

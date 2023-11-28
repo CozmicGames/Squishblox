@@ -1,7 +1,7 @@
 package com.cozmicgames.game.scene.components
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode
-import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.AnimatedSpriteMaterial
 import com.cozmicgames.game.scene.Component
 

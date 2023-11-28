@@ -2,8 +2,8 @@ package com.cozmicgames.game.scene
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Disposable
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Reflection
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Reflection
 import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty

@@ -10,8 +10,8 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils
 import com.badlogic.gdx.utils.Align
 import com.cozmicgames.game.*
-import com.cozmicgames.game.utils.collections.FixedSizeStack
-import com.cozmicgames.game.utils.collections.Pool
+import com.cozmicgames.common.utils.collections.FixedSizeStack
+import com.cozmicgames.common.utils.collections.Pool
 import com.cozmicgames.game.graphics.engine.graphics2d.TextRenderable2D
 import com.cozmicgames.game.graphics.gui.DefaultStyle
 import com.cozmicgames.game.graphics.gui.GUIElement
@@ -24,7 +24,7 @@ import com.cozmicgames.game.graphics.gui.skin.font
 import com.cozmicgames.game.graphics.gui.skin.int
 import com.cozmicgames.game.graphics.gui.skin.optionalDrawable
 import com.cozmicgames.game.input.InputListener
-import com.cozmicgames.game.utils.extensions.sum
+import com.cozmicgames.common.utils.extensions.sum
 import engine.input.GestureListener
 import kotlin.math.abs
 import kotlin.math.max

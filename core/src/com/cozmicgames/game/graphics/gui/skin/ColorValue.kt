@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.gui.skin
 
 import com.badlogic.gdx.graphics.Color
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 class ColorValue : GUIStyleValue {
     override val type get() = GUIStyleValue.Type.COLOR

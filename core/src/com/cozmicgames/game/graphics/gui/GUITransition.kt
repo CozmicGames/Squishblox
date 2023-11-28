@@ -1,8 +1,8 @@
 package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.math.Interpolation
-import com.cozmicgames.game.utils.extensions.clamp
-import com.cozmicgames.game.utils.maths.lerp
+import com.cozmicgames.common.utils.extensions.clamp
+import com.cozmicgames.common.utils.maths.lerp
 import kotlin.math.min
 
 class GUITransition(val transform: GUITransform, val from: GUITransform.State, val to: GUITransform.State, val duration: Float, val interpolation: Interpolation = Interpolation.linear, val onCompletion: () -> Unit = {}) {

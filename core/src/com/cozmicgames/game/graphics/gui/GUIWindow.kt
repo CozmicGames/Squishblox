@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Cursor.SystemCursor
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Align
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.extensions.clamp
+import com.cozmicgames.common.utils.extensions.clamp
 import com.cozmicgames.game.graphics.gui.elements.Group
 import com.cozmicgames.game.graphics.gui.elements.Label
 import com.cozmicgames.game.graphics.gui.elements.ScrollPane
@@ -29,7 +29,6 @@ class GUIWindow(var title: String = "", var isResizable: Boolean = true, val has
         private const val BUTTON_COLOR_DISABLED = 0x56565699
         private const val FONT_COLOR = 0xDDDDDDFF.toInt()
         private const val FONT_COLOR_DISABLED = 0xDDDDDD99.toInt()
-        private const val SELECTION_COLOR = 0xDDDDDD66.toInt()
 
         private val skin = GUISkin()
 

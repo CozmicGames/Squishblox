@@ -1,13 +1,8 @@
 package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
-import com.cozmicgames.game.utils.Updatable
-import com.cozmicgames.game.graphics.gui.elements.Label
-import com.cozmicgames.game.graphics.gui.skin.ColorDrawableValue
-import com.cozmicgames.game.graphics.gui.skin.ColorValue
-import com.cozmicgames.game.graphics.gui.skin.FontValue
+import com.cozmicgames.common.utils.Updatable
 
 class GUIManager : Updatable, Disposable {
     private val guis = arrayListOf<GUI>()

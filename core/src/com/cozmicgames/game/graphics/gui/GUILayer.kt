@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.math.Rectangle
-import com.cozmicgames.game.utils.collections.Pool
+import com.cozmicgames.common.utils.collections.Pool
 
 class GUILayer(val layerIndex: Int) {
     private class Entry {

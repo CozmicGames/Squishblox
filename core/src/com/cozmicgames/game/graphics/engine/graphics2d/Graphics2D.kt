@@ -16,8 +16,8 @@ import com.badlogic.gdx.utils.IntMap
 import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.Reflection
-import com.cozmicgames.game.utils.collections.ReclaimingPool
+import com.cozmicgames.common.utils.Reflection
+import com.cozmicgames.common.utils.collections.ReclaimingPool
 import com.cozmicgames.game.fonts
 import com.cozmicgames.game.input
 import java.util.Random

@@ -3,7 +3,7 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.scene.Scene
 import com.cozmicgames.game.scene.findGameObjectByComponent
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.game.world.processors.*
 
 class WorldScene : Scene() {

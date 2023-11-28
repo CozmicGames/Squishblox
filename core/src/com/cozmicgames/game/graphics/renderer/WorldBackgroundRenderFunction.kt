@@ -10,9 +10,9 @@ import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.textures
-import com.cozmicgames.game.utils.extensions.isEven
-import com.cozmicgames.game.utils.maths.intersectRectRect
-import com.cozmicgames.game.utils.maths.randomFloat
+import com.cozmicgames.common.utils.extensions.isEven
+import com.cozmicgames.common.utils.maths.intersectRectRect
+import com.cozmicgames.common.utils.maths.randomFloat
 import com.cozmicgames.game.world.WorldConstants
 import kotlin.math.ceil
 import kotlin.math.floor

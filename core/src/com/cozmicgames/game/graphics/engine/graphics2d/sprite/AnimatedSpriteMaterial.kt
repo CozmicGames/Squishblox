@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.graphics.engine.shaders.Shader2D
 import com.cozmicgames.game.textures
-import com.cozmicgames.game.utils.float
-import com.cozmicgames.game.utils.stringArray
+import com.cozmicgames.common.utils.float
+import com.cozmicgames.common.utils.stringArray
 
 class AnimatedSpriteMaterial : SpriteMaterial() {
     var textures: Array<String>

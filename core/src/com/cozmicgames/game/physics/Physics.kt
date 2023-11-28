@@ -4,8 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
-import com.cozmicgames.game.utils.Updatable
-import com.cozmicgames.game.utils.maths.*
+import com.cozmicgames.common.utils.Updatable
+import com.cozmicgames.common.utils.maths.*
 import kotlin.math.*
 
 class Physics : Updatable {

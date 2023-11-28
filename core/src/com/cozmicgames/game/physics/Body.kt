@@ -2,9 +2,9 @@ package com.cozmicgames.game.physics
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.utils.maths.FLOAT_EPSILON
-import com.cozmicgames.game.utils.maths.Transform
-import com.cozmicgames.game.utils.maths.cross
+import com.cozmicgames.common.utils.maths.FLOAT_EPSILON
+import com.cozmicgames.common.utils.maths.Transform
+import com.cozmicgames.common.utils.maths.cross
 import kotlin.math.abs
 
 open class Body(val transform: Transform = Transform(), val userData: Any? = null) {

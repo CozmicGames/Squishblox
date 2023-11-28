@@ -2,7 +2,7 @@ package com.cozmicgames.game.graphics.engine.graphics2d.particles
 
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.maths.Matrix3x2
+import com.cozmicgames.common.utils.maths.Matrix3x2
 import com.cozmicgames.game.graphics.engine.graphics2d.TransformedRenderable2D
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.AngleData
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.ColorData

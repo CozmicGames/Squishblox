@@ -1,6 +1,6 @@
 package com.cozmicgames.game.graphics.gui.elements
 
-import com.cozmicgames.game.utils.extensions.clamp
+import com.cozmicgames.common.utils.extensions.clamp
 import com.cozmicgames.game.graphics.gui.DefaultStyle
 import com.cozmicgames.game.graphics.gui.GUIElement
 import com.cozmicgames.game.graphics.gui.skin.GUIElementStyle

@@ -1,8 +1,8 @@
 package com.cozmicgames.game.input
 
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Reflection
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Reflection
 import com.cozmicgames.game.input
 import com.cozmicgames.game.tasks
 import kotlin.math.abs

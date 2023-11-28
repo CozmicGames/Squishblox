@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.RectPacker
+import com.cozmicgames.common.utils.RectPacker
 import com.cozmicgames.game.tasks
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

@@ -6,10 +6,10 @@ import com.cozmicgames.game.Game
 import com.cozmicgames.game.guis
 import com.cozmicgames.game.input
 import com.cozmicgames.game.states.InGameState
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Updatable
-import com.cozmicgames.game.utils.extensions.unproject
-import com.cozmicgames.game.utils.maths.intersectPointRect
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Updatable
+import com.cozmicgames.common.utils.extensions.unproject
+import com.cozmicgames.common.utils.maths.intersectPointRect
 import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 

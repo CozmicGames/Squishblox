@@ -1,10 +1,10 @@
 package com.cozmicgames.game.graphics.engine.graphics2d.sprite
 
 import com.badlogic.gdx.graphics.Color
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.boolean
-import com.cozmicgames.game.utils.int
-import com.cozmicgames.game.utils.string
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.boolean
+import com.cozmicgames.common.utils.int
+import com.cozmicgames.common.utils.string
 import com.cozmicgames.game.graphics.engine.shaders.Shader2D
 
 sealed class SpriteMaterial : Properties() {

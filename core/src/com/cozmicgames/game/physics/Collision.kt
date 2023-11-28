@@ -1,8 +1,8 @@
 package com.cozmicgames.game.physics
 
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.utils.extensions.clamp
-import com.cozmicgames.game.utils.maths.*
+import com.cozmicgames.common.utils.extensions.clamp
+import com.cozmicgames.common.utils.maths.*
 import kotlin.math.abs
 import kotlin.math.sqrt
 

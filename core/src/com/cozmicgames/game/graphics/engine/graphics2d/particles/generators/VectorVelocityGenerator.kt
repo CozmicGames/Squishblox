@@ -1,8 +1,8 @@
 package com.cozmicgames.game.graphics.engine.graphics2d.particles.generators
 
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.utils.maths.lerp
-import com.cozmicgames.game.utils.maths.randomFloat
+import com.cozmicgames.common.utils.maths.lerp
+import com.cozmicgames.common.utils.maths.randomFloat
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleData
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleGenerator
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.VelocityData

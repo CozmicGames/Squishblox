@@ -10,7 +10,6 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
     }
 }
 
@@ -29,6 +28,9 @@ allprojects {
         kotlinxSerializationVersion = '1.4.1'
         kotlinCsvVesion = '1.9.1'
         jomlVersion = '1.10.5'
+        kryonetVersion = '2.22.7'
+        brigadierVersion = '1.0.18'
+        profanityFilterVersion = '1.0.1'
     }
 
     repositories {
@@ -39,6 +41,25 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }
+        maven { url "https://libraries.minecraft.net" }
+    }
+}
+
+project(":core") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
+        implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$kotlinCsvVesion"
+        implementation "org.joml:joml:$jomlVersion"
+        implementation "com.github.crykn:kryonet:$kryonetVersion"
+        implementation "com.mojang:brigadier:$brigadierVersion"
+        implementation "com.modernmt.text:profanity-filter:$profanityFilterVersion"
+
     }
 }
 
@@ -54,16 +75,12 @@ project(":desktop") {
     }
 }
 
-project(":core") {
-    apply plugin: "kotlin"
+project(":server") {
+    apply plugin: "java-library"
 
     dependencies {
-        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
-        implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$kotlinCsvVesion"
-        implementation "org.joml:joml:$jomlVersion"
+        implementation project(":core")
+        implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     }
 }

@@ -1,6 +1,6 @@
 package com.cozmicgames.game.scene
 
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 abstract class Component {
     lateinit var gameObject: GameObject

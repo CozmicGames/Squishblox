@@ -1,8 +1,8 @@
 package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.Gdx
-import com.cozmicgames.game.utils.extensions.sumOf
-import com.cozmicgames.game.utils.collections.Array2D
+import com.cozmicgames.common.utils.extensions.sumOf
+import com.cozmicgames.common.utils.collections.Array2D
 import kotlin.math.max
 
 fun absolute(value: Float, mirror: Boolean = false) = absolute(mirror) { value }

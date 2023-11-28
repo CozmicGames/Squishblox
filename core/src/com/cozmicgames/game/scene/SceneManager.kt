@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.game.Version
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Updatable
 import kotlin.reflect.KClass
 
 class SceneManager : Updatable, Disposable {

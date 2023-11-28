@@ -3,7 +3,7 @@ package com.cozmicgames.game.graphics.gui.elements
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.extensions.clamp
+import com.cozmicgames.common.utils.extensions.clamp
 import com.cozmicgames.game.graphics.gui.DefaultStyle
 import com.cozmicgames.game.graphics.gui.GUIElement
 import com.cozmicgames.game.graphics.gui.absolute

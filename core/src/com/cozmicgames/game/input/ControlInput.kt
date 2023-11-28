@@ -2,7 +2,7 @@ package com.cozmicgames.game.input
 
 import com.badlogic.gdx.Input
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.game.input
 
 interface ControlInput {

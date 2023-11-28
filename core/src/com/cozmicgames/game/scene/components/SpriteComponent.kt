@@ -1,6 +1,6 @@
 package com.cozmicgames.game.scene.components
 
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.AnimatedSpriteMaterial
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.SpriteMaterial
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.StaticSpriteMaterial

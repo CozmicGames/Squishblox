@@ -3,7 +3,7 @@ package com.cozmicgames.game.scene.components
 import com.cozmicgames.game.scene.Component
 import com.cozmicgames.game.scene.GameObject
 import com.cozmicgames.game.scene.Scene
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 class TagComponent : Component() {
     val tags = arrayListOf<String>()

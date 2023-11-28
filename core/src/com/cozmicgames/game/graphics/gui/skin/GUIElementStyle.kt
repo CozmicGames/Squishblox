@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.gui.skin
 
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.Reflection
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 

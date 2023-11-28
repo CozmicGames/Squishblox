@@ -5,8 +5,8 @@ import com.badlogic.gdx.utils.IntMap
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
 import com.cozmicgames.game.graphics2d
-import com.cozmicgames.game.utils.collections.DynamicStack
-import com.cozmicgames.game.utils.maths.intersectPointRect
+import com.cozmicgames.common.utils.collections.DynamicStack
+import com.cozmicgames.common.utils.maths.intersectPointRect
 
 class World {
     companion object {

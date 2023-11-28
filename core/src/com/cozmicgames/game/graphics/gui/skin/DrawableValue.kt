@@ -2,7 +2,7 @@ package com.cozmicgames.game.graphics.gui.skin
 
 import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.game.graphics.gui.AnimatedDrawable
 import com.cozmicgames.game.graphics.gui.GUIDrawable
 import com.cozmicgames.game.graphics.gui.NinepatchDrawable

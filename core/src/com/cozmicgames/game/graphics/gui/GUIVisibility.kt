@@ -2,8 +2,8 @@ package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.utils.collections.Pool
-import com.cozmicgames.game.utils.collections.PriorityList
+import com.cozmicgames.common.utils.collections.Pool
+import com.cozmicgames.common.utils.collections.PriorityList
 import kotlin.math.max
 import kotlin.math.min
 

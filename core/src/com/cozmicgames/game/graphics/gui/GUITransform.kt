@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.gui
 
 import com.badlogic.gdx.math.Interpolation
-import com.cozmicgames.game.utils.collections.FixedSizeStack
+import com.cozmicgames.common.utils.collections.FixedSizeStack
 
 class GUITransform(val element: GUIElement) {
     open class State(val constraints: GUIConstraints, var alpha: Float = 1.0f)

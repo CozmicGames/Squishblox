@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.engine.graphics2d
 
 import com.badlogic.gdx.math.Rectangle
-import com.cozmicgames.game.utils.collections.DynamicStack
+import com.cozmicgames.common.utils.collections.DynamicStack
 import kotlin.math.max
 import kotlin.math.min
 

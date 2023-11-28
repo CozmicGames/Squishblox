@@ -1,6 +1,6 @@
 package com.cozmicgames.game.graphics.engine.graphics2d.particles.updaters
 
-import com.cozmicgames.game.utils.maths.dot
+import com.cozmicgames.common.utils.maths.dot
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleData
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleUpdater
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.AccelerationData

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.game.input
 import engine.input.GestureListener
 

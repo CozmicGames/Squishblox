@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.utils.IntSet
-import com.cozmicgames.game.utils.Updatable
+import com.cozmicgames.common.utils.Updatable
 
 class InputManager : Updatable {
     companion object {

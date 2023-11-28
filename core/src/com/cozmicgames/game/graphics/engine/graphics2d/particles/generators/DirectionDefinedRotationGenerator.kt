@@ -1,6 +1,6 @@
 package com.cozmicgames.game.graphics.engine.graphics2d.particles.generators
 
-import com.cozmicgames.game.utils.maths.HALF_PI
+import com.cozmicgames.common.utils.maths.HALF_PI
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleData
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleGenerator
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.AngleData

@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.extensions.safeHeight
-import com.cozmicgames.game.utils.extensions.safeWidth
+import com.cozmicgames.common.utils.extensions.safeHeight
+import com.cozmicgames.common.utils.extensions.safeWidth
 import com.cozmicgames.game.graphics.engine.graphics2d.ScissorStack
 import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.input
-import com.cozmicgames.game.utils.extensions.unproject
-import com.cozmicgames.game.utils.maths.intersectPointRect
+import com.cozmicgames.common.utils.extensions.unproject
+import com.cozmicgames.common.utils.maths.intersectPointRect
 import kotlin.math.abs
 
 class GUI : Disposable {

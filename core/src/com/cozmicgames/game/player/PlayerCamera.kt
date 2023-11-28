@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
-import com.cozmicgames.game.utils.extensions.clamp
-import com.cozmicgames.game.utils.extensions.safeHeight
-import com.cozmicgames.game.utils.extensions.safeWidth
+import com.cozmicgames.common.utils.extensions.clamp
+import com.cozmicgames.common.utils.extensions.safeHeight
+import com.cozmicgames.common.utils.extensions.safeWidth
 
 class PlayerCamera {
     companion object {

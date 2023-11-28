@@ -19,7 +19,7 @@ import com.cozmicgames.game.states.LoadingState
 import com.cozmicgames.game.states.SuspendGameState
 import com.cozmicgames.game.states.SuspendableGameState
 import com.cozmicgames.game.states.TransitionGameState
-import com.cozmicgames.game.utils.*
+import com.cozmicgames.common.utils.*
 import com.cozmicgames.game.player.Player
 import com.cozmicgames.game.physics.Physics
 import kotlin.system.exitProcess

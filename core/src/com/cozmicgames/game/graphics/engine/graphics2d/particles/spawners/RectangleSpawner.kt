@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.engine.graphics2d.particles.spawners
 
 import com.badlogic.gdx.math.Rectangle
-import com.cozmicgames.game.utils.maths.randomFloat
+import com.cozmicgames.common.utils.maths.randomFloat
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleData
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.ParticleSpawner
 import com.cozmicgames.game.graphics.engine.graphics2d.particles.data.PositionData

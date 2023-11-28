@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Align
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.utils.maths.Matrix3x2
-import com.cozmicgames.game.utils.collections.Resettable
+import com.cozmicgames.common.utils.maths.Matrix3x2
+import com.cozmicgames.common.utils.collections.Resettable
 import com.cozmicgames.game.fonts
 import com.cozmicgames.game.graphics.engine.graphics2d.fonts.DefaultFontStyle
 import com.cozmicgames.game.graphics.engine.graphics2d.fonts.FontStyle
@@ -18,7 +18,7 @@ import com.cozmicgames.game.graphics.engine.graphics2d.sprite.StaticSpriteMateri
 import com.cozmicgames.game.graphics.engine.shaders.Shader2D
 import com.cozmicgames.game.shaders
 import com.cozmicgames.game.textures
-import com.cozmicgames.game.utils.extensions.infinite
+import com.cozmicgames.common.utils.extensions.infinite
 
 sealed class Renderable2D : Resettable {
     var layer = 0

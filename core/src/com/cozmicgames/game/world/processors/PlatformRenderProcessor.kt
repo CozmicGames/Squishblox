@@ -12,8 +12,8 @@ import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.scene.SceneProcessor
 import com.cozmicgames.game.scene.findGameObjectsWithComponent
 import com.cozmicgames.game.textures
-import com.cozmicgames.game.utils.maths.distance
-import com.cozmicgames.game.utils.maths.toDegrees
+import com.cozmicgames.common.utils.maths.distance
+import com.cozmicgames.common.utils.maths.toDegrees
 import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
 import kotlin.math.atan2

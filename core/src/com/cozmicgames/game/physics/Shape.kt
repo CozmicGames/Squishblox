@@ -3,11 +3,11 @@ package com.cozmicgames.game.physics
 import com.badlogic.gdx.math.Vector2
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.physics
-import com.cozmicgames.game.utils.extensions.isOdd
-import com.cozmicgames.game.utils.maths.Matrix2x2
-import com.cozmicgames.game.utils.maths.cross
-import com.cozmicgames.game.utils.maths.dot
-import com.cozmicgames.game.utils.maths.lengthSquared
+import com.cozmicgames.common.utils.extensions.isOdd
+import com.cozmicgames.common.utils.maths.Matrix2x2
+import com.cozmicgames.common.utils.maths.cross
+import com.cozmicgames.common.utils.maths.dot
+import com.cozmicgames.common.utils.maths.lengthSquared
 import kotlin.math.min
 
 sealed class Shape {

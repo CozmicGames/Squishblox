@@ -1,7 +1,7 @@
 package com.cozmicgames.game.world.dataValues
 
-import com.cozmicgames.game.utils.Properties
-import com.cozmicgames.game.utils.serialization.Readable
+import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.common.utils.serialization.Readable
 
 class PlatformData : Readable {
     var fromMinX = 0.0f

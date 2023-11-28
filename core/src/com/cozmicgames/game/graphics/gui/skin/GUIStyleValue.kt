@@ -1,6 +1,6 @@
 package com.cozmicgames.game.graphics.gui.skin
 
-import com.cozmicgames.game.utils.Properties
+import com.cozmicgames.common.utils.Properties
 
 sealed interface GUIStyleValue {
     enum class Type {
