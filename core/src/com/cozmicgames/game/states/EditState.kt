@@ -25,7 +25,7 @@ class EditState(levelData: String? = null) : InGameState() {
         Game.player.playState = PlayState.EDIT
         Game.player.isPaused = false
 
-        val editButtonBackground = Panel(Panel.PanelStyle().also {
+        val buttonBackground = Panel(Panel.PanelStyle().also {
             it.background = NinepatchDrawableValue().also {
                 it.texture = "textures/edit_button_background.png"
                 it.autoSetSplitSizes()
@@ -60,7 +60,7 @@ class EditState(levelData: String? = null) : InGameState() {
         playButton.constraints.y = absolute(buttonOffsetFromSide)
         playButton.constraints.width = absolute(buttonSize)
         playButton.constraints.height = aspect()
-        editButtonBackground.addElement(playButton)
+        buttonBackground.addElement(playButton)
 
         fun getEditButtonStyle(texture: String) = ImageButton.ImageButtonStyle().also {
             it.backgroundNormal = TextureDrawableValue().also {
@@ -105,7 +105,7 @@ class EditState(levelData: String? = null) : InGameState() {
         editButtons.forEach {
             buttonY += buttonSpacing + buttonSize
             buttonGroup.add(it, it.onClick)
-            editButtonBackground.addElement(it)
+            buttonBackground.addElement(it)
             it.constraints.x = absolute(buttonOffsetFromSide, true)
             it.constraints.y = absolute(buttonY)
             it.constraints.width = absolute(buttonSize)
@@ -152,14 +152,14 @@ class EditState(levelData: String? = null) : InGameState() {
         resetButton.constraints.y = absolute(buttonY)
         resetButton.constraints.width = absolute(buttonSize)
         resetButton.constraints.height = aspect()
-        editButtonBackground.addElement(resetButton)
+        buttonBackground.addElement(resetButton)
 
-        editButtonBackground.constraints.x = absolute(0.0f, true)
-        editButtonBackground.constraints.y = absolute(0.0f)
-        editButtonBackground.constraints.width = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
-        editButtonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
+        buttonBackground.constraints.x = absolute(0.0f, true)
+        buttonBackground.constraints.y = absolute(0.0f)
+        buttonBackground.constraints.width = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
+        buttonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
 
-        gui.addElement(editButtonBackground)
+        gui.addElement(buttonBackground)
     }
 
     override fun update(delta: Float) {

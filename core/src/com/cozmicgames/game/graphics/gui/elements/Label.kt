@@ -6,15 +6,7 @@ import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.graphics.engine.graphics2d.TextRenderable2D
 import com.cozmicgames.game.graphics.gui.DefaultStyle
 import com.cozmicgames.game.graphics.gui.GUIElement
-import com.cozmicgames.game.graphics.gui.skin.ColorValue
-import com.cozmicgames.game.graphics.gui.skin.GUISkin
-import com.cozmicgames.game.graphics.gui.skin.GUIElementStyle
-import com.cozmicgames.game.graphics.gui.skin.boolean
-import com.cozmicgames.game.graphics.gui.skin.color
-import com.cozmicgames.game.graphics.gui.skin.font
-import com.cozmicgames.game.graphics.gui.skin.int
-import com.cozmicgames.game.graphics.gui.skin.optionalColor
-import com.cozmicgames.game.graphics.gui.skin.optionalDrawable
+import com.cozmicgames.game.graphics.gui.skin.*
 import com.cozmicgames.game.localization
 import kotlin.math.min
 
@@ -32,6 +24,7 @@ class Label(var textGetter: () -> String, val style: LabelStyle = LabelStyle()) 
         var align by int { it.value = Align.center }
         var wrap by boolean { it.value = true }
         var isFixedTextSize by boolean { it.value = true }
+        var fixedTextSize by optionalFloat()
         var background by optionalDrawable { DefaultStyle.normalDrawable() }
         var backgroundDisabled by optionalDrawable { DefaultStyle.disabledDrawable() }
     }
@@ -77,7 +70,7 @@ class Label(var textGetter: () -> String, val style: LabelStyle = LabelStyle()) 
                 it.style = style.font.fontStyle
                 it.text = Game.localization[textGetter()]
                 it.wrap = style.wrap.value
-                it.size = gui!!.textSize
+                it.size = style.fixedTextSize?.value ?: gui!!.textSize
 
                 if (!style.isFixedTextSize.value && width > 0.0f && height > 0.0f) {
                     val occupiedWidth = it.layout.width

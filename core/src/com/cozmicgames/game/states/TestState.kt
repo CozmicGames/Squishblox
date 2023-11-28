@@ -16,7 +16,7 @@ class TestState(levelData: String) : InGameState() {
         Game.player.playState = PlayState.TEST
         Game.player.isPaused = false
 
-        val editButtonBackground = Panel(Panel.PanelStyle().also {
+        val buttonBackground = Panel(Panel.PanelStyle().also {
             it.background = NinepatchDrawableValue().also {
                 it.texture = "textures/edit_button_background.png"
                 it.autoSetSplitSizes()
@@ -51,7 +51,7 @@ class TestState(levelData: String) : InGameState() {
         stopButton.constraints.y = absolute(buttonOffsetFromSide)
         stopButton.constraints.width = absolute(buttonSize)
         stopButton.constraints.height = aspect()
-        editButtonBackground.addElement(stopButton)
+        buttonBackground.addElement(stopButton)
 
         var buttonY = stopButton.y
         //repeat(6) {
@@ -82,14 +82,14 @@ class TestState(levelData: String) : InGameState() {
         resetButton.constraints.y = absolute(buttonY)
         resetButton.constraints.width = absolute(buttonSize)
         resetButton.constraints.height = aspect()
-        editButtonBackground.addElement(resetButton)
+        buttonBackground.addElement(resetButton)
 
-        editButtonBackground.constraints.x = absolute(0.0f, true)
-        editButtonBackground.constraints.y = absolute(0.0f)
-        editButtonBackground.constraints.width = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
-        editButtonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
+        buttonBackground.constraints.x = absolute(0.0f, true)
+        buttonBackground.constraints.y = absolute(0.0f)
+        buttonBackground.constraints.width = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
+        buttonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
 
-        gui.addElement(editButtonBackground)
+        gui.addElement(buttonBackground)
     }
 
     override fun update(delta: Float) {
