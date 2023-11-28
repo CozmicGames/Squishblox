@@ -12,7 +12,7 @@ import com.cozmicgames.game.world.dataValues.PlatformData
 
 class PlatformMoveProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     override fun shouldProcess(delta: Float): Boolean {
-        return Game.player.playState == PlayState.PLAY
+        return Game.player.playState != PlayState.EDIT
     }
 
     private fun updatePlatform(delta: Float, block: WorldBlock, platformData: PlatformData) {

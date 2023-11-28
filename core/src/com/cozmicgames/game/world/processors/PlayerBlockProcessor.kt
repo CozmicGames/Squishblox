@@ -27,7 +27,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
     private var jumpTime = 0.0f
 
     override fun shouldProcess(delta: Float): Boolean {
-        return Game.player.playState == PlayState.PLAY
+        return Game.player.playState != PlayState.EDIT
     }
 
     override fun process(delta: Float) {

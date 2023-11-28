@@ -92,6 +92,14 @@ sealed class BlockComponent : Component() {
         }
         id = -1
     }
+
+    override fun write(properties: Properties) {
+        properties.setFloatArray("color", arrayOf(color.r, color.g, color.b))
+    }
+
+    override fun read(properties: Properties) {
+        properties.getFloatArray("color")?.let { color.set(it[0], it[1], it[2], 1.0f) }
+    }
 }
 
 open class WorldBlock : BlockComponent() {
@@ -123,6 +131,7 @@ open class WorldBlock : BlockComponent() {
     }
 
     override fun read(properties: Properties) {
+        super.read(properties)
         properties.getPropertiesArray("dataValues")?.let {
             for (dataValueProperties in it) {
                 val typeName = dataValueProperties.getString("typeName") ?: continue
@@ -135,6 +144,7 @@ open class WorldBlock : BlockComponent() {
     }
 
     override fun write(properties: Properties) {
+        super.write(properties)
         dataValues?.let {
             val dataValuesProperties = arrayListOf<Properties>()
             it.forEach { (_, value) ->
@@ -249,7 +259,7 @@ class PlayerBlock : EntityBlock() {
     }
 
     private fun scaleHeight(amount: Float): Float {
-        val scaleFactor = height/ width
+        val scaleFactor = height / width
         var adjustedAmount = amount * scaleFactor
 
         if (amount < 0.0f) {

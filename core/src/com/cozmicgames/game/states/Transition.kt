@@ -1,9 +1,6 @@
 package com.cozmicgames.game.states
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
-import com.cozmicgames.game.utils.extensions.safeHeight
-import com.cozmicgames.game.utils.extensions.safeWidth
 
 sealed class Transition(val uniforms: String, val source: String) {
     abstract fun setUniforms(shaderProgram: ShaderProgram)
@@ -115,18 +112,21 @@ class CrossFadeTransition(val strength: Float = 0.3f): Transition("""
 }
 
 class CircleTransition: Transition("""
-    float u_aspect;
 """.trimIndent(), """
     vec4 effect() {
-        vec2 ratio = vec2(1.0, 1.0 / u_aspect);
-        float s = pow(2.0 * abs(progress - 0.5), 3.0);
-    
-        float dist = length((vec2(p) - 0.5) * ratio);
-        return mix(progress < 0.5 ? getFromColor(p) : getToColor(p), vec4(0.0, 0.0, 0.0, 1.0), step(s, dist));
+        float distance = length(v_texcoord - vec2(0.5, 0.5));
+        float radius = sqrt(8.0) * abs(u_progress - 0.5);
+  
+        if (distance > radius)
+            return vec4(0.0, 0.0, 0.0, 1.0);
+        else {
+            if (u_progress < 0.5) 
+                return getFromColor(v_texcoord);
+            else 
+                return getToColor(v_texcoord);
+        }
     }
 """.trimIndent()) {
-
     override fun setUniforms(shaderProgram: ShaderProgram) {
-        shaderProgram.setUniformf("u_aspect", Gdx.graphics.safeWidth.toFloat() / Gdx.graphics.safeHeight.toFloat())
     }
 }

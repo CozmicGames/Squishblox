@@ -54,7 +54,7 @@ class EditState(levelData: String? = null) : InGameState() {
                 it.color.set(0x009E22FF)
             }
         }) {
-            // Enter test state
+            returnState = TestState(Game.player.getCurrentLevelData())
         }
         playButton.constraints.x = absolute(buttonOffsetFromSide, true)
         playButton.constraints.y = absolute(buttonOffsetFromSide)
@@ -164,34 +164,33 @@ class EditState(levelData: String? = null) : InGameState() {
 
     override fun update(delta: Float) {
         if (Game.input.isKeyJustDown(Input.Keys.NUM_1)) {
+            buttonGroup.selected = editButtons[0]
             Game.player.scene.editState = WorldScene.EditState.CREATE
         }
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_2)) {
+            buttonGroup.selected = editButtons[1]
             Game.player.scene.editState = WorldScene.EditState.EDIT
         }
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_3)) {
+            buttonGroup.selected = editButtons[2]
             Game.player.scene.editState = WorldScene.EditState.EDIT_PLATFORM
         }
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_4)) {
+            buttonGroup.selected = editButtons[3]
             Game.player.scene.editState = WorldScene.EditState.EDIT_SCALE_UP
         }
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_5)) {
+            buttonGroup.selected = editButtons[4]
             Game.player.scene.editState = WorldScene.EditState.EDIT_SCALE_DOWN
         }
 
         if (Game.input.isKeyJustDown(Input.Keys.NUM_6)) {
+            buttonGroup.selected = editButtons[5]
             Game.player.scene.editState = WorldScene.EditState.DELETE
-        }
-
-        if (Game.input.isKeyJustDown(Input.Keys.TAB)) {
-            if (Game.player.playState == PlayState.EDIT)
-                Game.player.playState = PlayState.TEST
-            else
-                Game.player.playState = PlayState.EDIT
         }
     }
 }

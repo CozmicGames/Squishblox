@@ -6,6 +6,7 @@ import com.cozmicgames.game.Game
 import com.cozmicgames.game.guis
 import com.cozmicgames.game.input
 import com.cozmicgames.game.states.InGameState
+import com.cozmicgames.game.utils.Properties
 import com.cozmicgames.game.utils.Updatable
 import com.cozmicgames.game.utils.extensions.unproject
 import com.cozmicgames.game.utils.maths.intersectPointRect
@@ -105,5 +106,14 @@ class Player : Updatable {
             else -> { /*What are you doing here?*/
             }
         }
+    }
+
+    fun getCurrentLevelData(): String {
+        return if (playState == PlayState.EDIT) {
+            val properties = Properties()
+            scene.write(properties)
+            properties.write()
+        } else
+            currentLevelData
     }
 }

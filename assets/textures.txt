@@ -29,6 +29,7 @@ textures/play_icon.png
 textures/reset_icon.png
 textures/scale_down_block_icon.png
 textures/scale_up_block_icon.png
+textures/stop_icon.png
 textures/widget_background.png
 #filter nearest
 textures/grid_background_8x8.png

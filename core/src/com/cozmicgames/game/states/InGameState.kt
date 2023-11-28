@@ -16,7 +16,6 @@ abstract class InGameState : SuspendableGameState {
     init {
         Game.player.currentState = this
 
-        gui.isInteractionEnabled = false
         gui.pauseRenderingOnDisabled = true
 
         Game.player.camera.getMaxZoom = { 1.5f }
