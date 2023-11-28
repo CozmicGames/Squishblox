@@ -131,11 +131,11 @@ class GUI : Disposable {
         if (isInteractionEnabled) {
             scrollX -= Game.input.scrollX * scrollSpeed
             scrollY -= Game.input.scrollY * scrollSpeed
+        }
 
-            camera.unproject(Game.input.x - Gdx.graphics.safeInsetLeft, Game.input.y - Gdx.graphics.safeInsetBottom) { x, y, _ ->
-                inputX = x
-                inputY = y
-            }
+        camera.unproject(Game.input.x - Gdx.graphics.safeInsetLeft, Game.input.y - Gdx.graphics.safeInsetBottom) { x, y, _ ->
+            inputX = x
+            inputY = y
         }
 
         root.submitElementsToUpdate()

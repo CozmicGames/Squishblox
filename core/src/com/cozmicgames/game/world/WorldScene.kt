@@ -48,6 +48,8 @@ class WorldScene : Scene() {
     fun initialize(data: String) {
         addSceneProcessors()
 
+        clearGameObjects()
+
         val properties = Properties()
         properties.read(data)
         read(properties)
@@ -59,6 +61,8 @@ class WorldScene : Scene() {
 
     fun initialize() {
         addSceneProcessors()
+
+        clearGameObjects()
 
         addBlock(0, 0, 3, 1, WorldUtils.getRandomBlockColor())
 
@@ -94,18 +98,6 @@ class WorldScene : Scene() {
                 this.minY = WorldUtils.toWorldCoord(minY)
                 this.maxX = WorldUtils.toWorldCoord(maxX)
                 this.maxY = WorldUtils.toWorldCoord(maxY)
-            }
-        }
-    }
-
-    fun spawnPlayer(x: Int, y: Int) {
-        addGameObject {
-            addComponent<PlayerBlock> {
-                this.color.set(Color.WHITE)
-                this.minX = WorldUtils.toWorldCoord(x)
-                this.minY = WorldUtils.toWorldCoord(y)
-                this.maxX = WorldUtils.toWorldCoord(x + 1)
-                this.maxY = WorldUtils.toWorldCoord(y + 2)
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.cozmicgames.game.graphics.gui.elements
 
 class ButtonGroup<T : ToggleButton> {
-    private inner class Entry(val button: T) {
+    private inner class Entry(val button: T, onClick: () -> Unit) {
         val previousOnClick = button.onClick
 
         init {
@@ -12,6 +12,7 @@ class ButtonGroup<T : ToggleButton> {
                 }
                 button.isToggled = true
                 selected = button
+                onClick()
             }
         }
     }
@@ -26,8 +27,8 @@ class ButtonGroup<T : ToggleButton> {
 
     private val buttons = arrayListOf<Entry>()
 
-    fun add(button: T) {
-        buttons += Entry(button)
+    fun add(button: T, onClick: () -> Unit) {
+        buttons += Entry(button, onClick)
     }
 
     fun remove(button: T) {

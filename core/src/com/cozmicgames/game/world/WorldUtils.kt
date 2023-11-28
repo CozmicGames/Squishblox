@@ -56,7 +56,6 @@ object WorldUtils {
         Color(0x640064FF),
         Color(0x7a3b21FF),
         Color(0xffeeb0FF.toInt()),
-        Color(0xd3c781FF.toInt()),
         Color(0xa9a254FF.toInt()),
         Color(0x78803bFF),
         Color(0x3e6133FF),

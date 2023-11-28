@@ -32,6 +32,14 @@ class GUIManager : Updatable, Disposable {
         guis += gui
     }
 
+    fun isInputPositionVisible(): Boolean {
+        guis.forEach {
+            if (!it.isInputPositionVisible)
+                return false
+        }
+        return true
+    }
+
     //TODO: Implement windows where you set the constraints instead of a fixed size
     fun openWindow(title: String, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true) = openWindow(title, (Gdx.graphics.width - width) * 0.5f, (Gdx.graphics.height - height) * 0.5f, width, height, isResizable, hasTitleBar, isScrollable)
 
@@ -72,26 +80,4 @@ class GUIManager : Updatable, Disposable {
             it.dispose()
         }
     }
-}
-
-fun GUIManager.openMessageWindow(message: String, width: Float, height: Float) {
-    val window = openWindow("", width, height, false, true, false)
-    window.content.addElement(Label(message, Label.LabelStyle().also {
-        it.background = ColorDrawableValue().also {
-            it.color.set(0x454545FF)
-        }
-        it.font = FontValue().also {
-            it.font = "fonts/ChakraPetch-Medium.fnt"
-        }
-        it.textColor = ColorValue().also {
-            it.color.set(0xDDDDDDFF.toInt())
-        }
-        it.wrap.value = false
-        it.align.value = Align.center
-    }).also {
-        it.constraints.x = center()
-        it.constraints.y = center()
-        it.constraints.width = fill()
-        it.constraints.height = fill()
-    })
 }

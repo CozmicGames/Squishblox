@@ -28,6 +28,9 @@ class BlockDeleteProcessor(private val worldScene: WorldScene) : SceneProcessor(
     }
 
     override fun process(delta: Float) {
+        if (!Game.player.isCursorPositionVisible())
+            return
+
         val scene = this.scene as? WorldScene ?: return
 
         val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))

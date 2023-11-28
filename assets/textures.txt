@@ -1,16 +1,21 @@
 textures/block.png
 textures/block_preview.png
+textures/cancel_button.png
 textures/cloud_0.png
 textures/cloud_1.png
 textures/cloud_2.png
 textures/cloud_3.png
 textures/cloud_4.png
+textures/confirm_button.png
 textures/create_block_icon.png
 textures/delete_block_icon.png
 textures/edit_block_icon.png
+textures/edit_button_background.png
 textures/edit_platform_icon.png
-textures/edit_player_icon.png
-textures/grid_background_8x8.png
+textures/edit_reset_icon.png
+textures/edit_reset_icon_open.png
+textures/edit_scale_down_icon.png
+textures/edit_scale_up_icon.png
 textures/menu_button.png
 textures/parallax_background.png
 textures/parallax_water.png
@@ -21,5 +26,9 @@ textures/player_eyes.png
 textures/player_eyes_left.png
 textures/player_eyes_right.png
 textures/play_icon.png
+textures/reset_icon.png
 textures/scale_down_block_icon.png
 textures/scale_up_block_icon.png
+textures/widget_background.png
+#filter nearest
+textures/grid_background_8x8.png

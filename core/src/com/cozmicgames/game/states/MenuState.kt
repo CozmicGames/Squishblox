@@ -30,8 +30,6 @@ import com.cozmicgames.game.time
 class MenuState : GameState {
     private var returnState: GameState = this
     private val gui = Game.guis.create()
-    private var isConnectionReady = false
-    private var backgroundOffsetStart = 0.0f
     private var isAnimating = false
 
     private val bannerImage: Image
@@ -119,7 +117,7 @@ class MenuState : GameState {
 
         menuButtons = arrayOf(
             TextButton("Singleplayer", buttonStyle) {
-                returnState = TransitionGameState(WorldState(), LinearTransition(LinearTransition.Direction.DOWN))
+                returnState = TransitionGameState(EditState(), LinearTransition(LinearTransition.Direction.DOWN))
             },
             TextButton("Settings", buttonStyle) {
                 //TODO: Show settings
@@ -180,10 +178,6 @@ class MenuState : GameState {
 
     override fun render(delta: Float): () -> GameState {
         Game.renderGraph.render(Game.time.delta)
-
-        if (isConnectionReady)
-            returnState = TransitionGameState(WorldState(), GlitchTransition())
-
         return { returnState }
     }
 

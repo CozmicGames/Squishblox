@@ -72,5 +72,6 @@ class WorldRenderFunction(dependencyName: String, dependencyIndex: Int) : Fullsc
         }
 
         Game.graphics2d.render(Game.player.camera.camera) { it in RenderLayers.WORLD_LAYER_BEGIN..RenderLayers.WORLD_LAYER_END }
+        Game.guis.render()
     }
 }

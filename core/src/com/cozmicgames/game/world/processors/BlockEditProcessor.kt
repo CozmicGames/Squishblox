@@ -412,6 +412,9 @@ class BlockEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
     }
 
     override fun process(delta: Float) {
+        if (!Game.player.isCursorPositionVisible())
+            return
+
         val scene = this.scene as? WorldScene ?: return
 
         if (editingId != null) {

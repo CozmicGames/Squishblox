@@ -19,6 +19,7 @@ class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor(
     private var y0 = 0
     private var x1 = 0
     private var y1 = 0
+    private var isDragging = false
 
     private val blockPreviewNinePatch: NinePatch
 
@@ -40,7 +41,13 @@ class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor(
     }
 
     override fun process(delta: Float) {
-        if (Game.input.isButtonDown(0)) {
+        if (!Game.player.isCursorPositionVisible())
+            return
+
+        if (Game.input.isButtonJustDown(0))
+            isDragging = true
+
+        if (isDragging && Game.input.isButtonDown(0)) {
             val cursorX = WorldUtils.toCellCoord(Game.player.inputX, if (Game.player.inputX >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
             val cursorY = WorldUtils.toCellCoord(Game.player.inputY, if (Game.player.inputY >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)
 
@@ -81,8 +88,10 @@ class BlockCreateProcessor(private val worldScene: WorldScene) : SceneProcessor(
                 val maxX = max(if (x1 < x0) x0 + 1 else x0, x1)
                 val maxY = max(if (y1 < y0) y0 + 1 else y0, y1)
 
-                if (isBuildable(minX, minY, maxX, maxY))
+                if (isDragging && isBuildable(minX, minY, maxX, maxY))
                     worldScene.addBlock(minX, minY, maxX, maxY, WorldUtils.getRandomBlockColor())
+
+                isDragging = false
             }
 
             x0 = WorldUtils.toCellCoord(Game.player.inputX, if (Game.player.inputX >= 0.0f) WorldUtils.CoordRounding.FLOOR else WorldUtils.CoordRounding.CEIL)

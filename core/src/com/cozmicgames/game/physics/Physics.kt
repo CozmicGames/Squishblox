@@ -24,7 +24,7 @@ class Physics : Updatable {
     private val manifolds = arrayListOf<Manifold>()
 
     override fun update(delta: Float) {
-        if (Game.player.playState != PlayState.EDIT)
+        if (Game.player.playState != PlayState.EDIT && !Game.player.isPaused && !Game.player.isLevelCompleted)
             repeat(subSteps) {
                 step(delta / subSteps)
             }

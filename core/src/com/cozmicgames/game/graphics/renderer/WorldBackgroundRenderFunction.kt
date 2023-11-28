@@ -177,8 +177,10 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             val layer = layers[i]
             drawParallaxLayer(layer, i)
         }
+
         if (Game.player.playState == PlayState.EDIT)
             drawGrid()
-        drawClouds(delta)
+        else
+            drawClouds(delta)
     }
 }

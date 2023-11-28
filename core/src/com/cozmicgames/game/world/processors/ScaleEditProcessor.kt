@@ -40,6 +40,9 @@ class ScaleEditProcessor(private val worldScene: WorldScene) : SceneProcessor() 
     }
 
     override fun process(delta: Float) {
+        if (!Game.player.isCursorPositionVisible())
+            return
+
         val hoveredId = worldScene.world.getBlock(WorldUtils.toCellCoord(Game.player.inputX), WorldUtils.toCellCoord(Game.player.inputY))
 
         if (hoveredId != null) {

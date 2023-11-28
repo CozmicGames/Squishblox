@@ -24,7 +24,7 @@ import com.cozmicgames.game.input
 import com.cozmicgames.game.renderer2d
 import com.cozmicgames.game.tasks
 
-class InGameMenuState(private val previousState: WorldState) : SuspendGameState {
+class InGameMenuState(private val previousState: InGameState) : SuspendGameState {
     private var returnState: GameState = this
     private val gui = Game.guis.create()
     private val buttonsGroup: Group

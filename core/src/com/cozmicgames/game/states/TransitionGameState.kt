@@ -10,7 +10,7 @@ import com.cozmicgames.game.renderGraph
 import com.cozmicgames.game.renderer2d
 import com.cozmicgames.game.time
 
-class TransitionGameState(private val toGameState: WorldState, transition: Transition, val duration: Float = 0.66f, val interpolation: Interpolation = Interpolation.smooth) : GameState {
+class TransitionGameState(private val toGameState: InGameState, transition: Transition, val duration: Float = 0.66f, val interpolation: Interpolation = Interpolation.smooth) : GameState {
     private var time = 0.0f
 
     init {
