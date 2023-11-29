@@ -11,10 +11,10 @@ import com.cozmicgames.common.utils.extensions.safeWidth
 class PlayerCamera {
     companion object {
         private val VIEWPORT_POINTS_NDC = arrayOf(
-                Vector3(-1.0f, -1.0f, 0.0f),
-                Vector3(1.0f, -1.0f, 0.0f),
-                Vector3(1.0f, 1.0f, 0.0f),
-                Vector3(-1.0f, 1.0f, 0.0f)
+            Vector3(-1.0f, -1.0f, 0.0f),
+            Vector3(1.0f, -1.0f, 0.0f),
+            Vector3(1.0f, 1.0f, 0.0f),
+            Vector3(-1.0f, 1.0f, 0.0f)
         )
     }
 
@@ -27,6 +27,8 @@ class PlayerCamera {
 
     val rectangle = Rectangle()
 
+    var getViewportWidth: (() -> Float)? = null
+    var getViewportHeight: (() -> Float)? = null
     var getMinZoom: (() -> Float)? = null
     var getMaxZoom: (() -> Float)? = null
     var getMinX: (() -> Float)? = null
@@ -42,8 +44,8 @@ class PlayerCamera {
     }
 
     fun update() {
-        camera.viewportWidth = Gdx.graphics.safeWidth.toFloat()
-        camera.viewportHeight = Gdx.graphics.safeHeight.toFloat()
+        camera.viewportWidth = getViewportWidth?.invoke() ?: Gdx.graphics.safeWidth.toFloat()
+        camera.viewportHeight = getViewportHeight?.invoke() ?: Gdx.graphics.safeHeight.toFloat()
 
         val minZoom = getMinZoom?.invoke() ?: 0.0f
         val maxZoom = getMaxZoom?.invoke() ?: Float.MAX_VALUE

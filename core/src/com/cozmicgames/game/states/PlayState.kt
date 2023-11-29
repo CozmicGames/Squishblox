@@ -10,12 +10,11 @@ import com.cozmicgames.game.graphics.gui.elements.Panel
 import com.cozmicgames.game.graphics.gui.skin.*
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
-import kotlin.math.abs
 import kotlin.math.floor
 
-class PlayState(levelData: String) : InGameState() {
+class PlayState(uuid: String, levelData: String) : InGameState() {
     init {
-        Game.player.startLevel(levelData)
+        Game.player.startLevel(uuid, levelData)
         Game.player.playState = PlayState.PLAY
         Game.player.isPaused = false
 
@@ -48,7 +47,7 @@ class PlayState(levelData: String) : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            Game.player.startLevel(levelData)
+            Game.player.resetLevel()
         }
         resetButton.constraints.x = absolute(buttonOffsetFromSide, true)
         resetButton.constraints.y = absolute(buttonOffsetFromSide)

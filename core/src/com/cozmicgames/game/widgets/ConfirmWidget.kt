@@ -1,4 +1,4 @@
-package com.cozmicgames.game.player
+package com.cozmicgames.game.widgets
 
 import com.badlogic.gdx.utils.Align
 import com.cozmicgames.game.graphics.gui.*

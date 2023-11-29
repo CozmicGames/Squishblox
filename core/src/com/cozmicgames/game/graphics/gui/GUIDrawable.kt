@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
+import com.cozmicgames.game.graphics.engine.graphics2d.BasicRenderable2D
 import com.cozmicgames.game.graphics.engine.graphics2d.NinepatchRenderable2D
 import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.textures
@@ -20,7 +20,7 @@ abstract class GUIDrawable {
 
 class TextureDrawable(private val texture: String, private val flipX: Boolean = false, private val flipY: Boolean = false) : GUIDrawable() {
     override fun draw(layer: Int, color: Color, x: Float, y: Float, width: Float, height: Float) {
-        Game.graphics2d.submit<DirectRenderable2D> {
+        Game.graphics2d.submit<BasicRenderable2D> {
             it.layer = layer
             it.x = x
             it.y = y
@@ -63,7 +63,7 @@ class AnimatedDrawable(private val textures: Array<String>, private val keyFrame
     override fun draw(layer: Int, color: Color, x: Float, y: Float, width: Float, height: Float) {
         val texture = animation.getKeyFrame(Game.time.sinceStart, true)
 
-        Game.graphics2d.submit<DirectRenderable2D> {
+        Game.graphics2d.submit<BasicRenderable2D> {
             it.layer = layer
             it.x = x
             it.y = y

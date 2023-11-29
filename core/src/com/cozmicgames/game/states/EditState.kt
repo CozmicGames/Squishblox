@@ -8,7 +8,7 @@ import com.cozmicgames.game.graphics.gui.elements.ImageButton
 import com.cozmicgames.game.graphics.gui.elements.Panel
 import com.cozmicgames.game.graphics.gui.skin.NinepatchDrawableValue
 import com.cozmicgames.game.graphics.gui.skin.TextureDrawableValue
-import com.cozmicgames.game.player.ConfirmWidget
+import com.cozmicgames.game.widgets.ConfirmWidget
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.world.WorldScene
 
@@ -133,7 +133,7 @@ class EditState(levelData: String? = null) : InGameState() {
         }) {
             gui.isInteractionEnabled = false
             val window = Game.guis.openWindow("", 400.0f, 300.0f, false, false, false)
-            val confirmWidget: ConfirmWidget = ConfirmWidget("Reset level", "Do you want to reset the level?\nThis deletes all progress.") {
+            val widget = ConfirmWidget("Reset level", "Do you want to reset the level?\nThis deletes all progress.") {
                 if (it)
                     Game.player.scene.initialize()
                 Game.tasks.submit({
@@ -146,7 +146,7 @@ class EditState(levelData: String? = null) : InGameState() {
                 it.constraints.width = fill()
                 it.constraints.height = fill()
             }
-            window.content.addElement(confirmWidget)
+            window.content.addElement(widget)
         }
         resetButton.constraints.x = absolute(buttonOffsetFromSide, true)
         resetButton.constraints.y = absolute(buttonY)

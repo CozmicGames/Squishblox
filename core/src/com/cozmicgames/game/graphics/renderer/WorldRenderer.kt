@@ -2,27 +2,28 @@ package com.cozmicgames.game.graphics.renderer
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.ScreenUtils
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.graphics.RenderLayers
-import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
-import com.cozmicgames.game.graphics.engine.rendergraph.RenderFunction
-import com.cozmicgames.game.graphics2d
-import com.cozmicgames.game.player
-import com.cozmicgames.game.player.PlayState
-import com.cozmicgames.game.textures
 import com.cozmicgames.common.utils.extensions.isEven
 import com.cozmicgames.common.utils.maths.intersectRectRect
 import com.cozmicgames.common.utils.maths.randomFloat
+import com.cozmicgames.game.*
+import com.cozmicgames.game.graphics.RenderLayers
+import com.cozmicgames.game.graphics.engine.graphics2d.BasicRenderable2D
+import com.cozmicgames.game.player.PlayState
+import com.cozmicgames.game.player.PlayerCamera
 import com.cozmicgames.game.world.WorldConstants
+import com.cozmicgames.game.world.WorldScene
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.sin
 
-class WorldBackgroundRenderFunction : RenderFunction() {
+class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean) {
     private class Cloud(val texture: String, var x: Float, var y: Float, var speedFactor: Float)
 
-    private class ParallaxLayer(val texture: String, val factor: Float, val color: Color)
+    private class BackgroundLayer(val texture: String, val factor: Float, val color: Color)
 
-    private val textures = arrayOf(
+    private class WaterLayer(val texture: String, var x: Float, var y: Float, val color: Color)
+
+    private val cloudTextures = arrayOf(
         "textures/cloud_0.png",
         "textures/cloud_1.png",
         "textures/cloud_2.png",
@@ -30,14 +31,20 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         "textures/cloud_4.png"
     )
 
-    private val layers = arrayOf(
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(0xF2B877FF.toInt())),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.1f, Color(0xE47F3CFF.toInt())),
-        ParallaxLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.5f, Color(0xB15A29FF.toInt()))
+    private val backgroundLayers = arrayOf(
+        BackgroundLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.02f, Color(0xF2B877FF.toInt())),
+        BackgroundLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.1f, Color(0xE47F3CFF.toInt())),
+        BackgroundLayer("textures/parallax_background.png", WorldConstants.WORLD_CELL_SIZE * 0.5f, Color(0xB15A29FF.toInt()))
+    )
+
+    private val waterLayers = arrayOf(
+        WaterLayer("textures/parallax_water.png", 64.0f, 16.0f, Color(0xBAF0FFFF.toInt())),
+        WaterLayer("textures/parallax_water.png", 32.0f, 12.0f, Color(0x005DBDFF)),
+        WaterLayer("textures/parallax_water.png", 0.0f, 8.0f, Color(0x228FE5FF))
     )
 
     private val clouds = Array(WorldConstants.CLOUDS_COUNT) {
-        Cloud(textures.random(), 0.0f, 0.0f, 1.0f + (randomFloat() - 0.5f) * WorldConstants.CLOUD_SPEED_SPREAD)
+        Cloud(cloudTextures.random(), 0.0f, 0.0f, 1.0f + (randomFloat() - 0.5f) * WorldConstants.CLOUD_SPEED_SPREAD)
     }
 
     private val skyColor = Color(0x6FC0F2FF)
@@ -85,8 +92,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             var backgroundTileY = floor((Game.player.camera.position.y - Game.player.camera.rectangle.height * 0.5f) / backgroundTileHeight) * backgroundTileHeight
 
             repeat(numBackgroundTilesY) {
-                Game.graphics2d.submit<DirectRenderable2D> {
-                    it.layer = RenderLayers.WORLD_LAYER_BACKGROUND
+                Game.graphics2d.submit<BasicRenderable2D> {
+                    it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_BACKGROUND else RenderLayers.WORLD_LAYER_BACKGROUND
                     it.texture = "textures/grid_background_8x8.png"
                     it.x = backgroundTileX
                     it.y = backgroundTileY
@@ -114,8 +121,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             }
 
             val texture = Game.textures.getTexture(cloud.texture)
-            Game.graphics2d.submit<DirectRenderable2D> {
-                it.layer = RenderLayers.WORLD_LAYER_CLOUD_SHADOW
+            Game.graphics2d.submit<BasicRenderable2D> {
+                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_CLOUD_SHADOW else RenderLayers.WORLD_LAYER_CLOUD_SHADOW
                 it.color = WorldConstants.SHADOW_COLOR
                 it.texture = cloud.texture
                 it.x = cloud.x + WorldConstants.SHADOW_OFFSET.x
@@ -124,8 +131,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
                 it.height = WorldConstants.CLOUD_SIZE * texture.regionHeight.toFloat() / texture.regionWidth.toFloat()
             }
 
-            Game.graphics2d.submit<DirectRenderable2D> {
-                it.layer = RenderLayers.WORLD_LAYER_CLOUD
+            Game.graphics2d.submit<BasicRenderable2D> {
+                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_CLOUD else RenderLayers.WORLD_LAYER_CLOUD
                 it.texture = cloud.texture
                 it.x = cloud.x
                 it.y = cloud.y
@@ -135,7 +142,7 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         }
     }
 
-    private fun drawParallaxLayer(layer: ParallaxLayer, index: Int) {
+    private fun drawBackgroundLayer(layer: BackgroundLayer, index: Int) {
         val region = Game.textures.getTexture(layer.texture)
         val camera = Game.player.camera
 
@@ -148,8 +155,8 @@ class WorldBackgroundRenderFunction : RenderFunction() {
             backgroundTileX -= backgroundTileWidth
 
         repeat(numBackgroundTilesX) {
-            Game.graphics2d.submit<DirectRenderable2D> {
-                it.layer = RenderLayers.WORLD_LAYER_BACKGROUND
+            Game.graphics2d.submit<BasicRenderable2D> {
+                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_BACKGROUND else RenderLayers.WORLD_LAYER_BACKGROUND
                 it.texture = layer.texture
                 it.color = layer.color
                 it.x = backgroundTileX
@@ -163,7 +170,34 @@ class WorldBackgroundRenderFunction : RenderFunction() {
         }
     }
 
-    override fun render(delta: Float) {
+    private fun drawWaterLayer(layer: WaterLayer) {
+        val region = Game.textures.getTexture(layer.texture)
+        val camera = Game.player.camera
+
+        val backgroundTileWidth = region.regionWidth.toFloat()
+        val backgroundTileHeight = region.regionHeight.toFloat()
+
+        val numBackgroundTilesX = ceil(camera.rectangle.width / backgroundTileWidth).toInt() + 2
+        var backgroundTileX = camera.rectangle.x - (camera.rectangle.x + layer.x) % backgroundTileWidth - backgroundTileWidth
+        if (camera.position.x < backgroundTileWidth)
+            backgroundTileX -= backgroundTileWidth
+
+        repeat(numBackgroundTilesX) {
+            Game.graphics2d.submit<BasicRenderable2D> {
+                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_WATER else RenderLayers.WORLD_LAYER_WATER
+                it.texture = layer.texture
+                it.color = layer.color
+                it.x = backgroundTileX
+                it.y = layer.y + WorldConstants.WORLD_WATER_Y
+                it.width = backgroundTileWidth + 1.0f
+                it.height = backgroundTileHeight
+            }
+
+            backgroundTileX += backgroundTileWidth
+        }
+    }
+
+    fun render(delta: Float, camera: PlayerCamera) {
         if (isFirstRender) {
             clouds.forEach {
                 findCloudSpawnPosition(it, true)
@@ -173,14 +207,30 @@ class WorldBackgroundRenderFunction : RenderFunction() {
 
         ScreenUtils.clear(skyColor)
 
-        for (i in layers.indices.reversed()) {
-            val layer = layers[i]
-            drawParallaxLayer(layer, i)
+        for (i in backgroundLayers.indices.reversed()) {
+            val layer = backgroundLayers[i]
+            drawBackgroundLayer(layer, i)
         }
 
         if (Game.player.playState == PlayState.EDIT)
             drawGrid()
         else
             drawClouds(delta)
+
+        waterLayers.forEachIndexed { index, layer ->
+            layer.x += sin(Game.time.sinceStart * 3.0f * ((index + 1).toFloat() / waterLayers.size)) * 0.5f
+            layer.y += sin(Game.time.sinceStart * ((index + 1).toFloat() / waterLayers.size)) * 0.05f
+            drawWaterLayer(layer)
+        }
+
+        val range = if (scene.useAltLayers)
+            RenderLayers.ALT_WORLD_LAYER_BEGIN..RenderLayers.ALT_WORLD_LAYER_END
+        else
+            RenderLayers.WORLD_LAYER_BEGIN..RenderLayers.WORLD_LAYER_END
+
+        Game.graphics2d.render(camera.camera) { it in range }
+
+        if (drawGuis)
+            Game.guis.render()
     }
 }

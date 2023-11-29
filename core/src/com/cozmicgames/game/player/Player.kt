@@ -2,14 +2,17 @@ package com.cozmicgames.game.player
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.Game
-import com.cozmicgames.game.guis
-import com.cozmicgames.game.input
 import com.cozmicgames.game.states.InGameState
 import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.common.utils.extensions.unproject
 import com.cozmicgames.common.utils.maths.intersectPointRect
+import com.cozmicgames.game.*
+import com.cozmicgames.game.graphics.gui.fill
+import com.cozmicgames.game.graphics.gui.same
+import com.cozmicgames.game.states.EditState
+import com.cozmicgames.game.widgets.LevelCompletedWidget
+import com.cozmicgames.game.widgets.SubmitLevelWidget
 import com.cozmicgames.game.world.WorldConstants
 import com.cozmicgames.game.world.WorldScene
 
@@ -37,6 +40,7 @@ class Player : Updatable {
         private set
 
     private var levelStartTime = 0L
+    private var currentLevelUuid = ""
     private var currentLevelData = ""
     private val playerPosition = Vector2()
     private val cameraFollower = CameraFollower(camera, playerPosition, 0.8f)
@@ -79,11 +83,13 @@ class Player : Updatable {
         isInputPositionVisible = Game.guis.isInputPositionVisible()
     }
 
-    fun startLevel(data: String) {
+    fun startLevel(uuid: String, data: String) {
+        currentLevelUuid = uuid
         currentLevelData = data
         scene.initialize(data)
         levelStartTime = System.currentTimeMillis()
         isLevelCompleted = false
+        isPaused = false
     }
 
     fun resetLevel() {
@@ -91,16 +97,58 @@ class Player : Updatable {
     }
 
     fun onCompleteLevel() {
+        if (isPaused)
+            return
+
         isLevelCompleted = true
 
         when (playState) {
             PlayState.PLAY -> {
-                val time = (System.currentTimeMillis() - levelStartTime) / 1000.0f
+                val time = System.currentTimeMillis() - levelStartTime
 
+                isPaused = true
+                currentState.gui.isInteractionEnabled = false
+                val window = Game.guis.openWindow("", 600.0f, 500.0f, false, false, false)
+                val widget = LevelCompletedWidget(currentLevelUuid, time) {
+                    if (it) {
+                        //TODO: Back to menu
+                    }
+                    Game.tasks.submit({
+                        Game.guis.closeWindow(window)
+                        currentState.gui.isInteractionEnabled = true
+                    })
+                }.also {
+                    it.constraints.x = same()
+                    it.constraints.y = same()
+                    it.constraints.width = fill()
+                    it.constraints.height = fill()
+                }
+                window.content.addElement(widget)
             }
 
             PlayState.TEST -> {
+                isPaused = true
+                currentState.gui.isInteractionEnabled = false
+                val window = Game.guis.openWindow("", 600.0f, 500.0f, false, false, false)
+                val widget: SubmitLevelWidget = SubmitLevelWidget(currentLevelData) {
+                    if (it) {
+                        //TODO: Back to menu
+                    } else
+                        currentState.returnState = EditState(currentLevelData)
 
+                    Game.tasks.submit({
+                        Game.guis.closeWindow(window)
+                    })
+                }.also {
+                    it.constraints.x = same()
+                    it.constraints.y = same()
+                    it.constraints.width = fill()
+                    it.constraints.height = fill()
+                }
+                window.content.addElement(widget)
+                window.onClose = {
+                    widget.dispose()
+                }
             }
 
             else -> { /*What are you doing here?*/
@@ -115,5 +163,13 @@ class Player : Updatable {
             properties.write()
         } else
             currentLevelData
+    }
+
+    fun registerLocalLevel(uuid: String, levelData: String) {
+        val directory = Gdx.files.local("levels/$uuid/")
+        val levelFile = directory.child("level.json")
+
+        levelFile.mkdirs()
+        levelFile.writeString(levelData, false)
     }
 }

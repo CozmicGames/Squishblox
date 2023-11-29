@@ -3,7 +3,7 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.IntMap
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
+import com.cozmicgames.game.graphics.engine.graphics2d.BasicRenderable2D
 import com.cozmicgames.game.graphics2d
 import com.cozmicgames.common.utils.collections.DynamicStack
 import com.cozmicgames.common.utils.maths.intersectPointRect
@@ -44,7 +44,7 @@ class World {
 
     fun getBlocks(minX: Int, minY: Int, maxX: Int, maxY: Int, idFilter: (Int) -> Boolean = { true }): List<Int> {
         if (DEBUG_INTERSECTION)
-            Game.graphics2d.submit<DirectRenderable2D> {
+            Game.graphics2d.submit<BasicRenderable2D> {
                 it.layer = 80
                 it.texture = "blank"
                 it.x = minX * WorldConstants.WORLD_CELL_SIZE
@@ -58,7 +58,7 @@ class World {
         forEachBlock(minX, minY, maxX, maxY, idFilter) {
             if (DEBUG_INTERSECTION) {
                 val block = blocks.get(it)!!
-                Game.graphics2d.submit<DirectRenderable2D> {
+                Game.graphics2d.submit<BasicRenderable2D> {
                     it.layer = 80
                     it.texture = "blank"
                     it.x = block.minX * WorldConstants.WORLD_CELL_SIZE

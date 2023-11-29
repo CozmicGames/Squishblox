@@ -12,7 +12,7 @@ import com.cozmicgames.game.player.PlayState
 
 class TestState(levelData: String) : InGameState() {
     init {
-        Game.player.startLevel(levelData)
+        Game.player.startLevel("", levelData)
         Game.player.playState = PlayState.TEST
         Game.player.isPaused = false
 
@@ -76,7 +76,7 @@ class TestState(levelData: String) : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            Game.player.startLevel(levelData)
+            Game.player.resetLevel()
         }
         resetButton.constraints.x = absolute(buttonOffsetFromSide, true)
         resetButton.constraints.y = absolute(buttonY)

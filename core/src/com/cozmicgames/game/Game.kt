@@ -23,6 +23,7 @@ import com.cozmicgames.common.utils.*
 import com.cozmicgames.game.networking.NetworkManager
 import com.cozmicgames.game.player.Player
 import com.cozmicgames.game.physics.Physics
+import com.cozmicgames.game.world.WorldPreviewRenderer
 import kotlin.system.exitProcess
 
 class Game(gameSettings: GameSettings) : ApplicationAdapter() {
@@ -106,14 +107,15 @@ val Game.Companion.tasks by Game.context.injector { TaskManager() }
 val Game.Companion.input by Game.context.injector { InputManager() }
 val Game.Companion.gestures by Game.context.injector { GestureManager() }
 val Game.Companion.localization by Game.context.lazyInjector { LocalizationManager() }
+val Game.Companion.player by Game.context.injector { Player() }
 val Game.Companion.shaders by Game.context.injector { ShaderManager() }
 val Game.Companion.textures by Game.context.injector { TextureManager() }
 val Game.Companion.fonts by Game.context.injector { FontManager() }
 val Game.Companion.audio by Game.context.injector { AudioManager() }
 val Game.Companion.graphics2d by Game.context.injector { Graphics2D() }
 val Game.Companion.guis by Game.context.injector { GUIManager() }
+val Game.Companion.previewRenderer by Game.context.injector { WorldPreviewRenderer(800, 600) }
 val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRenderFunction()) }
 val Game.Companion.renderer2d by Game.context.injector { Renderer2D() }
-val Game.Companion.player by Game.context.injector { Player() }
 val Game.Companion.physics by Game.context.injector { Physics() }
 val Game.Companion.networking by Game.context.injector { NetworkManager() }

@@ -4,9 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.cozmicgames.game.scene.Scene
 import com.cozmicgames.game.scene.findGameObjectByComponent
 import com.cozmicgames.common.utils.Properties
+import com.cozmicgames.game.Game
+import com.cozmicgames.game.physics
 import com.cozmicgames.game.world.processors.*
 
-class WorldScene : Scene() {
+class WorldScene(val useAltLayers: Boolean = false) : Scene() {
     enum class EditState {
         CREATE,
         EDIT,
@@ -28,7 +30,7 @@ class WorldScene : Scene() {
         if (!isFirstInitialize)
             return
 
-        addSceneProcessor(BlockRenderProcessor())
+        addSceneProcessor(BlockRenderProcessor(useAltLayers))
         addSceneProcessor(PlatformRenderProcessor(this))
         addSceneProcessor(DebugRenderProcessor())
 
@@ -49,6 +51,7 @@ class WorldScene : Scene() {
         addSceneProcessors()
 
         clearGameObjects()
+        Game.physics.clear()
 
         val properties = Properties()
         properties.read(data)
@@ -63,6 +66,7 @@ class WorldScene : Scene() {
         addSceneProcessors()
 
         clearGameObjects()
+        Game.physics.clear()
 
         addBlock(0, 0, 3, 1, WorldUtils.getRandomBlockColor())
 

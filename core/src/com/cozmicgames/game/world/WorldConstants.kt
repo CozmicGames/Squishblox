@@ -3,9 +3,6 @@ package com.cozmicgames.game.world
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.cozmicgames.game.Game
-import com.cozmicgames.game.graphics.RenderLayers
-import com.cozmicgames.game.graphics.engine.graphics2d.DirectRenderable2D
-import com.cozmicgames.game.graphics2d
 import com.cozmicgames.game.physics
 import com.cozmicgames.game.physics.CollisionListener
 import com.cozmicgames.game.physics.CollisionPair
@@ -71,7 +68,8 @@ object WorldConstants {
                         }
                         return
                     }
-                }
+                } else
+                    return
 
                 val platformData = platformBlock.getData<PlatformData>() ?: return
                 val playerCenterX = playerBlock.minX + playerBlock.width * 0.5f

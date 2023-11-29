@@ -16,6 +16,7 @@ textures/edit_reset_icon.png
 textures/edit_reset_icon_open.png
 textures/edit_scale_down_icon.png
 textures/edit_scale_up_icon.png
+textures/element_background.png
 textures/menu_button.png
 textures/parallax_background.png
 textures/parallax_water.png

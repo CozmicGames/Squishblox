@@ -4,21 +4,19 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Align
-import com.cozmicgames.game.Game
 import com.cozmicgames.common.utils.maths.Matrix3x2
 import com.cozmicgames.common.utils.collections.Resettable
-import com.cozmicgames.game.fonts
 import com.cozmicgames.game.graphics.engine.graphics2d.fonts.DefaultFontStyle
 import com.cozmicgames.game.graphics.engine.graphics2d.fonts.FontStyle
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.AnimatedSpriteMaterial
 import com.cozmicgames.game.graphics.engine.graphics2d.sprite.StaticSpriteMaterial
 import com.cozmicgames.game.graphics.engine.shaders.Shader2D
-import com.cozmicgames.game.shaders
-import com.cozmicgames.game.textures
 import com.cozmicgames.common.utils.extensions.infinite
+import com.cozmicgames.game.*
 
 sealed class Renderable2D : Resettable {
     var layer = 0
@@ -694,7 +692,7 @@ class TransformedRenderable2D : Renderable2D() {
     }
 }
 
-class DirectRenderable2D : Renderable2D() {
+class BasicRenderable2D : Renderable2D() {
     var x = 0.0f
     var y = 0.0f
     var width = 0.0f
@@ -795,6 +793,125 @@ class DirectRenderable2D : Renderable2D() {
     override fun draw(batch: SpriteBatch, overrides: RenderOverrides?) {
         val previousColor = batch.color
         val texture = Game.textures.getTexture(overrides?.texture ?: texture)
+        val shaderName = overrides?.shader ?: shader
+        batch.color = overrides?.color ?: color
+
+        if (shaderName != null) {
+            val previousShader = batch.shader
+            val shader = Game.shaders.getShader(shaderName)
+            batch.shader = shader.shaderProgram
+            setUniforms(shader)
+            overrides?.setUniforms?.let { it(shader) }
+            batch.draw(texture.texture, x, y, originX, originY, width, height, 1.0f, 1.0f, rotation, texture.regionX, texture.regionY, texture.regionWidth, texture.regionHeight, flipX, flipY)
+            batch.shader = previousShader
+        } else
+            batch.draw(texture.texture, x, y, originX, originY, width, height, 1.0f, 1.0f, rotation, texture.regionX, texture.regionY, texture.regionWidth, texture.regionHeight, flipX, flipY)
+
+        batch.color = previousColor
+    }
+}
+
+class DirectRenderable2D : Renderable2D() {
+    var x = 0.0f
+    var y = 0.0f
+    var width = 0.0f
+    var height = 0.0f
+    var rotation = 0.0f
+    var originX = 0.0f
+    var originY = 0.0f
+    var flipX = false
+    var flipY = false
+    var color = Color.WHITE
+    var texture: TextureRegion? = null
+    var shader: String? = null
+    var setUniforms: (Shader2D) -> Unit = {}
+
+    override val textureHandle get() = texture?.texture?.textureObjectHandle ?: Game.textures.getTexture("blank").texture.textureObjectHandle
+
+    override fun updateBounds() {
+        val worldOriginX = x + originX
+        val worldOriginY = y + originY
+
+        val p0x = -originX
+        val p0y = -originY
+        val p1x = -originX
+        val p1y = height - originY
+        val p2x = width - originX
+        val p2y = height - originY
+        val p3x = width - originX
+        val p3y = -originY
+
+        var x0: Float
+        var y0: Float
+        var x1: Float
+        var y1: Float
+        var x2: Float
+        var y2: Float
+        var x3: Float
+        var y3: Float
+
+        if (rotation != 0.0f) {
+            val cos = MathUtils.cosDeg(rotation)
+            val sin = MathUtils.sinDeg(rotation)
+            x0 = cos * p0x - sin * p0y
+            y0 = sin * p0x + cos * p0y
+            x1 = cos * p1x - sin * p1y
+            y1 = sin * p1x + cos * p1y
+            x2 = cos * p2x - sin * p2y
+            y2 = sin * p2x + cos * p2y
+            x3 = x0 + (x2 - x1)
+            y3 = y2 - (y1 - y0)
+        } else {
+            x0 = p0x
+            y0 = p0y
+            x1 = p1x
+            y1 = p1y
+            x2 = p2x
+            y2 = p2y
+            x3 = p3x
+            y3 = p3y
+        }
+
+        x0 += worldOriginX
+        y0 += worldOriginY
+        x1 += worldOriginX
+        y1 += worldOriginY
+        x2 += worldOriginX
+        y2 += worldOriginY
+        x3 += worldOriginX
+        y3 += worldOriginY
+
+        val minX = minOf(x0, x1, x2, x3)
+        val minY = minOf(y0, y1, y2, y3)
+        val maxX = maxOf(x0, x1, x2, x3)
+        val maxY = maxOf(y0, y1, y2, y3)
+
+        bounds.x = minX
+        bounds.y = minY
+        bounds.width = maxX - minX
+        bounds.height = maxY - minY
+    }
+
+    override fun reset() {
+        super.reset()
+        x = 0.0f
+        y = 0.0f
+        width = 0.0f
+        height = 0.0f
+        rotation = 0.0f
+        originX = 0.0f
+        originY = 0.0f
+        flipX = false
+        flipY = false
+        color = Color.WHITE
+        texture = null
+        shader = null
+        setUniforms = {}
+    }
+
+    override fun draw(batch: SpriteBatch, overrides: RenderOverrides?) {
+        val previousColor = batch.color
+        val texture = overrides?.texture?.let { Game.textures.getTexture(it) } ?: texture ?: Game.textures.getTexture("blank")
         val shaderName = overrides?.shader ?: shader
         batch.color = overrides?.color ?: color
 
