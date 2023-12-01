@@ -41,6 +41,8 @@ textures/scale_up_block_icon.png
 textures/scrollbar_handle.png
 textures/search_icon.png
 textures/settings_icon.png
+textures/slider_background.png
+textures/slider_foreground.png
 textures/stop_icon.png
 textures/trashcan_icon.png
 textures/trashcan_open_icon.png

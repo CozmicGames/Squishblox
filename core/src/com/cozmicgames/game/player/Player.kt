@@ -110,6 +110,8 @@ class Player : Updatable {
 
         when (playState) {
             PlayState.PLAY -> {
+                Game.audio.playSound("sounds/level_completed.wav")
+
                 val time = System.currentTimeMillis() - levelStartTime
 
                 isPaused = true
@@ -132,6 +134,8 @@ class Player : Updatable {
             }
 
             PlayState.TEST -> {
+                Game.audio.playSound("sounds/level_completed.wav")
+
                 isPaused = true
                 currentState.gui.isInteractionEnabled = false
                 val window = Game.guis.openWindow("", 1000.0f, 800.0f, false, false, false)

@@ -1,5 +1,6 @@
 package com.cozmicgames.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
@@ -28,8 +29,9 @@ public class DesktopLauncher {
 		try {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setForegroundFPS(60);
-			config.setTitle("Scaleblox");
+			config.setTitle("Squishblox");
 			config.setInitialBackgroundColor(Color.BLACK);
+			config.setWindowIcon("branding/icon.png");
 
 			if (gameSettings.isFullscreen())
 				config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());

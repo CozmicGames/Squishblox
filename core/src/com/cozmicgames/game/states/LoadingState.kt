@@ -111,21 +111,12 @@ class LoadingState : GameState {
                     val file = Gdx.files.internal(line)
                     if (file.exists()) {
                         toLoadCount++
-                        asyncToLoadCount++
                         loadingTasks += {
                             Gdx.app.log("LOADING", "Loading $file.")
                             currentInfoMessage = "Loading $file."
 
-                            val isLoading = Game.audio.loadSoundAsync(file) {
-                                loadedCount++
-                                asyncLoadedCount++
-                            }
-
-                            if (!isLoading) {
-                                Gdx.app.log("LOADING", "Failed to load $file.")
-                                toLoadCount--
-                                asyncToLoadCount--
-                            }
+                            Game.audio.loadSound(file)
+                            loadedCount++
                         }
                     }
                 }
@@ -134,9 +125,9 @@ class LoadingState : GameState {
 
         bannerImage = Image("branding/banner.png", flipY = true)
         bannerImage.constraints.x = center()
-        bannerImage.constraints.y = absolute(25.0f)
+        bannerImage.constraints.y = relative(0.2f)
         bannerImage.constraints.width = relative(0.6f)
-        bannerImage.constraints.height = aspect(1200.0f / 500.0f)
+        bannerImage.constraints.height = aspect(2000.0f / 600.0f)
 
         progressBar = Progressbar(Progressbar.ProgressbarStyle().also {
             it.background = ColorDrawableValue().also {
@@ -205,6 +196,8 @@ class LoadingState : GameState {
         if (isLoadingFinished && isTexturePackingFinished) {
             gui.removeElement(progressBar)
             gui.removeElement(infoLabel)
+
+            Game.audio.playBackgroundMusic(Gdx.files.internal("music/background_music.mp3"))
 
             return { TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.DOWN)) }
         }

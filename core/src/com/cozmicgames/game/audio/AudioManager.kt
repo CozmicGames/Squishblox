@@ -1,6 +1,7 @@
 package com.cozmicgames.game.audio
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
@@ -14,6 +15,15 @@ class AudioManager : Disposable {
     }
 
     private val sounds = hashMapOf<String, Sound>()
+    private var backgroundMusic: Music? = null
+
+    var musicVolume
+        get() = backgroundMusic?.volume ?: 0.0f
+        set(value) {
+            backgroundMusic?.volume = value
+        }
+
+    var soundVolume = 1.0f
 
     fun loadSound(file: FileHandle, name: String = file.path()): Boolean {
         if (!file.exists())
@@ -28,8 +38,10 @@ class AudioManager : Disposable {
     }
 
     fun loadSoundAsync(file: FileHandle, name: String = file.path(), callback: () -> Unit): Boolean {
-        if (!file.exists())
+        if (!file.exists()) {
+            callback()
             return false
+        }
 
         Game.tasks.submitAsync({
             val sound = Gdx.audio.newSound(file)
@@ -52,9 +64,26 @@ class AudioManager : Disposable {
         return getSound(file)!!
     }
 
+    fun playBackgroundMusic(file: FileHandle) {
+        backgroundMusic?.dispose()
+
+        if (file.exists())
+            backgroundMusic = Gdx.audio.newMusic(file)
+
+        backgroundMusic?.play()
+        backgroundMusic?.isLooping = true
+    }
+
+    fun playSound(name: String) {
+        val sound = getSound(name) ?: return
+        sound.play(soundVolume)
+    }
+
     override fun dispose() {
         sounds.forEach { (_, sound) ->
             sound.dispose()
         }
+
+        backgroundMusic?.dispose()
     }
 }

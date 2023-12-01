@@ -22,6 +22,7 @@ import com.cozmicgames.game.graphics.gui.skin.TextureDrawableValue
 import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.widgets.LeaderboardWidget
+import com.cozmicgames.game.widgets.SettingsWidget
 
 class OnlineLevelsState : InGameState() {
     private abstract inner class MenuElement : GUIElement()
@@ -335,7 +336,16 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            //TODO: Show settings
+            val window = Game.guis.openWindow("", 400.0f, 300.0f, false, false, false)
+            val widget = SettingsWidget() {
+                Game.guis.closeWindow(window)
+            }.also {
+                it.constraints.x = same()
+                it.constraints.y = same()
+                it.constraints.width = fill()
+                it.constraints.height = fill()
+            }
+            window.content.addElement(widget)
         }
         settingsButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize + buttonSpacing, true)
         settingsButton.constraints.y = absolute(buttonOffsetFromSide)

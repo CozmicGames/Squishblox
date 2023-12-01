@@ -51,7 +51,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
             playerBlock.isFacingRight = moveAmount > 0.0f
 
         if (isOnGround && jumpJustPressed)
-            Game.audio.getSound("sounds/jump.wav")?.play()
+            Game.audio.playSound("sounds/jump.wav")
 
         if (!isOnGround)
             playerBlock.body.velocity.x = WorldUtils.approach(playerBlock.body.velocity.x, 0.0f, airDeceleration * delta)
