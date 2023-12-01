@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.game.Game
+import com.cozmicgames.game.gameSettings
 import com.cozmicgames.game.tasks
 import kotlin.reflect.KProperty
 
@@ -18,12 +19,13 @@ class AudioManager : Disposable {
     private var backgroundMusic: Music? = null
 
     var musicVolume
-        get() = backgroundMusic?.volume ?: 0.0f
+        get() = Game.gameSettings.musicVolume
         set(value) {
             backgroundMusic?.volume = value
+            Game.gameSettings.soundVolume = value
         }
 
-    var soundVolume = 1.0f
+    var soundVolume by Game.gameSettings::soundVolume
 
     fun loadSound(file: FileHandle, name: String = file.path()): Boolean {
         if (!file.exists())
@@ -72,6 +74,7 @@ class AudioManager : Disposable {
 
         backgroundMusic?.play()
         backgroundMusic?.isLooping = true
+        backgroundMusic?.volume = musicVolume
     }
 
     fun playSound(name: String) {

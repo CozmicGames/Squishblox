@@ -1,9 +1,6 @@
 package com.cozmicgames.game
 
-import com.cozmicgames.common.utils.Properties
-import com.cozmicgames.common.utils.boolean
-import com.cozmicgames.common.utils.int
-import com.cozmicgames.common.utils.string
+import com.cozmicgames.common.utils.*
 
 class GameSettings : Properties() {
     var isFullscreen by boolean { false }
@@ -12,4 +9,6 @@ class GameSettings : Properties() {
     var vsync by boolean { false }
     var language by string { "English" }
     var name by string { "" }
+    var soundVolume by float { 1.0f }
+    var musicVolume by float { 1.0f }
 }

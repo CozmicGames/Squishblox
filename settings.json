@@ -1,4 +1,8 @@
 {
+    "soundVolume": {
+        "type": "FLOAT",
+        "value": 1.0
+    },
     "vsync": {
         "type": "BOOLEAN",
         "value": false
@@ -14,6 +18,10 @@
     "language": {
         "type": "STRING",
         "value": "English"
+    },
+    "musicVolume": {
+        "type": "FLOAT",
+        "value": 1.0
     },
     "isFullscreen": {
         "type": "BOOLEAN",

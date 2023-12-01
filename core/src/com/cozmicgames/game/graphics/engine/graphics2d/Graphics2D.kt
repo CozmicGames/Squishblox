@@ -57,7 +57,7 @@ class Graphics2D : Disposable {
 
     var sortByTexture = true
     var drawDebugBounds = false
-    var showFPS = true
+    var showFPS = false
 
     val currentScissorRectangle get() = scissorStack.currentScissorRectangle
 
