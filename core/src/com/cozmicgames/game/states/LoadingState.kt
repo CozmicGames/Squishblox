@@ -206,7 +206,7 @@ class LoadingState : GameState {
             gui.removeElement(progressBar)
             gui.removeElement(infoLabel)
 
-            return { MenuState() }
+            return { TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.DOWN)) }
         }
 
         Game.renderGraph.render(Game.time.delta)

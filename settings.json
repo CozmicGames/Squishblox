@@ -5,11 +5,11 @@
     },
     "width": {
         "type": "INT",
-        "value": 1172
+        "value": 1920
     },
     "name": {
         "type": "STRING",
-        "value": ""
+        "value": "max"
     },
     "language": {
         "type": "STRING",
@@ -21,6 +21,6 @@
     },
     "height": {
         "type": "INT",
-        "value": 726
+        "value": 1009
     }
 }

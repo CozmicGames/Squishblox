@@ -15,7 +15,7 @@ import com.cozmicgames.game.world.*
 import com.cozmicgames.game.world.dataValues.PlatformData
 import com.cozmicgames.game.world.dataValues.ScaleData
 
-class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor() {
+class BlockRenderProcessor(private val worldScene: WorldScene) : SceneProcessor() {
     private val blockNinePatch: NinePatch
     private val playerBlockNinePatch: NinePatch
 
@@ -32,14 +32,12 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
     }
 
     override fun process(delta: Float) {
-        val scene = this.scene ?: return
-
-        for (gameObject in scene.activeGameObjects) {
+        for (gameObject in worldScene.activeGameObjects) {
             val transformComponent = gameObject.getComponent<TransformComponent>() ?: continue
 
             gameObject.getComponent<BlockComponent>()?.let { block ->
                 Game.graphics2d.submit<BasicRenderable2D> {
-                    it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK_SHADOW else RenderLayers.WORLD_LAYER_BLOCK_SHADOW
+                    it.layer = RenderLayers.WORLD_LAYER_BLOCK_SHADOW + worldScene.baseRenderLayer
                     it.texture = "blank"
                     it.color = WorldConstants.SHADOW_COLOR
                     it.x = transformComponent.transform.x + WorldConstants.SHADOW_OFFSET.x
@@ -51,7 +49,7 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
                 when (block) {
                     is WorldBlock -> {
                         Game.graphics2d.submit<NinepatchRenderable2D> {
-                            it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK else RenderLayers.WORLD_LAYER_BLOCK
+                            it.layer = RenderLayers.WORLD_LAYER_BLOCK + worldScene.baseRenderLayer
                             it.ninePatch = blockNinePatch
                             it.color = block.color
                             it.x = transformComponent.transform.x
@@ -62,7 +60,7 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
 
                         block.getData<ScaleData>()?.let { data ->
                             Game.graphics2d.submit<BasicRenderable2D> {
-                                it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK_FOREGROUND else RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND
+                                it.layer = RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND + worldScene.baseRenderLayer
                                 it.texture = if (data.scale > 0.0f) "textures/scale_up_block_icon.png" else "textures/scale_down_block_icon.png"
                                 it.color = block.color
                                 it.x = transformComponent.transform.x + transformComponent.transform.scaleX * 0.5f - WorldConstants.WORLD_CELL_SIZE * 0.5f
@@ -74,7 +72,7 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
 
                         block.getData<PlatformData>()?.let { data ->
                             Game.graphics2d.submit<BasicRenderable2D> {
-                                it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK_FOREGROUND else RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND
+                                it.layer = RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND + worldScene.baseRenderLayer
                                 it.texture = "textures/platform_block_icon.png"
                                 it.color = block.color
                                 it.x = transformComponent.transform.x + transformComponent.transform.scaleX * 0.5f - WorldConstants.WORLD_CELL_SIZE * 0.5f
@@ -90,7 +88,7 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
 
                     is EntityBlock -> {
                         Game.graphics2d.submit<NinepatchRenderable2D> {
-                            it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK else RenderLayers.WORLD_LAYER_BLOCK
+                            it.layer = RenderLayers.WORLD_LAYER_BLOCK + worldScene.baseRenderLayer
                             it.ninePatch = playerBlockNinePatch
                             it.color = block.color
                             it.x = transformComponent.transform.x
@@ -102,7 +100,7 @@ class BlockRenderProcessor(private val useAltLayers: Boolean) : SceneProcessor()
                         if (!block.isBlinking) {
                             val playerEyesTexture = TextureRegion(Game.textures.getTexture("textures/player_eyes.png"))
                             Game.graphics2d.submit<BasicRenderable2D> {
-                                it.layer = if (useAltLayers) RenderLayers.ALT_WORLD_LAYER_BLOCK_FOREGROUND else RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND
+                                it.layer = RenderLayers.WORLD_LAYER_BLOCK_FOREGROUND + worldScene.baseRenderLayer
                                 it.texture = if (block.isFacingRight) "textures/player_eyes_right.png" else "textures/player_eyes_left.png"
                                 it.color = block.color
                                 it.x = transformComponent.transform.x + (transformComponent.transform.scaleX - playerEyesTexture.regionWidth) * 0.5f

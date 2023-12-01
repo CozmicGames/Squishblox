@@ -109,10 +109,10 @@ class NetworkManager : Updatable, Disposable {
         }
     }
 
-    inline fun <reified T : NetworkMessage> listenFor(timeout: Float = 30.0f, noinline block: (T) -> Boolean) = listenFor(T::class, timeout, block)
+    inline fun <reified T : NetworkMessage> listenFor(timeout: Float = 30.0f, noinline onTimeout: () -> Unit = {}, noinline block: (T) -> Boolean) = listenFor(T::class, timeout, onTimeout, block)
 
-    fun <T : NetworkMessage> listenFor(type: KClass<T>, timeout: Float, block: (T) -> Boolean) {
-        listeners += NetworkMessageListener(type, timeout, System.currentTimeMillis(), block)
+    fun <T : NetworkMessage> listenFor(type: KClass<T>, timeout: Float, onTimeout: () -> Unit = {}, block: (T) -> Boolean) {
+        listeners += NetworkMessageListener(type, timeout, System.currentTimeMillis(), onTimeout, block)
     }
 
     fun send(message: NetworkMessage) {
@@ -123,6 +123,11 @@ class NetworkManager : Updatable, Disposable {
         if (!client.isConnected) {
             if (connectionState == ConnectionState.FAILED_CONNECTION)
                 sendQueue.clear()
+
+            listeners.forEach {
+                it.onTimeout()
+            }
+            listeners.clear()
 
             return
         }
@@ -172,8 +177,10 @@ class NetworkManager : Updatable, Disposable {
         }
 
         listeners.forEach {
-            if ((System.currentTimeMillis() - it.creationTime) / 1000.0f > it.timeout)
+            if ((System.currentTimeMillis() - it.creationTime) / 1000.0f > it.timeout) {
                 listenersToRemove += it
+                it.onTimeout()
+            }
         }
 
         listenersToRemove.forEach {

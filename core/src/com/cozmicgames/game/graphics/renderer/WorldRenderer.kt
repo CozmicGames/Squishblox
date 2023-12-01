@@ -16,7 +16,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.sin
 
-class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean) {
+class WorldRenderer {
     private class Cloud(val texture: String, var x: Float, var y: Float, var speedFactor: Float)
 
     private class BackgroundLayer(val texture: String, val factor: Float, val color: Color)
@@ -79,7 +79,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
         attemptSpawn()
     }
 
-    private fun drawGrid() {
+    private fun drawGrid(scene: WorldScene) {
         val backgroundTileWidth = 8 * WorldConstants.WORLD_CELL_SIZE
         val backgroundTileHeight = 8 * WorldConstants.WORLD_CELL_SIZE
 
@@ -93,7 +93,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
 
             repeat(numBackgroundTilesY) {
                 Game.graphics2d.submit<BasicRenderable2D> {
-                    it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_BACKGROUND else RenderLayers.WORLD_LAYER_BACKGROUND
+                    it.layer = RenderLayers.WORLD_LAYER_BACKGROUND + scene.baseRenderLayer
                     it.texture = "textures/grid_background_8x8.png"
                     it.x = backgroundTileX
                     it.y = backgroundTileY
@@ -109,7 +109,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
         }
     }
 
-    fun drawClouds(delta: Float) {
+    fun drawClouds(scene: WorldScene, delta: Float) {
         for (cloud in clouds) {
             cloud.x -= cloud.speedFactor * delta * WorldConstants.CLOUD_SPEED
 
@@ -122,7 +122,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
 
             val texture = Game.textures.getTexture(cloud.texture)
             Game.graphics2d.submit<BasicRenderable2D> {
-                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_CLOUD_SHADOW else RenderLayers.WORLD_LAYER_CLOUD_SHADOW
+                it.layer = RenderLayers.WORLD_LAYER_CLOUD_SHADOW + scene.baseRenderLayer
                 it.color = WorldConstants.SHADOW_COLOR
                 it.texture = cloud.texture
                 it.x = cloud.x + WorldConstants.SHADOW_OFFSET.x
@@ -132,7 +132,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
             }
 
             Game.graphics2d.submit<BasicRenderable2D> {
-                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_CLOUD else RenderLayers.WORLD_LAYER_CLOUD
+                it.layer = RenderLayers.WORLD_LAYER_CLOUD + scene.baseRenderLayer
                 it.texture = cloud.texture
                 it.x = cloud.x
                 it.y = cloud.y
@@ -142,7 +142,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
         }
     }
 
-    private fun drawBackgroundLayer(layer: BackgroundLayer, index: Int) {
+    private fun drawBackgroundLayer(scene: WorldScene, layer: BackgroundLayer, index: Int) {
         val region = Game.textures.getTexture(layer.texture)
         val camera = Game.player.camera
 
@@ -156,7 +156,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
 
         repeat(numBackgroundTilesX) {
             Game.graphics2d.submit<BasicRenderable2D> {
-                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_BACKGROUND else RenderLayers.WORLD_LAYER_BACKGROUND
+                it.layer = RenderLayers.WORLD_LAYER_BACKGROUND + scene.baseRenderLayer
                 it.texture = layer.texture
                 it.color = layer.color
                 it.x = backgroundTileX
@@ -170,7 +170,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
         }
     }
 
-    private fun drawWaterLayer(layer: WaterLayer) {
+    private fun drawWaterLayer(scene: WorldScene, layer: WaterLayer) {
         val region = Game.textures.getTexture(layer.texture)
         val camera = Game.player.camera
 
@@ -184,7 +184,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
 
         repeat(numBackgroundTilesX) {
             Game.graphics2d.submit<BasicRenderable2D> {
-                it.layer = if (scene.useAltLayers) RenderLayers.ALT_WORLD_LAYER_WATER else RenderLayers.WORLD_LAYER_WATER
+                it.layer = RenderLayers.WORLD_LAYER_WATER + scene.baseRenderLayer
                 it.texture = layer.texture
                 it.color = layer.color
                 it.x = backgroundTileX
@@ -197,7 +197,7 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
         }
     }
 
-    fun render(delta: Float, camera: PlayerCamera) {
+    fun render(delta: Float, camera: PlayerCamera, scene: WorldScene, drawGuis: Boolean) {
         if (isFirstRender) {
             clouds.forEach {
                 findCloudSpawnPosition(it, true)
@@ -209,24 +209,23 @@ class WorldRenderer(private val scene: WorldScene, private val drawGuis: Boolean
 
         for (i in backgroundLayers.indices.reversed()) {
             val layer = backgroundLayers[i]
-            drawBackgroundLayer(layer, i)
+            drawBackgroundLayer(scene, layer, i)
         }
 
         if (Game.player.playState == PlayState.EDIT)
-            drawGrid()
+            drawGrid(scene)
         else
-            drawClouds(delta)
+            drawClouds(scene, delta)
 
         waterLayers.forEachIndexed { index, layer ->
             layer.x += sin(Game.time.sinceStart * 3.0f * ((index + 1).toFloat() / waterLayers.size)) * 0.5f
             layer.y += sin(Game.time.sinceStart * ((index + 1).toFloat() / waterLayers.size)) * 0.05f
-            drawWaterLayer(layer)
+            drawWaterLayer(scene, layer)
         }
 
-        val range = if (scene.useAltLayers)
-            RenderLayers.ALT_WORLD_LAYER_BEGIN..RenderLayers.ALT_WORLD_LAYER_END
-        else
-            RenderLayers.WORLD_LAYER_BEGIN..RenderLayers.WORLD_LAYER_END
+        val rangeMin = RenderLayers.WORLD_LAYER_BEGIN + scene.baseRenderLayer
+        val rangeMax = RenderLayers.WORLD_LAYER_END + scene.baseRenderLayer
+        val range = rangeMin..rangeMax
 
         Game.graphics2d.render(camera.camera) { it in range }
 

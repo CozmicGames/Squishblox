@@ -12,7 +12,7 @@ import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 import kotlin.math.floor
 
-class PlayState(uuid: String, levelData: String) : InGameState() {
+class PlayLevelState(uuid: String, levelData: String) : WorldGameState() {
     init {
         Game.player.startLevel(uuid, levelData)
         Game.player.playState = PlayState.PLAY
@@ -27,8 +27,34 @@ class PlayState(uuid: String, levelData: String) : InGameState() {
         })
 
         val buttonSize = 75.0f
+        val buttonSpacing = 10.0f
         val buttonOffsetFromSide = 15.0f
         val labelWidth = 200.0f
+
+        val stopButton = ImageButton(ImageButton.ImageButtonStyle().also {
+            it.backgroundNormal = TextureDrawableValue().also {
+                it.texture = "textures/stop_icon.png"
+                it.flipY = true
+                it.color.set(0xBF000CAA.toInt())
+            }
+            it.backgroundHovered = TextureDrawableValue().also {
+                it.texture = "textures/stop_icon.png"
+                it.flipY = true
+                it.color.set(0xBF000CFF.toInt())
+            }
+            it.backgroundPressed = TextureDrawableValue().also {
+                it.texture = "textures/stop_icon.png"
+                it.flipY = true
+                it.color.set(0xA0040FFF.toInt())
+            }
+        }) {
+            returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
+        }
+        stopButton.constraints.x = absolute(buttonOffsetFromSide, true)
+        stopButton.constraints.y = absolute(buttonOffsetFromSide)
+        stopButton.constraints.width = absolute(buttonSize)
+        stopButton.constraints.height = aspect()
+        buttonBackground.addElement(stopButton)
 
         val resetButton = ImageButton(ImageButton.ImageButtonStyle().also {
             it.backgroundNormal = TextureDrawableValue().also {
@@ -49,7 +75,7 @@ class PlayState(uuid: String, levelData: String) : InGameState() {
         }) {
             Game.player.resetLevel()
         }
-        resetButton.constraints.x = absolute(buttonOffsetFromSide, true)
+        resetButton.constraints.x = absolute(buttonOffsetFromSide + buttonSpacing + stopButton.width, true)
         resetButton.constraints.y = absolute(buttonOffsetFromSide)
         resetButton.constraints.width = absolute(buttonSize)
         resetButton.constraints.height = aspect()
@@ -83,7 +109,7 @@ class PlayState(uuid: String, levelData: String) : InGameState() {
             }
         })
 
-        timerLabel.constraints.x = absolute(true) { buttonOffsetFromSide * 2.0f + resetButton.width }
+        timerLabel.constraints.x = absolute(true) { buttonOffsetFromSide + buttonSpacing + resetButton.width + buttonSpacing + stopButton.width }
         timerLabel.constraints.y = same(resetButton)
         timerLabel.constraints.width = absolute(labelWidth)
         timerLabel.constraints.height = same(resetButton)
@@ -91,13 +117,9 @@ class PlayState(uuid: String, levelData: String) : InGameState() {
 
         buttonBackground.constraints.x = absolute(0.0f, true)
         buttonBackground.constraints.y = absolute(0.0f)
-        buttonBackground.constraints.width = absolute(buttonOffsetFromSide * 3.0f) + same(resetButton) + same(timerLabel)
+        buttonBackground.constraints.width = absolute { buttonOffsetFromSide * 2.0f + timerLabel.width + buttonSpacing + resetButton.width + buttonSpacing + stopButton.width }
         buttonBackground.constraints.height = absolute(resetButton.y + buttonSize + buttonOffsetFromSide)
 
         gui.addElement(buttonBackground)
-    }
-
-    override fun update(delta: Float) {
-
     }
 }

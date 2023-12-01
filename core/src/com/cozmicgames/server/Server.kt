@@ -27,10 +27,8 @@ class Server : ApplicationAdapter() {
         while (!isStopped) {
             val line = reader.readLine()
             if (line != null)
-                if (line.startsWith("/")) {
-                    if (!commands.processFromTerminal(line.removePrefix("/")))
-                        break
-                }
+                if (!commands.processFromTerminal(line))
+                    break
         }
         reader.close()
     }

@@ -1,14 +1,18 @@
 package com.cozmicgames.server.data
 
 import com.cozmicgames.common.score.ScoreboardEntry
+import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.server.Server
 import com.cozmicgames.server.dataRoot
+import com.esotericsoftware.kryonet.Connection
 import java.util.UUID
 import java.util.concurrent.ConcurrentLinkedDeque
 
-class DataManager {
+class DataManager : Updatable {
     private val uuids = ConcurrentLinkedDeque<UUID>()
     private val tempScoreboard = ThreadLocal.withInitial { arrayOfNulls<ScoreboardEntry>(5) }
+    private val submitTimes = hashMapOf<Connection, Long>()
+    private val connectionsToRemove = arrayListOf<Connection>()
 
     init {
         Server.dataRoot.list("json").forEach {
@@ -25,7 +29,7 @@ class DataManager {
         }
     }
 
-    fun submitLevel(levelData: String): UUID {
+    fun submitLevel(connection: Connection, levelData: String): UUID {
         var uuid = UUID.randomUUID()
 
         while (uuid in uuids)
@@ -35,6 +39,8 @@ class DataManager {
 
         val file = Server.dataRoot.child("$uuid.json")
         file.writeString(levelData, false)
+
+        submitTimes[connection] = System.currentTimeMillis()
 
         return uuid
     }
@@ -119,5 +125,20 @@ class DataManager {
             return null
 
         return file.readString()
+    }
+
+    fun canSubmit(connection: Connection) = connection !in submitTimes
+
+    override fun update(delta: Float) {
+        connectionsToRemove.clear()
+
+        submitTimes.forEach { (connection, time) ->
+            if (System.currentTimeMillis() - time >= 60000)
+                connectionsToRemove += connection
+        }
+
+        connectionsToRemove.forEach {
+            submitTimes -= it
+        }
     }
 }

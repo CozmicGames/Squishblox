@@ -10,7 +10,6 @@ import com.cozmicgames.game.graphics.gui.absolute
 import com.cozmicgames.game.graphics.gui.packed
 import com.cozmicgames.game.graphics.gui.skin.GUIElementStyle
 import com.cozmicgames.game.graphics.gui.skin.GUISkin
-import com.cozmicgames.game.graphics.gui.skin.drawable
 import com.cozmicgames.game.graphics.gui.skin.float
 import com.cozmicgames.game.graphics.gui.skin.optionalDrawable
 import com.cozmicgames.game.input
@@ -21,22 +20,22 @@ class ScrollPane(private val style: ScrollPaneStyle = ScrollPaneStyle()) : GUIEl
     class ScrollPaneStyle : GUIElementStyle() {
         var background by optionalDrawable { DefaultStyle.highlightDrawable() }
         var backgroundDisabled by optionalDrawable { DefaultStyle.normalDrawable() }
-        var horizontalScrollbarNormal by drawable { DefaultStyle.normalDrawable() }
-        var horizontalScrollbarHovered by drawable { DefaultStyle.normalDrawable() }
-        var horizontalScrollbarDisabled by drawable { DefaultStyle.disabledDrawable() }
+        var horizontalScrollbarNormal by optionalDrawable { DefaultStyle.normalDrawable() }
+        var horizontalScrollbarHovered by optionalDrawable { DefaultStyle.normalDrawable() }
+        var horizontalScrollbarDisabled by optionalDrawable { DefaultStyle.disabledDrawable() }
         var horizontalScrollbarHeight by float { it.value = 10.0f }
-        var horizontalHandleNormal by drawable { DefaultStyle.normalDrawable() }
-        var horizontalHandleHovered by drawable { DefaultStyle.hoveredDrawable() }
-        var horizontalHandlePressed by drawable { DefaultStyle.pressedDrawable() }
-        var horizontalHandleDisabled by drawable { DefaultStyle.disabledDrawable() }
-        var verticalScrollbarNormal by drawable { DefaultStyle.normalDrawable() }
-        var verticalScrollbarHovered by drawable { DefaultStyle.normalDrawable() }
-        var verticalScrollbarDisabled by drawable { DefaultStyle.disabledDrawable() }
+        var horizontalHandleNormal by optionalDrawable { DefaultStyle.normalDrawable() }
+        var horizontalHandleHovered by optionalDrawable { DefaultStyle.hoveredDrawable() }
+        var horizontalHandlePressed by optionalDrawable { DefaultStyle.pressedDrawable() }
+        var horizontalHandleDisabled by optionalDrawable { DefaultStyle.disabledDrawable() }
+        var verticalScrollbarNormal by optionalDrawable { DefaultStyle.normalDrawable() }
+        var verticalScrollbarHovered by optionalDrawable { DefaultStyle.normalDrawable() }
+        var verticalScrollbarDisabled by optionalDrawable { DefaultStyle.disabledDrawable() }
         var verticalScrollbarWidth by float { it.value = 10.0f }
-        var verticalHandleNormal by drawable { DefaultStyle.normalDrawable() }
-        var verticalHandleHovered by drawable { DefaultStyle.hoveredDrawable() }
-        var verticalHandlePressed by drawable { DefaultStyle.pressedDrawable() }
-        var verticalHandleDisabled by drawable { DefaultStyle.disabledDrawable() }
+        var verticalHandleNormal by optionalDrawable { DefaultStyle.normalDrawable() }
+        var verticalHandleHovered by optionalDrawable { DefaultStyle.hoveredDrawable() }
+        var verticalHandlePressed by optionalDrawable { DefaultStyle.pressedDrawable() }
+        var verticalHandleDisabled by optionalDrawable { DefaultStyle.disabledDrawable() }
     }
 
     val content = Group()
@@ -225,8 +224,11 @@ class ScrollPane(private val style: ScrollPaneStyle = ScrollPaneStyle()) : GUIEl
                     scroll.y = (localInputY - dragOffset) * contentFactorY
 
                 if (isHovered) {
-                    scroll.x += gui.scrollX
-                    scroll.y -= gui.scrollY
+                    if (needsHorizontalScrollbar)
+                        scroll.x += gui.scrollX
+
+                    if (needsVerticalScrollbar)
+                        scroll.y -= gui.scrollY
                 }
 
                 scroll.x = scroll.x.clamp(0.0f, content.width - contentWidth)
@@ -261,13 +263,13 @@ class ScrollPane(private val style: ScrollPaneStyle = ScrollPaneStyle()) : GUIEl
         }
 
         if (needsHorizontalScrollbar) {
-            horizontalScrollbarDrawable.drawable.draw(layer + 1, horizontalScrollbarDrawable.color, horizontalScrollbarBounds.x, horizontalScrollbarBounds.y, horizontalScrollbarBounds.width, horizontalScrollbarBounds.height)
-            horizontalHandleDrawable.drawable.draw(layer + 2, horizontalHandleDrawable.color, horizontalHandleBounds.x, horizontalHandleBounds.y, horizontalHandleBounds.width, horizontalHandleBounds.height)
+            horizontalScrollbarDrawable?.let { it.drawable.draw(layer + 1, it.color, horizontalScrollbarBounds.x, horizontalScrollbarBounds.y, horizontalScrollbarBounds.width, horizontalScrollbarBounds.height) }
+            horizontalHandleDrawable?.let { it.drawable.draw(layer + 2, it.color, horizontalHandleBounds.x, horizontalHandleBounds.y, horizontalHandleBounds.width, horizontalHandleBounds.height) }
         }
 
         if (needsVerticalScrollbar) {
-            verticalScrollbarDrawable.drawable.draw(layer + 1, verticalScrollbarDrawable.color, verticalScrollbarBounds.x, verticalScrollbarBounds.y, verticalScrollbarBounds.width, verticalScrollbarBounds.height)
-            verticalHandleDrawable.drawable.draw(layer + 2, verticalHandleDrawable.color, verticalHandleBounds.x, verticalHandleBounds.y, verticalHandleBounds.width, verticalHandleBounds.height)
+            verticalScrollbarDrawable?.let { it.drawable.draw(layer + 1, it.color, verticalScrollbarBounds.x, verticalScrollbarBounds.y, verticalScrollbarBounds.width, verticalScrollbarBounds.height) }
+            verticalHandleDrawable?.let { it.drawable.draw(layer + 2, it.color, verticalHandleBounds.x, verticalHandleBounds.y, verticalHandleBounds.width, verticalHandleBounds.height) }
         }
 
         scissorRectangle.x = x

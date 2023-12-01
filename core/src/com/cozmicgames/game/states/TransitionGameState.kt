@@ -10,13 +10,13 @@ import com.cozmicgames.game.renderGraph
 import com.cozmicgames.game.renderer2d
 import com.cozmicgames.game.time
 
-class TransitionGameState(private val toGameState: InGameState, transition: Transition, val duration: Float = 0.66f, val interpolation: Interpolation = Interpolation.smooth) : GameState {
+class TransitionGameState(private val toGameState: InGameState, transition: Transition, val duration: Float = 0.5f, val interpolation: Interpolation = Interpolation.smooth) : GameState {
     private var time = 0.0f
 
     init {
         Gdx.app.postRunnable {
             Game.renderGraph.getNode(Renderer2D.TRANSITION_FROM)?.renderFunction = ScreenshotRenderFunction()
-            Game.renderer2d.setPresentSource(Renderer2D.WORLD)
+            Game.renderer2d.setPresentSource(toGameState.presentSource)
             toGameState.render(0.0f)
             Game.renderGraph.getNode(Renderer2D.TRANSITION_TO)?.renderFunction = ScreenshotRenderFunction()
             toGameState.gui.isEnabled = false
@@ -38,7 +38,7 @@ class TransitionGameState(private val toGameState: InGameState, transition: Tran
             Gdx.app.postRunnable {
                 toGameState.gui.isInteractionEnabled = true
                 toGameState.gui.isEnabled = true
-                Game.renderer2d.setPresentSource(Renderer2D.WORLD)
+                Game.renderer2d.setPresentSource(toGameState.presentSource)
             }
             return { toGameState }
         } else

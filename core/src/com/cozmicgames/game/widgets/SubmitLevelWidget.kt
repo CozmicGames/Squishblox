@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
-import com.cozmicgames.common.networking.messages.*
 import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.common.utils.extensions.safeWidth
 import com.cozmicgames.game.*
@@ -21,8 +20,9 @@ import com.cozmicgames.game.graphics.gui.skin.NinepatchDrawableValue
 import com.cozmicgames.game.graphics.gui.skin.TextureDrawableValue
 import com.cozmicgames.game.player.PlayerCamera
 import com.cozmicgames.game.world.WorldConstants
+import java.util.UUID
 
-class SubmitLevelWidget(levelData: String, callback: (Boolean) -> Unit) : Disposable, Panel(PanelStyle().also {
+class SubmitLevelWidget(levelData: String, uuid: String?, callback: (Boolean) -> Unit) : Disposable, Panel(PanelStyle().also {
     it.background = NinepatchDrawableValue().also {
         it.texture = "textures/widget_background.png"
         it.autoSetSplitSizes()
@@ -86,26 +86,28 @@ class SubmitLevelWidget(levelData: String, callback: (Boolean) -> Unit) : Dispos
                     it.layer = layer
                     it.texture = "blank"
                     it.color = Color.DARK_GRAY
-                    it.x = x - 3.0f
-                    it.y = y - 3.0f
-                    it.width = width + 6.0f
-                    it.height = height + 6.0f
-                }
-
-                Game.graphics2d.submit<DirectRenderable2D> {
-                    it.layer = layer + 1
-                    it.texture = Game.previewRenderer.texture?.let { TextureRegion(it) }
                     it.x = x
                     it.y = y
                     it.width = width
                     it.height = height
                 }
+
+                val borderSize = 3.0f
+
+                Game.graphics2d.submit<DirectRenderable2D> {
+                    it.layer = layer + 1
+                    it.texture = Game.previewRenderer.texture?.let { TextureRegion(it) }
+                    it.x = x + borderSize
+                    it.y = y + borderSize
+                    it.width = width - borderSize * 2
+                    it.height = height - borderSize * 2
+                }
             }
         }
         screenshotElement.constraints.x = center()
         screenshotElement.constraints.y = absolute(110.0f)
-        screenshotElement.constraints.width = absolute(400.0f)
-        screenshotElement.constraints.height = absolute(300.0f)
+        screenshotElement.constraints.width = absolute(800.0f)
+        screenshotElement.constraints.height = absolute(600.0f)
 
         val closeButton = ImageButton(ImageButton.ImageButtonStyle().also {
             it.backgroundNormal = TextureDrawableValue().also {
@@ -160,15 +162,8 @@ class SubmitLevelWidget(levelData: String, callback: (Boolean) -> Unit) : Dispos
             cameraProperties.setFloat("y", camera.position.y)
             cameraProperties.setFloat("zoom", camera.zoom)
             properties.setProperties("camera", cameraProperties)
-            val data = properties.write(false)
 
-            Game.networking.listenFor<ConfirmSubmitLevelMessage> {
-                Game.player.registerLocalLevel(it.uuid, data)
-                true
-            }
-            Game.networking.send(SubmitLevelMessage().also {
-                it.levelData = data
-            })
+            Game.player.registerLocalLevel(uuid ?: UUID.randomUUID().toString(), properties)
         }
         confirmButton.constraints.width = absolute(60.0f)
         confirmButton.constraints.height = aspect()

@@ -176,7 +176,7 @@ class LevelCompletedWidget(uuid: String, time: Long, callback: (Boolean) -> Unit
             if (it.uuid == uuid) {
                 it.scoreboard.forEachIndexed { index, entry ->
                     if (entry != null) {
-                        scoreboardList.add(Label("$index:  ${entry.name} (${formatTimeString(entry.time)})", textLabelStyle).also {
+                        scoreboardList.add(Label("${index + 1}:  ${entry.name} (${formatTimeString(entry.time)})", textLabelStyle).also {
                             it.constraints.width = relative(0.4f, this)
                             it.constraints.height = absolute(50.0f)
                         })

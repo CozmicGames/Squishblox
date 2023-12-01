@@ -23,6 +23,7 @@ import com.cozmicgames.common.utils.*
 import com.cozmicgames.game.networking.NetworkManager
 import com.cozmicgames.game.player.Player
 import com.cozmicgames.game.physics.Physics
+import com.cozmicgames.game.world.WorldPreviewImageRenderer
 import com.cozmicgames.game.world.WorldPreviewRenderer
 import kotlin.system.exitProcess
 
@@ -84,9 +85,12 @@ class Game(gameSettings: GameSettings) : ApplicationAdapter() {
         if (newState != currentGameState) {
             if (newState !is SuspendGameState)
                 currentGameState.end()
-            else
+            else {
                 if (currentGameState is SuspendableGameState)
                     (currentGameState as SuspendableGameState).suspend()
+                else
+                    currentGameState.end()
+            }
 
             if (currentGameState is SuspendGameState && newState is SuspendableGameState)
                 newState.resumeFromSuspension()
@@ -115,6 +119,7 @@ val Game.Companion.audio by Game.context.injector { AudioManager() }
 val Game.Companion.graphics2d by Game.context.injector { Graphics2D() }
 val Game.Companion.guis by Game.context.injector { GUIManager() }
 val Game.Companion.previewRenderer by Game.context.injector { WorldPreviewRenderer(800, 600) }
+val Game.Companion.previewImageRenderer by Game.context.injector { WorldPreviewImageRenderer(800, 600) }
 val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRenderFunction()) }
 val Game.Companion.renderer2d by Game.context.injector { Renderer2D() }
 val Game.Companion.physics by Game.context.injector { Physics() }

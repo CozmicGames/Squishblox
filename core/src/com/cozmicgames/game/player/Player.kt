@@ -1,8 +1,9 @@
 package com.cozmicgames.game.player
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.math.Vector2
-import com.cozmicgames.game.states.InGameState
 import com.cozmicgames.common.utils.Properties
 import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.common.utils.extensions.unproject
@@ -10,7 +11,7 @@ import com.cozmicgames.common.utils.maths.intersectPointRect
 import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.fill
 import com.cozmicgames.game.graphics.gui.same
-import com.cozmicgames.game.states.EditState
+import com.cozmicgames.game.states.*
 import com.cozmicgames.game.widgets.LevelCompletedWidget
 import com.cozmicgames.game.widgets.SubmitLevelWidget
 import com.cozmicgames.game.world.WorldConstants
@@ -29,7 +30,7 @@ class Player : Updatable {
 
     val scene = WorldScene()
 
-    lateinit var currentState: InGameState
+    lateinit var currentState: WorldGameState
 
     var isPaused = false
 
@@ -39,12 +40,15 @@ class Player : Updatable {
     var isLevelCompleted = false
         private set
 
+    var canUploadLevel = true
+
     private var levelStartTime = 0L
-    private var currentLevelUuid = ""
+    private var currentLevelUuid: String? = null
     private var currentLevelData = ""
     private val playerPosition = Vector2()
     private val cameraFollower = CameraFollower(camera, playerPosition, 0.8f)
     private var isInputPositionVisible = true
+    private var previewImageIndex = 0
 
     fun isHovered(minX: Float, minY: Float, maxX: Float, maxY: Float): Boolean {
         return intersectPointRect(inputX, inputY, minX, minY, maxX, maxY)
@@ -55,6 +59,8 @@ class Player : Updatable {
     }
 
     override fun update(delta: Float) {
+        previewImageIndex = 0
+
         if (playState != PlayState.EDIT && !isLevelCompleted) {
             playerPosition.x = scene.playerBlock?.let { it.minX + it.width * 0.5f } ?: 0.0f
             playerPosition.y = scene.playerBlock?.let { it.minY + it.height * 0.5f } ?: 0.0f
@@ -83,10 +89,10 @@ class Player : Updatable {
         isInputPositionVisible = Game.guis.isInputPositionVisible()
     }
 
-    fun startLevel(uuid: String, data: String) {
+    fun startLevel(uuid: String?, data: String) {
         currentLevelUuid = uuid
         currentLevelData = data
-        scene.initialize(data)
+        scene.initialize(currentLevelData)
         levelStartTime = System.currentTimeMillis()
         isLevelCompleted = false
         isPaused = false
@@ -109,10 +115,9 @@ class Player : Updatable {
                 isPaused = true
                 currentState.gui.isInteractionEnabled = false
                 val window = Game.guis.openWindow("", 600.0f, 500.0f, false, false, false)
-                val widget = LevelCompletedWidget(currentLevelUuid, time) {
-                    if (it) {
-                        //TODO: Back to menu
-                    }
+                val widget = LevelCompletedWidget(currentLevelUuid!!, time) {
+                    currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
+
                     Game.tasks.submit({
                         Game.guis.closeWindow(window)
                         currentState.gui.isInteractionEnabled = true
@@ -129,14 +134,14 @@ class Player : Updatable {
             PlayState.TEST -> {
                 isPaused = true
                 currentState.gui.isInteractionEnabled = false
-                val window = Game.guis.openWindow("", 600.0f, 500.0f, false, false, false)
-                val widget: SubmitLevelWidget = SubmitLevelWidget(currentLevelData) {
-                    if (it) {
-                        //TODO: Back to menu
-                    } else
-                        currentState.returnState = EditState(currentLevelData)
-
+                val window = Game.guis.openWindow("", 1000.0f, 800.0f, false, false, false)
+                val widget = SubmitLevelWidget(currentLevelData, currentLevelUuid) {
                     Game.tasks.submit({
+                        if (it)
+                            currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
+                        else
+                            currentState.returnState = EditState(currentLevelData)
+
                         Game.guis.closeWindow(window)
                     })
                 }.also {
@@ -165,11 +170,58 @@ class Player : Updatable {
             currentLevelData
     }
 
-    fun registerLocalLevel(uuid: String, levelData: String) {
-        val directory = Gdx.files.local("levels/$uuid/")
-        val levelFile = directory.child("level.json")
+    fun registerLocalLevel(uuid: String, levelProperties: Properties) {
+        val levelFile = Gdx.files.local("levels/local/$uuid/level.json")
+        if (levelFile.exists())
+            levelFile.delete()
+        levelFile.writeString(levelProperties.write(false), false)
 
-        levelFile.mkdirs()
-        levelFile.writeString(levelData, false)
+        val imageFile = Gdx.files.local("levels/local/$uuid/level.png")
+        if (imageFile.exists())
+            imageFile.delete()
+        val image = createPreviewImage(levelProperties)
+        PixmapIO.writePNG(imageFile, image)
+        image.dispose()
+    }
+
+    fun registerSavedLevel(uuid: String, levelProperties: Properties) {
+        val levelFile = Gdx.files.local("levels/saved/$uuid/level.json")
+        levelFile.writeString(levelProperties.write(false), false)
+
+        val image = createPreviewImage(levelProperties)
+        PixmapIO.writePNG(Gdx.files.local("levels/saved/$uuid/level.png"), image)
+        image.dispose()
+    }
+
+    fun createPreviewImage(levelProperties: Properties): Pixmap {
+        val camera = PlayerCamera()
+
+        levelProperties.getProperties("camera")?.let {
+            camera.position.x = it.getFloat("x") ?: 0.0f
+            camera.position.y = it.getFloat("y") ?: 0.0f
+            camera.zoom = it.getFloat("zoom") ?: 1.0f
+            camera.update()
+        }
+
+        var sceneData = ""
+        levelProperties.getProperties("level")?.let {
+            sceneData = it.write()
+        }
+
+        return Game.previewImageRenderer.renderToImage(camera, sceneData, previewImageIndex)
+    }
+
+    fun deleteLocalLevel(uuid: String) {
+        val directory = Gdx.files.local("levels/local/$uuid")
+
+        if (directory.exists())
+            directory.deleteDirectory()
+    }
+
+    fun deleteSavedLevel(uuid: String) {
+        val directory = Gdx.files.local("levels/saved/$uuid")
+
+        if (directory.exists())
+            directory.deleteDirectory()
     }
 }

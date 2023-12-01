@@ -16,7 +16,6 @@ import com.cozmicgames.common.utils.Updatable
 import com.cozmicgames.common.utils.maths.randomFloat
 import com.cozmicgames.common.utils.serialization.Readable
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass
 
@@ -210,7 +209,7 @@ class PlayerBlock : EntityBlock() {
 
         if (amount < 0.0f) {
             val minWidth = (WorldConstants.WORLD_CELL_SIZE * WorldConstants.WORLD_CELL_SIZE) / height
-            adjustedAmount = max(adjustedAmount, width - minWidth)
+            adjustedAmount = min(abs(adjustedAmount), width - minWidth)
             minX += adjustedAmount * 0.5f
             maxX -= adjustedAmount * 0.5f
             return 0.0f
@@ -264,7 +263,7 @@ class PlayerBlock : EntityBlock() {
 
         if (amount < 0.0f) {
             val minHeight = (WorldConstants.WORLD_CELL_SIZE * WorldConstants.WORLD_CELL_SIZE) / width
-            adjustedAmount = max(adjustedAmount, height - minHeight)
+            adjustedAmount = min(abs(adjustedAmount), height - minHeight)
             maxY -= adjustedAmount
             return 0.0f
         }

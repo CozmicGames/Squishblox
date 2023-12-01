@@ -12,7 +12,7 @@ import com.cozmicgames.game.widgets.ConfirmWidget
 import com.cozmicgames.game.player.PlayState
 import com.cozmicgames.game.world.WorldScene
 
-class EditState(levelData: String? = null) : InGameState() {
+class EditState(levelData: String? = null, levelUuid: String? = null) : WorldGameState() {
     private val editButtons: Array<ImageButton>
     private val buttonGroup = ButtonGroup<ImageButton>()
 
@@ -54,7 +54,7 @@ class EditState(levelData: String? = null) : InGameState() {
                 it.color.set(0x009E22FF)
             }
         }) {
-            returnState = TestState(Game.player.getCurrentLevelData())
+            returnState = TestLevelState(Game.player.getCurrentLevelData(), levelUuid)
         }
         playButton.constraints.x = absolute(buttonOffsetFromSide, true)
         playButton.constraints.y = absolute(buttonOffsetFromSide)
@@ -116,23 +116,23 @@ class EditState(levelData: String? = null) : InGameState() {
 
         val resetButton = ImageButton(ImageButton.ImageButtonStyle().also {
             it.backgroundNormal = TextureDrawableValue().also {
-                it.texture = "textures/edit_reset_icon.png"
+                it.texture = "textures/trashcan_icon.png"
                 it.flipY = true
                 it.color.set(0xBF000CAA.toInt())
             }
             it.backgroundHovered = TextureDrawableValue().also {
-                it.texture = "textures/edit_reset_icon_open.png"
+                it.texture = "textures/trashcan_open_icon.png"
                 it.flipY = true
                 it.color.set(0xBF000CFF.toInt())
             }
             it.backgroundPressed = TextureDrawableValue().also {
-                it.texture = "textures/edit_reset_icon.png"
+                it.texture = "textures/trashcan_icon.png"
                 it.flipY = true
                 it.color.set(0xA0040FFF.toInt())
             }
         }) {
             gui.isInteractionEnabled = false
-            val window = Game.guis.openWindow("", 400.0f, 300.0f, false, false, false)
+            val window = Game.guis.openWindow("", 450.0f, 300.0f, false, false, false)
             val widget = ConfirmWidget("Reset level", "Do you want to reset the level?\nThis deletes all progress.") {
                 if (it)
                     Game.player.scene.initialize()
@@ -160,9 +160,65 @@ class EditState(levelData: String? = null) : InGameState() {
         buttonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
 
         gui.addElement(buttonBackground)
+
+        val backButtonBackground = Panel(Panel.PanelStyle().also {
+            it.background = NinepatchDrawableValue().also {
+                it.texture = "textures/level_context_button_background.png"
+                it.autoSetSplitSizes()
+                it.color.set(0xd3c781FF.toInt())
+            }
+        })
+        backButtonBackground.constraints.x = absolute(0.0f)
+        backButtonBackground.constraints.y = absolute(0.0f)
+        backButtonBackground.constraints.width = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
+        backButtonBackground.constraints.height = absolute(buttonSize + buttonOffsetFromSide * 2.0f)
+
+        val backButton = ImageButton(ImageButton.ImageButtonStyle().also {
+            it.backgroundNormal = TextureDrawableValue().also {
+                it.texture = "textures/back_icon.png"
+                it.flipY = true
+                it.color.set(0xDDDDDDFF.toInt())
+            }
+            it.backgroundHovered = TextureDrawableValue().also {
+                it.texture = "textures/back_icon.png"
+                it.flipY = true
+                it.color.set(0x4A8CCEFF)
+            }
+            it.backgroundPressed = TextureDrawableValue().also {
+                it.texture = "textures/back_icon.png"
+                it.flipY = true
+                it.color.set(0x2E91F4FF)
+            }
+        }) {
+            gui.isInteractionEnabled = false
+            val window = Game.guis.openWindow("", 450.0f, 300.0f, false, false, false)
+            val widget = ConfirmWidget("Close editor", "Do you want to close the editor?\nAll progress will be lost.") {
+                if (it)
+                    returnState = TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.LEFT))
+                Game.tasks.submit({
+                    Game.guis.closeWindow(window)
+                    gui.isInteractionEnabled = true
+                })
+            }.also {
+                it.constraints.x = same()
+                it.constraints.y = same()
+                it.constraints.width = fill()
+                it.constraints.height = fill()
+            }
+            window.content.addElement(widget)
+        }
+        backButton.constraints.x = absolute(buttonOffsetFromSide)
+        backButton.constraints.y = absolute(buttonOffsetFromSide)
+        backButton.constraints.width = absolute(buttonSize)
+        backButton.constraints.height = aspect()
+        backButtonBackground.addElement(backButton)
+
+        gui.addElement(backButtonBackground)
     }
 
     override fun update(delta: Float) {
+        super.update(delta)
+
         if (Game.input.isKeyJustDown(Input.Keys.NUM_1)) {
             buttonGroup.selected = editButtons[0]
             Game.player.scene.editState = WorldScene.EditState.CREATE

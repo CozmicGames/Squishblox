@@ -5,9 +5,9 @@ import com.cozmicgames.game.graphics.engine.rendergraph.RenderFunction
 import com.cozmicgames.game.player
 
 class WorldRenderFunction : RenderFunction() {
-    private val renderer = WorldRenderer(Game.player.scene, true)
+    private val renderer = WorldRenderer()
 
     override fun render(delta: Float) {
-        renderer.render(delta, Game.player.camera)
+        renderer.render(delta, Game.player.camera, Game.player.scene, true)
     }
 }

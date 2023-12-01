@@ -10,9 +10,9 @@ import com.cozmicgames.game.graphics.gui.skin.TextureDrawableValue
 import com.cozmicgames.game.player
 import com.cozmicgames.game.player.PlayState
 
-class TestState(levelData: String) : InGameState() {
+class TestLevelState(levelData: String, uuid: String?) : WorldGameState() {
     init {
-        Game.player.startLevel("", levelData)
+        Game.player.startLevel(uuid, levelData)
         Game.player.playState = PlayState.TEST
         Game.player.isPaused = false
 
@@ -90,9 +90,5 @@ class TestState(levelData: String) : InGameState() {
         buttonBackground.constraints.height = absolute(buttonY + buttonSize + buttonOffsetFromSide)
 
         gui.addElement(buttonBackground)
-    }
-
-    override fun update(delta: Float) {
-
     }
 }

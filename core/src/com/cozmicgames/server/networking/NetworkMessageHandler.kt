@@ -1,5 +1,6 @@
 package com.cozmicgames.server.networking
 
+import com.badlogic.gdx.Gdx
 import com.cozmicgames.common.networking.NetworkMessage
 import com.cozmicgames.common.networking.messages.*
 import com.cozmicgames.game.Version
@@ -21,10 +22,19 @@ class NetworkMessageHandler {
         when (message.message) {
             is SubmitLevelMessage -> {
                 Server.tasks.submitAsync({
-                    val uuid = Server.data.submitLevel(message.message.levelData)
-                    Server.networking.send(message.connection, ConfirmSubmitLevelMessage().also {
-                        it.uuid = uuid.toString()
-                    })
+                    if (Server.data.canSubmit(message.connection)) {
+                        Gdx.app.log("SERVER", "Level submitted from ${message.connection}.")
+                        val uuid = Server.data.submitLevel(message.connection, message.message.levelData)
+                        Server.networking.send(message.connection, ConfirmSubmitLevelMessage().also {
+                            it.isConfirmed = true
+                            it.uuid = uuid.toString()
+                        })
+                    } else {
+                        Gdx.app.log("SERVER", "Level submission denied from ${message.connection}.")
+                        Server.networking.send(message.connection, ConfirmSubmitLevelMessage().also {
+                            it.isConfirmed = false
+                        })
+                    }
                 })
             }
 
@@ -53,6 +63,7 @@ class NetworkMessageHandler {
                 Server.networking.send(message.connection, ConfirmNameMessage().also {
                     it.name = message.message.name
                     it.isConfirmed = !Server.profanityFilter.test("en", message.message.name)
+                    Gdx.app.log("SERVER", "Name ${if (it.isConfirmed) "confirmed" else "denied"} (${it.name}).")
                 })
             }
 
@@ -60,6 +71,7 @@ class NetworkMessageHandler {
                 try {
                     val uuid = UUID.fromString(message.message.uuid)
                     Server.data.submitScore(uuid, message.message.name, message.message.time)
+                    Gdx.app.log("SERVER", "Score submitted from ${message.connection} (Level: $uuid).")
                 } catch (_: Exception) {
                 }
             }

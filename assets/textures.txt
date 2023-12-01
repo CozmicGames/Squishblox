@@ -1,3 +1,4 @@
+textures/back_icon.png
 textures/block.png
 textures/block_preview.png
 textures/cancel_button.png
@@ -11,13 +12,19 @@ textures/create_block_icon.png
 textures/delete_block_icon.png
 textures/edit_block_icon.png
 textures/edit_button_background.png
+textures/edit_level_icon.png
 textures/edit_platform_icon.png
-textures/edit_reset_icon.png
-textures/edit_reset_icon_open.png
 textures/edit_scale_down_icon.png
 textures/edit_scale_up_icon.png
 textures/element_background.png
+textures/exit_icon.png
+textures/leaderboard_icon.png
+textures/level_context_button_background.png
+textures/loading_spinner.png
+textures/local_icon.png
 textures/menu_button.png
+textures/missing_level.png
+textures/online_icon.png
 textures/parallax_background.png
 textures/parallax_water.png
 textures/platform_block_icon.png
@@ -28,9 +35,16 @@ textures/player_eyes_left.png
 textures/player_eyes_right.png
 textures/play_icon.png
 textures/reset_icon.png
+textures/save_icon.png
 textures/scale_down_block_icon.png
 textures/scale_up_block_icon.png
+textures/scrollbar_handle.png
+textures/search_icon.png
+textures/settings_icon.png
 textures/stop_icon.png
+textures/trashcan_icon.png
+textures/trashcan_open_icon.png
+textures/upload_icon.png
 textures/widget_background.png
 #filter nearest
 textures/grid_background_8x8.png

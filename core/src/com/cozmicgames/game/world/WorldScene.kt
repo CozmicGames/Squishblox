@@ -8,7 +8,7 @@ import com.cozmicgames.game.Game
 import com.cozmicgames.game.physics
 import com.cozmicgames.game.world.processors.*
 
-class WorldScene(val useAltLayers: Boolean = false) : Scene() {
+class WorldScene : Scene() {
     enum class EditState {
         CREATE,
         EDIT,
@@ -24,13 +24,15 @@ class WorldScene(val useAltLayers: Boolean = false) : Scene() {
 
     var playerBlock: PlayerBlock? = null
 
+    var baseRenderLayer = 0
+
     private var isFirstInitialize = true
 
     private fun addSceneProcessors() {
         if (!isFirstInitialize)
             return
 
-        addSceneProcessor(BlockRenderProcessor(useAltLayers))
+        addSceneProcessor(BlockRenderProcessor(this))
         addSceneProcessor(PlatformRenderProcessor(this))
         addSceneProcessor(DebugRenderProcessor())
 
