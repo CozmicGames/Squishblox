@@ -40,8 +40,6 @@ class Player : Updatable {
     var isLevelCompleted = false
         private set
 
-    var canUploadLevel = true
-
     private var levelStartTime = 0L
     private var currentLevelUuid: String? = null
     private var currentLevelData = ""
@@ -212,7 +210,7 @@ class Player : Updatable {
             sceneData = it.write()
         }
 
-        return Game.previewImageRenderer.renderToImage(camera, sceneData, previewImageIndex)
+        return Game.previewImageRenderer.renderToImage(camera, sceneData, previewImageIndex++)
     }
 
     fun deleteLocalLevel(uuid: String) {

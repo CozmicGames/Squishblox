@@ -19,6 +19,7 @@ import com.cozmicgames.game.graphics.gui.elements.*
 import com.cozmicgames.game.graphics.gui.skin.*
 import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.player.PlayState
+import com.cozmicgames.game.widgets.InfoWidget
 import com.cozmicgames.game.widgets.LeaderboardWidget
 import com.cozmicgames.game.widgets.SettingsWidget
 import com.cozmicgames.game.world.WorldScene
@@ -208,17 +209,31 @@ class LocalLevelsState : InGameState() {
                     it.color.set(0x2E91F4FF)
                 }
             }) {
-                Game.player.canUploadLevel = false
-
                 Game.networking.listenFor<ConfirmSubmitLevelMessage> {
-                    val properties = Properties()
-                    properties.read(levelData)
+                    if (it.isConfirmed) {
+                        val properties = Properties()
+                        properties.read(levelData)
 
-                    Game.player.deleteLocalLevel(uuid)
-                    Game.player.registerSavedLevel(it.uuid, properties)
-                    Game.player.canUploadLevel = true
+                        Game.player.deleteLocalLevel(uuid)
+                        Game.player.registerSavedLevel(it.uuid, properties)
 
-                    updateLevelElements()
+                        updateLevelElements()
+                    } else {
+                        this@LocalLevelsState.gui.isInteractionEnabled = false
+                        val window = Game.guis.openWindow("", 400.0f, 460.0f, false, false, false)
+                        val widget = InfoWidget("Level rejected", "You can only upload\nlevels once every 60 seconds.") {
+                            Game.guis.closeWindow(window)
+                            Game.tasks.submit({
+                                this@LocalLevelsState.gui.isInteractionEnabled = true
+                            })
+                        }.also {
+                            it.constraints.x = same()
+                            it.constraints.y = same()
+                            it.constraints.width = fill()
+                            it.constraints.height = fill()
+                        }
+                        window.content.addElement(widget)
+                    }
                     true
                 }
 
@@ -287,16 +302,6 @@ class LocalLevelsState : InGameState() {
             contextButtonBackground.addElement(deleteButton)
 
             addElement(contextButtonBackground)
-
-            addListener(object : Listener {
-                override fun onUpdate(element: GUIElement, delta: Float, scissorRectangle: Rectangle?) {
-                    if (uploadButton.isEnabled && !Game.player.canUploadLevel)
-                        uploadButton.isEnabled = false
-
-                    if (!uploadButton.isEnabled && Game.player.canUploadLevel)
-                        uploadButton.isEnabled = true
-                }
-            })
         }
 
         override fun onPlay() {
