@@ -12,6 +12,7 @@ import com.cozmicgames.game.*
 import com.cozmicgames.game.graphics.gui.fill
 import com.cozmicgames.game.graphics.gui.same
 import com.cozmicgames.game.states.*
+import com.cozmicgames.game.widgets.InfoWidget
 import com.cozmicgames.game.widgets.LevelCompletedWidget
 import com.cozmicgames.game.widgets.SubmitLevelWidget
 import com.cozmicgames.game.world.WorldConstants
@@ -107,6 +108,29 @@ class Player : Updatable {
         isLevelCompleted = true
 
         when (playState) {
+            PlayState.TUTORIAL -> {
+                Game.audio.playSound("sounds/level_completed.wav")
+                Game.gameSettings.playedTutorial = true
+
+                isPaused = true
+                currentState.gui.isInteractionEnabled = false
+                val window = Game.guis.openWindow("", 500.0f, 450.0f, false, false, false)
+                val widget = InfoWidget("Tutorial completed", "You completed the tutorial.\nNow create, explore and play\nyour own or others levels!") {
+                    currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
+
+                    Game.tasks.submit({
+                        Game.guis.closeWindow(window)
+                        currentState.gui.isInteractionEnabled = true
+                    })
+                }.also {
+                    it.constraints.x = same()
+                    it.constraints.y = same()
+                    it.constraints.width = fill()
+                    it.constraints.height = fill()
+                }
+                window.content.addElement(widget)
+            }
+
             PlayState.PLAY -> {
                 Game.audio.playSound("sounds/level_completed.wav")
 

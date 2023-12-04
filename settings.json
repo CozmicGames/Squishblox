@@ -19,9 +19,13 @@
         "type": "STRING",
         "value": "English"
     },
+    "playedTutorial": {
+        "type": "BOOLEAN",
+        "value": true
+    },
     "musicVolume": {
         "type": "FLOAT",
-        "value": 1.0
+        "value": 0.29069763
     },
     "isFullscreen": {
         "type": "BOOLEAN",

@@ -44,6 +44,34 @@ open class Properties {
         }
     }
 
+    abstract class OptionalDelegate<T>(val defaultValue: (() -> T)?) {
+        private var isDefaultSet = false
+
+        abstract fun get(properties: Properties, name: String): T?
+
+        abstract fun set(properties: Properties, name: String, value: T)
+
+        operator fun getValue(thisRef: Any, property: KProperty<*>): T? {
+            val properties = (thisRef as Properties)
+
+            if (property.name !in properties && !isDefaultSet) {
+                defaultValue?.let {
+                    set(properties, property.name, it())
+                }
+                isDefaultSet = true
+            }
+
+            return get(properties, property.name)
+        }
+
+        operator fun setValue(thisRef: Any, property: KProperty<*>, value: T?) {
+            if (value == null)
+                (thisRef as Properties).remove(property.name)
+            else
+                set(thisRef as Properties, property.name, value)
+        }
+    }
+
     enum class Type {
         INT,
         FLOAT,
@@ -69,6 +97,10 @@ open class Properties {
     private fun getValue(name: String) = valuesInternal[name]
 
     operator fun contains(name: String) = getValue(name) != null
+
+    fun remove(name: String): Boolean {
+        return valuesInternal.remove(name) != null
+    }
 
     fun getType(name: String) = getValue(name)?.type
 
@@ -165,6 +197,7 @@ open class Properties {
                                     }
                                 }
                             }
+
                             Type.FLOAT -> {
                                 putJsonArray("array") {
                                     (value.value as Array<Float>).forEach {
@@ -172,6 +205,7 @@ open class Properties {
                                     }
                                 }
                             }
+
                             Type.BOOLEAN -> {
                                 putJsonArray("array") {
                                     (value.value as Array<Boolean>).forEach {
@@ -179,6 +213,7 @@ open class Properties {
                                     }
                                 }
                             }
+
                             Type.STRING -> {
                                 putJsonArray("array") {
                                     (value.value as Array<String>).forEach {
@@ -186,6 +221,7 @@ open class Properties {
                                     }
                                 }
                             }
+
                             Type.PROPERTIES -> {
                                 putJsonArray("array") {
                                     (value.value as Array<Properties>).forEach {
@@ -314,6 +350,7 @@ open class Properties {
 
                         properties.setSingleValue(name, type, value)
                     }
+
                     Type.FLOAT -> if (isArray) {
                         val array = try {
                             requireNotNull(valueObj["array"]).jsonArray
@@ -360,6 +397,7 @@ open class Properties {
 
                         properties.setSingleValue(name, type, value)
                     }
+
                     Type.BOOLEAN -> if (isArray) {
                         val array = try {
                             requireNotNull(valueObj["array"]).jsonArray
@@ -406,6 +444,7 @@ open class Properties {
 
                         properties.setSingleValue(name, type, value)
                     }
+
                     Type.STRING -> if (isArray) {
                         val array = try {
                             requireNotNull(valueObj["array"]).jsonArray
@@ -452,6 +491,7 @@ open class Properties {
 
                         properties.setSingleValue(name, type, value)
                     }
+
                     Type.PROPERTIES -> if (isArray) {
                         val array = try {
                             requireNotNull(valueObj["array"]).jsonArray
@@ -570,6 +610,66 @@ open class PropertiesArrayDelegate(defaultValue: () -> Array<Properties>) : Prop
     override fun set(properties: Properties, name: String, value: Array<Properties>) = properties.setPropertiesArray(name, value)
 }
 
+open class OptionalIntDelegate(defaultValue: (() -> Int)? = null) : Properties.OptionalDelegate<Int>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getInt(name)
+
+    override fun set(properties: Properties, name: String, value: Int) = properties.setInt(name, value)
+}
+
+open class OptionalFloatDelegate(defaultValue: (() -> Float)? = null) : Properties.OptionalDelegate<Float>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getFloat(name)
+
+    override fun set(properties: Properties, name: String, value: Float) = properties.setFloat(name, value)
+}
+
+open class OptionalBooleanDelegate(defaultValue: (() -> Boolean)? = null) : Properties.OptionalDelegate<Boolean>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getBoolean(name)
+
+    override fun set(properties: Properties, name: String, value: Boolean) = properties.setBoolean(name, value)
+}
+
+open class OptionalStringDelegate(defaultValue: (() -> String)? = null) : Properties.OptionalDelegate<String>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getString(name)
+
+    override fun set(properties: Properties, name: String, value: String) = properties.setString(name, value)
+}
+
+open class OptionalPropertiesDelegate(defaultValue: (() -> Properties)? = null) : Properties.OptionalDelegate<Properties>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getProperties(name)
+
+    override fun set(properties: Properties, name: String, value: Properties) = properties.setProperties(name, value)
+}
+
+open class OptionalIntArrayDelegate(defaultValue: (() -> Array<Int>)? = null) : Properties.OptionalDelegate<Array<Int>>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getIntArray(name)
+
+    override fun set(properties: Properties, name: String, value: Array<Int>) = properties.setIntArray(name, value)
+}
+
+open class OptionalFloatArrayDelegate(defaultValue: (() -> Array<Float>)? = null) : Properties.OptionalDelegate<Array<Float>>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getFloatArray(name)
+
+    override fun set(properties: Properties, name: String, value: Array<Float>) = properties.setFloatArray(name, value)
+}
+
+open class OptionalBooleanArrayDelegate(defaultValue: (() -> Array<Boolean>)? = null) : Properties.OptionalDelegate<Array<Boolean>>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getBooleanArray(name)
+
+    override fun set(properties: Properties, name: String, value: Array<Boolean>) = properties.setBooleanArray(name, value)
+}
+
+open class OptionalStringArrayDelegate(defaultValue: (() -> Array<String>)? = null) : Properties.OptionalDelegate<Array<String>>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getStringArray(name)
+
+    override fun set(properties: Properties, name: String, value: Array<String>) = properties.setStringArray(name, value)
+}
+
+open class OptionalPropertiesArrayDelegate(defaultValue: (() -> Array<Properties>)? = null) : Properties.OptionalDelegate<Array<Properties>>(defaultValue) {
+    override fun get(properties: Properties, name: String) = properties.getPropertiesArray(name)
+
+    override fun set(properties: Properties, name: String, value: Array<Properties>) = properties.setPropertiesArray(name, value)
+}
+
 fun int(defaultValue: () -> Int) = IntDelegate(defaultValue)
 
 fun float(defaultValue: () -> Float) = FloatDelegate(defaultValue)
@@ -589,6 +689,27 @@ fun booleanArray(defaultValue: () -> Array<Boolean>) = BooleanArrayDelegate(defa
 fun stringArray(defaultValue: () -> Array<String>) = StringArrayDelegate(defaultValue)
 
 fun propertiesArray(defaultValue: () -> Array<Properties>) = PropertiesArrayDelegate(defaultValue)
+
+fun optionalInt(defaultValue: (() -> Int)? = null) = OptionalIntDelegate(defaultValue)
+
+fun optionalFloat(defaultValue: (() -> Float)? = null) = OptionalFloatDelegate(defaultValue)
+
+fun optionalBoolean(defaultValue: (() -> Boolean)? = null) = OptionalBooleanDelegate(defaultValue)
+
+fun optionalString(defaultValue: (() -> String)? = null) = OptionalStringDelegate(defaultValue)
+
+fun optionalProperties(defaultValue: (() -> Properties)? = null) = OptionalPropertiesDelegate(defaultValue)
+
+fun optionalIntArray(defaultValue: (() -> Array<Int>)? = null) = OptionalIntArrayDelegate(defaultValue)
+
+fun optionalFloatArray(defaultValue: (() -> Array<Float>)? = null) = OptionalFloatArrayDelegate(defaultValue)
+
+fun optionalBooleanArray(defaultValue: (() -> Array<Boolean>)? = null) = OptionalBooleanArrayDelegate(defaultValue)
+
+fun optionalStringArray(defaultValue: (() -> Array<String>)? = null) = OptionalStringArrayDelegate(defaultValue)
+
+fun optionalPropertiesArray(defaultValue: (() -> Array<Properties>)? = null) = OptionalPropertiesArrayDelegate(defaultValue)
+
 
 fun Properties.readIntProperty(property: KMutableProperty0<Int>) {
     val value = getInt(property.name) ?: return

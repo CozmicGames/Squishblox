@@ -4,21 +4,18 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.cozmicgames.game.*
-import com.cozmicgames.game.graphics.gui.absolute
-import com.cozmicgames.game.graphics.gui.aspect
-import com.cozmicgames.game.graphics.gui.center
+import com.cozmicgames.game.graphics.gui.*
 import com.cozmicgames.game.graphics.gui.elements.Image
 import com.cozmicgames.game.graphics.gui.elements.Label
 import com.cozmicgames.game.graphics.gui.elements.Progressbar
-import com.cozmicgames.game.graphics.gui.offset
-import com.cozmicgames.game.graphics.gui.packed
-import com.cozmicgames.game.graphics.gui.relative
-import com.cozmicgames.game.graphics.gui.same
 import com.cozmicgames.game.graphics.gui.skin.ColorDrawableValue
+import com.cozmicgames.game.widgets.ConfirmWidget
 import java.util.ArrayDeque
 import kotlin.system.measureTimeMillis
 
 class LoadingState : GameState {
+    private var returnState: GameState = this
+
     private val gui = Game.guis.create()
     private val loadingTasks = ArrayDeque<() -> Unit>()
     private var toLoadCount = 0
@@ -28,6 +25,8 @@ class LoadingState : GameState {
     private var isTexturePackingStarted = false
     private var isTexturePackingFinished = false
     private var currentInfoMessage = "Initializing"
+    private var isTutorialInfoWindowOpen = false
+    private var isBackgroundMusicStarted = false
 
     private val bannerImage: Image
     private val versionLabel: Label
@@ -194,17 +193,38 @@ class LoadingState : GameState {
         }
 
         if (isLoadingFinished && isTexturePackingFinished) {
-            gui.removeElement(progressBar)
-            gui.removeElement(infoLabel)
+            if (!isBackgroundMusicStarted) {
+                Game.audio.playBackgroundMusic(Gdx.files.internal("music/background_music.mp3"))
+                isBackgroundMusicStarted = true
+            }
 
-            Game.audio.playBackgroundMusic(Gdx.files.internal("music/background_music.mp3"))
+            if (!Game.gameSettings.playedTutorial) {
+                if (!isTutorialInfoWindowOpen) {
+                    isTutorialInfoWindowOpen = true
 
-            return { TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.DOWN)) }
+                    val window = Game.guis.openWindow("", 500.0f, 300.0f, false, false, false)
+                    val widget = ConfirmWidget("Play tutorial", "You haven't played the tutorial yet.\nPlay it now?") {
+                        returnState = if (it)
+                            TransitionGameState(PlayTutorialLevelState(), CircleTransition())
+                        else
+                            TransitionGameState(LocalLevelsState(), CircleTransition())
+
+                        Game.tasks.submit({
+                            Game.guis.closeWindow(window)
+                        })
+                    }.also {
+                        it.constraints.x = same()
+                        it.constraints.y = same()
+                        it.constraints.width = fill()
+                        it.constraints.height = fill()
+                    }
+                    window.content.addElement(widget)
+                }
+            } else
+                returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
         }
 
-        Game.renderGraph.render(Game.time.delta)
-
-        return { this }
+        return { returnState }
     }
 
     override fun end() {

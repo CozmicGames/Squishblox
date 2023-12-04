@@ -52,7 +52,7 @@ class InfoWidget(title: String, text: String, callback: () -> Unit) : Group() {
 
         val textLabel = Label({ text }, textLabelStyle)
         textLabel.constraints.width = same(this)
-        textLabel.constraints.height = absolute(75.0f)
+        textLabel.constraints.height = relative(0.5f, this)
 
         val closeButton = ImageButton(ImageButton.ImageButtonStyle().also {
             it.backgroundNormal = TextureDrawableValue().also {
@@ -86,7 +86,7 @@ class InfoWidget(title: String, text: String, callback: () -> Unit) : Group() {
         list.add(titleLabel)
         list.add(padding { 30.0f })
         list.add(textLabel)
-        list.add(padding { 10.0f })
+
         addElement(list)
 
         addElement(closeButton)

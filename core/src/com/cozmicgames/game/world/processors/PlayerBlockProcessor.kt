@@ -38,6 +38,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         val jump = Game.input.isKeyDown(Keys.SPACE)
         val crouch = Game.input.isKeyDown(Keys.SHIFT_LEFT) || Game.input.isKeyDown(Keys.SHIFT_RIGHT)
         val jumpJustPressed = Game.input.isKeyJustDown(Keys.SPACE)
+        val jumpJustReleased = Game.input.isKeyJustUp(Keys.SPACE)
 
         var moveAmount = 0.0f
 
@@ -50,8 +51,6 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         if (abs(moveAmount) > 0.0f)
             playerBlock.isFacingRight = moveAmount > 0.0f
 
-        if (isOnGround && jumpJustPressed)
-            Game.audio.playSound("sounds/jump.wav")
 
         if (!isOnGround)
             playerBlock.body.velocity.x = WorldUtils.approach(playerBlock.body.velocity.x, 0.0f, airDeceleration * delta)
@@ -74,8 +73,12 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         if (!isOnGround && playerBlock.body.velocity.y < 0.0f)
             playerBlock.body.velocity.y *= gravityFactor
 
-        if (jump && jumpTime < maxJumpTime)
+        if (jump && jumpTime < maxJumpTime) {
+            if (playerBlock.body.velocity.y <= 0.0f)
+                Game.audio.playSound("sounds/jump.wav")
+
             playerBlock.body.velocity.y += playerBlock.calculateJumpForce(jumpForce) * (maxJumpTime - jumpTime)
+        }
 
         if (!isOnGround)
             jumpTime += delta
@@ -83,7 +86,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
         val wasOnGround = isOnGround
         isOnGround = false
 
-        Game.physics.forEachOverlappingRectangle(playerBlock.body.bounds.x - 4.0f, playerBlock.body.bounds.y - 0.1f, playerBlock.body.bounds.width - 8.0f, 0.1f) {
+        Game.physics.forEachOverlappingRectangle(playerBlock.body.bounds.x - 4.0f, playerBlock.body.bounds.y - 1.0f, playerBlock.body.bounds.width - 8.0f, 1.0f) {
             if (it != playerBlock.body)
                 isOnGround = true
 
@@ -92,7 +95,7 @@ class PlayerBlockProcessor(private val worldScene: WorldScene) : SceneProcessor(
             }
         }
 
-        if (!wasOnGround && isOnGround && !jump)
+        if (!wasOnGround && isOnGround)
             jumpTime = 0.0f
     }
 }

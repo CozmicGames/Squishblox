@@ -4,5 +4,6 @@ enum class PlayState {
     MENU,
     EDIT,
     TEST,
-    PLAY
+    PLAY,
+    TUTORIAL
 }

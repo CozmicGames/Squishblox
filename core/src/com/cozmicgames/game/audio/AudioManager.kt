@@ -15,14 +15,14 @@ class AudioManager : Disposable {
         operator fun getValue(thisRef: Any, property: KProperty<*>) = getOrLoadSound(file)
     }
 
-    private val sounds = hashMapOf<String, Sound>()
+    private val sounds = hashMapOf<String, Music>()
     private var backgroundMusic: Music? = null
 
     var musicVolume
         get() = Game.gameSettings.musicVolume
         set(value) {
             backgroundMusic?.volume = value
-            Game.gameSettings.soundVolume = value
+            Game.gameSettings.musicVolume = value
         }
 
     var soundVolume by Game.gameSettings::soundVolume
@@ -32,7 +32,7 @@ class AudioManager : Disposable {
             return false
 
         try {
-            sounds.put(name, Gdx.audio.newSound(file))?.dispose()
+            sounds.put(name, Gdx.audio.newMusic(file))?.dispose()
         } catch (_: Exception) {
             return false
         }
@@ -46,7 +46,7 @@ class AudioManager : Disposable {
         }
 
         Game.tasks.submitAsync({
-            val sound = Gdx.audio.newSound(file)
+            val sound = Gdx.audio.newMusic(file)
             Gdx.app.postRunnable {
                 sounds.put(name, sound)?.dispose()
                 callback()
@@ -59,7 +59,7 @@ class AudioManager : Disposable {
 
     fun getSound(name: String) = sounds[name]
 
-    fun getOrLoadSound(file: FileHandle): Sound {
+    fun getOrLoadSound(file: FileHandle): Music {
         if (getSound(file) == null)
             loadSound(file)
 
@@ -79,7 +79,11 @@ class AudioManager : Disposable {
 
     fun playSound(name: String) {
         val sound = getSound(name) ?: return
-        sound.play(soundVolume)
+        if (sound.isPlaying)
+            sound.stop()
+
+        sound.volume = soundVolume
+        sound.play()
     }
 
     override fun dispose() {

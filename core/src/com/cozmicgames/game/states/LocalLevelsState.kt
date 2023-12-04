@@ -49,7 +49,7 @@ class LocalLevelsState : InGameState() {
 
     private abstract class MenuElement : GUIElement()
 
-    private abstract inner class LevelElement(val levelData: String, previewImage: Pixmap) : Disposable, MenuElement() {
+    private abstract inner class LevelElement(previewImage: Pixmap) : Disposable, MenuElement() {
         override val additionalLayers = 1
 
         private val texture: Texture
@@ -127,7 +127,7 @@ class LocalLevelsState : InGameState() {
         }
     }
 
-    private inner class TutorialLevelElement : LevelElement(Gdx.files.internal("tutorial/level.json").readString(), Pixmap(Gdx.files.internal("tutorial/level.png"))) {
+    private inner class TutorialLevelElement : LevelElement(Pixmap(Gdx.files.internal("tutorial/level.png"))) {
         init {
             val contextInfoSize = 40.0f
             val contextInfoOffsetFromSide = 10.0f
@@ -170,11 +170,13 @@ class LocalLevelsState : InGameState() {
         }
 
         override fun onPlay() {
-            returnState = TransitionGameState(PlayLevelState("", levelData), CircleTransition())
+            returnState = TransitionGameState(PlayTutorialLevelState(), CircleTransition())
         }
     }
 
-    private inner class LocalLevelElement(val uuid: String) : LevelElement(loadLevelData(uuid, true), loadLevelPreviewImage(uuid, true)) {
+    private inner class LocalLevelElement(val uuid: String) : LevelElement(loadLevelPreviewImage(uuid, true)) {
+        private val levelData = loadLevelData(uuid, true)
+
         init {
             val contextButtonSpacing = 8.0f
             val contextButtonSize = 40.0f
@@ -267,7 +269,7 @@ class LocalLevelsState : InGameState() {
                 val properties = Properties()
                 properties.read(levelData)
                 properties.getProperties("level")?.let {
-                    returnState = TransitionGameState(EditState(it.write(), uuid), LinearTransition(LinearTransition.Direction.RIGHT))
+                    returnState = TransitionGameState(EditState(it.write(), uuid), CircleTransition())
                 }
             }
             editButton.constraints.x = absolute(contextButtonOffsetFromSide + contextButtonSize + contextButtonSpacing, true)
@@ -313,7 +315,9 @@ class LocalLevelsState : InGameState() {
         }
     }
 
-    private inner class SavedLevelElement(val uuid: String) : LevelElement(loadLevelData(uuid, false), loadLevelPreviewImage(uuid, false)) {
+    private inner class SavedLevelElement(val uuid: String) : LevelElement(loadLevelPreviewImage(uuid, false)) {
+        private val levelData = loadLevelData(uuid, false)
+
         init {
             val contextButtonSpacing = 8.0f
             val contextButtonSize = 40.0f
@@ -445,7 +449,7 @@ class LocalLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            returnState = TransitionGameState(EditState(), LinearTransition(LinearTransition.Direction.RIGHT))
+            returnState = TransitionGameState(EditState(), CircleTransition())
         }
         createLevelButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize * 4 + buttonSpacing * 4, true)
         createLevelButton.constraints.y = absolute(buttonOffsetFromSide)
@@ -470,7 +474,7 @@ class LocalLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            returnState = TransitionGameState(OnlineLevelsState(), LinearTransition(LinearTransition.Direction.DOWN))
+            returnState = TransitionGameState(OnlineLevelsState(), CircleTransition())
         }
         onlineButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize * 3 + buttonSpacing * 3, true)
         onlineButton.constraints.y = absolute(buttonOffsetFromSide)

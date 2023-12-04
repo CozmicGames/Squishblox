@@ -286,7 +286,7 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            returnState = TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.UP))
+            returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
         }
         localButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize * 3 + buttonSpacing * 3, true)
         localButton.constraints.y = absolute(buttonOffsetFromSide)

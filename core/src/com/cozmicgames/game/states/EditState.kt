@@ -194,7 +194,7 @@ class EditState(levelData: String? = null, levelUuid: String? = null) : WorldGam
             val window = Game.guis.openWindow("", 450.0f, 300.0f, false, false, false)
             val widget = ConfirmWidget("Close editor", "Do you want to close the editor?\nAll progress will be lost.") {
                 if (it)
-                    returnState = TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.LEFT))
+                    returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
                 Game.tasks.submit({
                     Game.guis.closeWindow(window)
                     gui.isInteractionEnabled = true

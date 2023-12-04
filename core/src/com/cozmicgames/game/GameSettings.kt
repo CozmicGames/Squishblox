@@ -11,4 +11,5 @@ class GameSettings : Properties() {
     var name by string { "" }
     var soundVolume by float { 1.0f }
     var musicVolume by float { 1.0f }
+    var playedTutorial by boolean { false }
 }

@@ -76,8 +76,7 @@ class Game(gameSettings: GameSettings) : ApplicationAdapter() {
         renderer2d.beginFrame()
 
         val newState = currentGameState.render(Game.time.delta)()
-        if (currentGameState !is TransitionGameState)
-            renderGraph.render(Game.time.delta)
+        renderGraph.render(Game.time.delta)
 
         renderer2d.endFrame()
         graphics2d.endFrame()
