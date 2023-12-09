@@ -74,7 +74,7 @@ class InfoWidget(title: String, text: String, callback: () -> Unit) : Group() {
             callback()
         }
         closeButton.constraints.x = center()
-        closeButton.constraints.y = absolute(0.0f, true)
+        closeButton.constraints.y = absolute(10.0f, true)
         closeButton.constraints.width = absolute(60.0f)
         closeButton.constraints.height = aspect()
 
@@ -83,6 +83,7 @@ class InfoWidget(title: String, text: String, callback: () -> Unit) : Group() {
             it.constraints.height = absolute { getAmount() }
         }
 
+        list.add(padding { 10.0f })
         list.add(titleLabel)
         list.add(padding { 30.0f })
         list.add(textLabel)

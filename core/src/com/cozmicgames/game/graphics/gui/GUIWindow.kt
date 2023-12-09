@@ -16,7 +16,7 @@ import com.cozmicgames.game.graphics.gui.skin.NinepatchDrawableValue
 import com.cozmicgames.game.input
 import kotlin.math.max
 
-class GUIWindow(var title: String = "", var isResizable: Boolean = true, val hasTitleBar: Boolean = true, isScrollable: Boolean = true, windowLayer: Int) : Group() {
+class GUIWindow(var title: String = "", var isResizable: Boolean = true, val hasTitleBar: Boolean = true, isScrollable: Boolean = true, blocksInteractions: Boolean = false, windowLayer: Int) : Group() {
     companion object {
         private const val RESIZE_BORDER_SIZE = 5.0f
 
@@ -136,6 +136,20 @@ class GUIWindow(var title: String = "", var isResizable: Boolean = true, val has
         titleLabel.constraints.y = absolute { 0.0f }
         titleLabel.constraints.width = same(this) - same(closeButton)
         titleLabel.constraints.height = packed()
+
+        if (blocksInteractions) {
+            val blockingElement = object : GUIElement() {
+                override fun render() {
+                }
+            }
+
+            blockingElement.constraints.x = center()
+            blockingElement.constraints.y = center()
+            blockingElement.constraints.width = absolute { Gdx.graphics.width.toFloat() }
+            blockingElement.constraints.height = absolute { Gdx.graphics.height.toFloat() }
+
+            addElement(blockingElement)
+        }
 
         if (isScrollable) {
             scrollPane.constraints.x = absolute { 0.0f }

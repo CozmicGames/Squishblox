@@ -85,10 +85,10 @@ class GUI(private val baseWindowLayer: Int = 1000, private val maxLayersInWindow
         return root.removeElement(element)
     }
 
-    fun openWindow(title: String, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true) = openWindow(title, (Gdx.graphics.width - width) * 0.5f, (Gdx.graphics.height - height) * 0.5f, width, height, isResizable, hasTitleBar, isScrollable)
+    fun openWindow(title: String, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true, blocksInteractions: Boolean = false) = openWindow(title, (Gdx.graphics.width - width) * 0.5f, (Gdx.graphics.height - height) * 0.5f, width, height, isResizable, hasTitleBar, isScrollable, blocksInteractions)
 
-    fun openWindow(title: String, x: Float, y: Float, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true): GUIWindow {
-        val window = GUIWindow(title, isResizable, hasTitleBar, isScrollable, baseWindowLayer + windows.size * maxLayersInWindow).also { //TODO: Temporary fix, actually fix multiple windows overlapping eventually
+    fun openWindow(title: String, x: Float, y: Float, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true, blocksInteractions: Boolean = false): GUIWindow {
+        val window = GUIWindow(title, isResizable, hasTitleBar, isScrollable, blocksInteractions, baseWindowLayer + windows.size * maxLayersInWindow).also { //TODO: Temporary fix, actually fix multiple windows overlapping eventually
             it.windowX = x
             it.windowY = y
             it.windowWidth = width

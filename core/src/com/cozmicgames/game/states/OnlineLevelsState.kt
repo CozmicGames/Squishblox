@@ -158,7 +158,7 @@ class OnlineLevelsState : InGameState() {
                     it.color.set(0x2E91F4FF)
                 }
             }) {
-                val window = this@OnlineLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
+                val window = this@OnlineLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false, true)
                 val widget = LeaderboardWidget(uuid) {
                     window.close()
                 }.also {
@@ -336,7 +336,7 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false)
+            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false, true)
             val widget = SettingsWidget() {
                 window.close()
             }.also {

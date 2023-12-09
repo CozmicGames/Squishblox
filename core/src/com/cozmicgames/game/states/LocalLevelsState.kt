@@ -220,8 +220,7 @@ class LocalLevelsState : InGameState() {
 
                         updateLevelElements()
                     } else {
-                        this@LocalLevelsState.gui.isInteractionEnabled = false
-                        val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
+                        val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false, true)
                         val widget = InfoWidget("Level rejected", "You can only upload\nlevels once every 60 seconds.") {
                             window.close()
                             Game.tasks.submit({
@@ -351,7 +350,7 @@ class LocalLevelsState : InGameState() {
                     it.color.set(0x2E91F4FF)
                 }
             }) {
-                val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
+                val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false, true)
                 val widget = LeaderboardWidget(uuid) {
                     window.close()
                 }.also {
@@ -523,8 +522,8 @@ class LocalLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false)
-            val widget = SettingsWidget() {
+            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false, true)
+            val widget = SettingsWidget {
                 window.close()
             }.also {
                 it.constraints.x = same()

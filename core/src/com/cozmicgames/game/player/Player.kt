@@ -112,8 +112,7 @@ class Player : Updatable {
                 Game.gameSettings.playedTutorial = true
 
                 isPaused = true
-                currentGui!!.isInteractionEnabled = false
-                val window = currentGui!!.openWindow("", 500.0f, 450.0f, false, false, false)
+                val window = currentGui!!.openWindow("", 500.0f, 450.0f, false, false, false, true)
                 val widget = InfoWidget("Tutorial completed", "You completed the tutorial.\nNow create, explore and play\nyour own or others levels!") {
                     currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
 
@@ -136,14 +135,12 @@ class Player : Updatable {
                 val time = System.currentTimeMillis() - levelStartTime
 
                 isPaused = true
-                currentGui!!.isInteractionEnabled = false
-                val window = currentGui!!.openWindow("", 600.0f, 500.0f, false, false, false)
+                val window = currentGui!!.openWindow("", 600.0f, 500.0f, false, false, false, true)
                 val widget = LevelCompletedWidget(currentLevelUuid!!, time) {
                     currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
 
                     Game.tasks.submit({
                         window.close()
-                        currentGui!!.isInteractionEnabled = true
                     })
                 }.also {
                     it.constraints.x = same()
@@ -158,8 +155,7 @@ class Player : Updatable {
                 Game.audio.playSound("sounds/level_completed.wav")
 
                 isPaused = true
-                currentGui!!.isInteractionEnabled = false
-                val window = currentGui!!.openWindow("", 1000.0f, 800.0f, false, false, false)
+                val window = currentGui!!.openWindow("", 1000.0f, 800.0f, false, false, false, true)
                 val widget = SubmitLevelWidget(currentLevelData, currentLevelUuid) {
                     Game.tasks.submit({
                         if (it)

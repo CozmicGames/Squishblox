@@ -131,14 +131,12 @@ class EditState(levelData: String? = null, levelUuid: String? = null) : WorldGam
                 it.color.set(0xA0040FFF.toInt())
             }
         }) {
-            gui.isInteractionEnabled = false
-            val window = gui.openWindow("", 450.0f, 300.0f, false, false, false)
+            val window = gui.openWindow("", 450.0f, 300.0f, false, false, false, true)
             val widget = ConfirmWidget("Reset level", "Do you want to reset the level?\nThis deletes all progress.") {
                 if (it)
                     Game.player.scene.initialize()
                 Game.tasks.submit({
                     window.close()
-                    gui.isInteractionEnabled = true
                 })
             }.also {
                 it.constraints.x = same()
@@ -190,8 +188,7 @@ class EditState(levelData: String? = null, levelUuid: String? = null) : WorldGam
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            gui.isInteractionEnabled = false
-            val window = gui.openWindow("", 450.0f, 300.0f, false, false, false)
+            val window = gui.openWindow("", 450.0f, 300.0f, false, false, false, true)
             val widget = ConfirmWidget("Close editor", "Do you want to close the editor?\nAll progress will be lost.") {
                 if (it)
                     returnState = TransitionGameState(LocalLevelsState(), CircleTransition())

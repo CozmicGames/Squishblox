@@ -202,7 +202,7 @@ class LoadingState : InGameState() {
                 if (!isTutorialInfoWindowOpen) {
                     isTutorialInfoWindowOpen = true
 
-                    val window = gui.openWindow("", 500.0f, 300.0f, false, false, false)
+                    val window = gui.openWindow("", 500.0f, 300.0f, false, false, false, true)
                     val widget = ConfirmWidget("Play tutorial", "You haven't played the tutorial yet.\nPlay it now?") {
                         returnState = if (it)
                             TransitionGameState(PlayTutorialLevelState(), CircleTransition())
