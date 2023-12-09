@@ -31,7 +31,9 @@ class Player : Updatable {
 
     val scene = WorldScene()
 
-    lateinit var currentState: WorldGameState
+    lateinit var currentState: InGameState
+
+    val currentGui get() = if (::currentState.isInitialized) currentState.gui else null
 
     var isPaused = false
 
@@ -46,7 +48,6 @@ class Player : Updatable {
     private var currentLevelData = ""
     private val playerPosition = Vector2()
     private val cameraFollower = CameraFollower(camera, playerPosition, 0.8f)
-    private var isInputPositionVisible = true
     private var previewImageIndex = 0
 
     fun isHovered(minX: Float, minY: Float, maxX: Float, maxY: Float): Boolean {
@@ -54,7 +55,7 @@ class Player : Updatable {
     }
 
     fun isCursorPositionVisible(): Boolean {
-        return isInputPositionVisible
+        return currentGui?.isInputPositionVisible == true
     }
 
     override fun update(delta: Float) {
@@ -84,8 +85,6 @@ class Player : Updatable {
             if (it.minY <= WorldConstants.WORLD_WATER_Y)
                 resetLevel()
         }
-
-        isInputPositionVisible = Game.guis.isInputPositionVisible()
     }
 
     fun startLevel(uuid: String?, data: String) {
@@ -113,14 +112,14 @@ class Player : Updatable {
                 Game.gameSettings.playedTutorial = true
 
                 isPaused = true
-                currentState.gui.isInteractionEnabled = false
-                val window = Game.guis.openWindow("", 500.0f, 450.0f, false, false, false)
+                currentGui!!.isInteractionEnabled = false
+                val window = currentGui!!.openWindow("", 500.0f, 450.0f, false, false, false)
                 val widget = InfoWidget("Tutorial completed", "You completed the tutorial.\nNow create, explore and play\nyour own or others levels!") {
                     currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
 
                     Game.tasks.submit({
-                        Game.guis.closeWindow(window)
-                        currentState.gui.isInteractionEnabled = true
+                        window.close()
+                        currentGui!!.isInteractionEnabled = true
                     })
                 }.also {
                     it.constraints.x = same()
@@ -137,14 +136,14 @@ class Player : Updatable {
                 val time = System.currentTimeMillis() - levelStartTime
 
                 isPaused = true
-                currentState.gui.isInteractionEnabled = false
-                val window = Game.guis.openWindow("", 600.0f, 500.0f, false, false, false)
+                currentGui!!.isInteractionEnabled = false
+                val window = currentGui!!.openWindow("", 600.0f, 500.0f, false, false, false)
                 val widget = LevelCompletedWidget(currentLevelUuid!!, time) {
                     currentState.returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
 
                     Game.tasks.submit({
-                        Game.guis.closeWindow(window)
-                        currentState.gui.isInteractionEnabled = true
+                        window.close()
+                        currentGui!!.isInteractionEnabled = true
                     })
                 }.also {
                     it.constraints.x = same()
@@ -159,8 +158,8 @@ class Player : Updatable {
                 Game.audio.playSound("sounds/level_completed.wav")
 
                 isPaused = true
-                currentState.gui.isInteractionEnabled = false
-                val window = Game.guis.openWindow("", 1000.0f, 800.0f, false, false, false)
+                currentGui!!.isInteractionEnabled = false
+                val window = currentGui!!.openWindow("", 1000.0f, 800.0f, false, false, false)
                 val widget = SubmitLevelWidget(currentLevelData, currentLevelUuid) {
                     Game.tasks.submit({
                         if (it)
@@ -168,7 +167,7 @@ class Player : Updatable {
                         else
                             currentState.returnState = EditState(currentLevelData)
 
-                        Game.guis.closeWindow(window)
+                        window.close()
                     })
                 }.also {
                     it.constraints.x = same()

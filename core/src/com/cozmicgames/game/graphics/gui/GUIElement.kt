@@ -85,9 +85,14 @@ abstract class GUIElement {
         element.onAdded()
     }
 
-    fun removeElement(element: GUIElement) {
+    fun removeElement(element: GUIElement): Boolean {
+        if (element.parent != this)
+            return false
+
         element.parent = null
         element.onRemoved()
+
+        return true
     }
 
     fun addListener(listener: Listener) {

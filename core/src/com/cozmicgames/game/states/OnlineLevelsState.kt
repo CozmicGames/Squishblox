@@ -158,9 +158,9 @@ class OnlineLevelsState : InGameState() {
                     it.color.set(0x2E91F4FF)
                 }
             }) {
-                val window = Game.guis.openWindow("", 400.0f, 460.0f, false, false, false)
+                val window = this@OnlineLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
                 val widget = LeaderboardWidget(uuid) {
-                    Game.guis.closeWindow(window)
+                    window.close()
                 }.also {
                     it.constraints.x = same()
                     it.constraints.y = same()
@@ -286,7 +286,7 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
+            returnState = TransitionGameState(LocalLevelsState(), LinearTransition(LinearTransition.Direction.UP))
         }
         localButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize * 3 + buttonSpacing * 3, true)
         localButton.constraints.y = absolute(buttonOffsetFromSide)
@@ -336,9 +336,9 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            val window = Game.guis.openWindow("", 400.0f, 300.0f, false, false, false)
+            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false)
             val widget = SettingsWidget() {
-                Game.guis.closeWindow(window)
+                window.close()
             }.also {
                 it.constraints.x = same()
                 it.constraints.y = same()

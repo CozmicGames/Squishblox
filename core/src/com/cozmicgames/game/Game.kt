@@ -10,7 +10,6 @@ import com.cozmicgames.game.graphics.engine.rendergraph.RenderGraph
 import com.cozmicgames.game.graphics.engine.rendergraph.functions.BlankRenderFunction
 import com.cozmicgames.game.graphics.engine.shaders.ShaderManager
 import com.cozmicgames.game.graphics.engine.textures.TextureManager
-import com.cozmicgames.game.graphics.gui.GUIManager
 import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.input.GestureManager
 import com.cozmicgames.game.input.InputManager
@@ -18,7 +17,6 @@ import com.cozmicgames.game.states.GameState
 import com.cozmicgames.game.states.LoadingState
 import com.cozmicgames.game.states.SuspendGameState
 import com.cozmicgames.game.states.SuspendableGameState
-import com.cozmicgames.game.states.TransitionGameState
 import com.cozmicgames.common.utils.*
 import com.cozmicgames.game.networking.NetworkManager
 import com.cozmicgames.game.player.Player
@@ -116,7 +114,6 @@ val Game.Companion.textures by Game.context.injector { TextureManager() }
 val Game.Companion.fonts by Game.context.injector { FontManager() }
 val Game.Companion.audio by Game.context.injector { AudioManager() }
 val Game.Companion.graphics2d by Game.context.injector { Graphics2D() }
-val Game.Companion.guis by Game.context.injector { GUIManager() }
 val Game.Companion.previewRenderer by Game.context.injector { WorldPreviewRenderer(800, 600) }
 val Game.Companion.previewImageRenderer by Game.context.injector { WorldPreviewImageRenderer(800, 600) }
 val Game.Companion.renderGraph by Game.context.injector { RenderGraph(BlankRenderFunction()) }

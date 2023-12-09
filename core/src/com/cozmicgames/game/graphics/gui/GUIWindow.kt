@@ -13,7 +13,6 @@ import com.cozmicgames.game.graphics.gui.elements.TextButton
 import com.cozmicgames.game.graphics.gui.skin.ColorDrawableValue
 import com.cozmicgames.game.graphics.gui.skin.GUISkin
 import com.cozmicgames.game.graphics.gui.skin.NinepatchDrawableValue
-import com.cozmicgames.game.guis
 import com.cozmicgames.game.input
 import kotlin.math.max
 
@@ -125,7 +124,7 @@ class GUIWindow(var title: String = "", var isResizable: Boolean = true, val has
         val titleLabel = Label(skin, "window") { title }
 
         val closeButton = TextButton(skin, "window", "Close") {
-            Game.guis.closeWindow(this)
+            close()
         }
 
         closeButton.constraints.x = absolute { titleLabel.width }
@@ -160,7 +159,6 @@ class GUIWindow(var title: String = "", var isResizable: Boolean = true, val has
 
             addElement(content)
         }
-
 
         if (hasTitleBar) {
             addElement(titleLabel)
@@ -326,5 +324,9 @@ class GUIWindow(var title: String = "", var isResizable: Boolean = true, val has
                 }
             }
         })
+    }
+
+    fun close() {
+        gui?.closeWindow(this)
     }
 }

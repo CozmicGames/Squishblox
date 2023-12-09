@@ -1,33 +1,41 @@
 package com.cozmicgames.game.graphics.renderer
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
+import com.cozmicgames.game.Game
 import com.cozmicgames.game.graphics.engine.rendergraph.functions.FullscreenRenderFunction
+import com.cozmicgames.game.renderer2d
 
-class ScreenshotRenderFunction : FullscreenRenderFunction("""
+class ScreenshotRenderFunction : FullscreenRenderFunction(
+    """
     uniform sampler2D u_texture;
 """.trimIndent(), """
     vec4 effect() {
         return texture(u_texture, v_texcoord);
     }
-""".trimIndent()), Disposable {
-    private val texture: Texture
+""".trimIndent()
+), Disposable {
+    private lateinit var texture: Texture
 
     init {
-        val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.width, Gdx.graphics.height)
-        texture = Texture(pixmap)
-        pixmap.dispose()
+        Game.renderer2d.takeScreenshot {
+            texture = Texture(it)
+        }
     }
 
     override fun setUniforms(shaderProgram: ShaderProgram) {
+        if (!::texture.isInitialized)
+            return
+
         texture.bind(0)
         shaderProgram.setUniformi("u_texture", 0)
     }
 
     override fun dispose() {
+        if (!::texture.isInitialized)
+            return
+
         texture.dispose()
     }
 }

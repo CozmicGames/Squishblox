@@ -6,6 +6,17 @@ sealed class Transition(val uniforms: String, val source: String) {
     abstract fun setUniforms(shaderProgram: ShaderProgram)
 }
 
+class FadeTransition: Transition("""
+    uniform vec2 u_direction;
+""".trimIndent(), """
+    vec4 effect() {
+        return mix(getFromColor(v_texcoord), getToColor(v_texcoord), u_progress);
+    }
+""".trimIndent()) {
+    override fun setUniforms(shaderProgram: ShaderProgram) {
+    }
+}
+
 class LinearTransition(val direction: Direction): Transition("""
     uniform vec2 u_direction;
 """.trimIndent(), """
@@ -115,7 +126,7 @@ class CircleTransition: Transition("""
 """.trimIndent(), """
     vec4 effect() {
         float distance = length(v_texcoord - vec2(0.5, 0.5));
-        float radius = sqrt(8.0) * abs(u_progress - 0.5);
+        float radius = sqrt(2.0) * abs(u_progress - 0.5);
   
         if (distance > radius)
             return vec4(0.0, 0.0, 0.0, 1.0);

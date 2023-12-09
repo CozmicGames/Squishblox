@@ -72,12 +72,12 @@ class RenderGraph(presentRenderFunction: RenderFunction?) : Resizable, Disposabl
 
         abstract fun shouldRender(delta: Float): Boolean
 
-        fun render(delta: Float) {
-            if (!shouldRender(delta))
+        fun render(delta: Float, ignoreShouldRender: Boolean = false) {
+            if (!ignoreShouldRender && !shouldRender(delta))
                 return
 
             renderFunction.dependencies.forEach {
-                it.getNode().render(delta)
+                it.getNode().render(delta, ignoreShouldRender)
             }
 
             pass.begin()
@@ -119,13 +119,20 @@ class RenderGraph(presentRenderFunction: RenderFunction?) : Resizable, Disposabl
 
     fun getPass(name: String) = getNode(name)?.pass
 
-    fun render(delta: Float) {
-        presentRenderFunction?.dependencies?.forEach {
-            it.getNode().render(delta)
-        }
+    fun render(delta: Float, framebuffer: FrameBuffer? = null) {
+        presentRenderFunction?.let {
+            it.dependencies.forEach { dependency ->
+                dependency.getNode().render(delta)
+            }
 
-        FrameBuffer.unbind()
-        presentRenderFunction?.render(delta)
+            GraphicsUtils.beginFramebuffer(framebuffer)
+            it.render(delta)
+        }
+    }
+
+    fun render(delta: Float, name: String) {
+        val node = getNode(name)
+        node?.render(delta, true)
     }
 
     override fun resize(width: Int, height: Int) {

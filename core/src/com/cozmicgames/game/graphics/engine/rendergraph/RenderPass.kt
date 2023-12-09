@@ -154,7 +154,7 @@ open class RenderPass(resolution: Resolution, block: RenderPass.() -> Unit = {})
             isDirty = false
         }
 
-        framebuffer?.begin()
+        GraphicsUtils.beginFramebuffer(framebuffer)
     }
 
     override fun dispose() {

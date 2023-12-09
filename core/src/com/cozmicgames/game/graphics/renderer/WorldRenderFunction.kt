@@ -8,6 +8,7 @@ class WorldRenderFunction : RenderFunction() {
     private val renderer = WorldRenderer()
 
     override fun render(delta: Float) {
-        renderer.render(delta, Game.player.camera, Game.player.scene, true)
+        renderer.render(delta, Game.player.camera, Game.player.scene)
+        Game.player.currentGui?.render()
     }
 }

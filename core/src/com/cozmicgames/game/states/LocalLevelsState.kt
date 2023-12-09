@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.cozmicgames.common.networking.messages.ConfirmSubmitLevelMessage
@@ -222,9 +221,9 @@ class LocalLevelsState : InGameState() {
                         updateLevelElements()
                     } else {
                         this@LocalLevelsState.gui.isInteractionEnabled = false
-                        val window = Game.guis.openWindow("", 400.0f, 460.0f, false, false, false)
+                        val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
                         val widget = InfoWidget("Level rejected", "You can only upload\nlevels once every 60 seconds.") {
-                            Game.guis.closeWindow(window)
+                            window.close()
                             Game.tasks.submit({
                                 this@LocalLevelsState.gui.isInteractionEnabled = true
                             })
@@ -352,9 +351,9 @@ class LocalLevelsState : InGameState() {
                     it.color.set(0x2E91F4FF)
                 }
             }) {
-                val window = Game.guis.openWindow("", 400.0f, 460.0f, false, false, false)
+                val window = this@LocalLevelsState.gui.openWindow("", 400.0f, 460.0f, false, false, false)
                 val widget = LeaderboardWidget(uuid) {
-                    Game.guis.closeWindow(window)
+                    window.close()
                 }.also {
                     it.constraints.x = same()
                     it.constraints.y = same()
@@ -474,7 +473,7 @@ class LocalLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            returnState = TransitionGameState(OnlineLevelsState(), CircleTransition())
+            returnState = TransitionGameState(OnlineLevelsState(), LinearTransition(LinearTransition.Direction.DOWN))
         }
         onlineButton.constraints.x = absolute(buttonOffsetFromSide + buttonSize * 3 + buttonSpacing * 3, true)
         onlineButton.constraints.y = absolute(buttonOffsetFromSide)
@@ -524,9 +523,9 @@ class LocalLevelsState : InGameState() {
                 it.color.set(0x2E91F4FF)
             }
         }) {
-            val window = Game.guis.openWindow("", 400.0f, 300.0f, false, false, false)
+            val window = gui.openWindow("", 400.0f, 300.0f, false, false, false)
             val widget = SettingsWidget() {
-                Game.guis.closeWindow(window)
+                window.close()
             }.also {
                 it.constraints.x = same()
                 it.constraints.y = same()

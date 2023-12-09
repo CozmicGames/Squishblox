@@ -197,7 +197,7 @@ class WorldRenderer {
         }
     }
 
-    fun render(delta: Float, camera: PlayerCamera, scene: WorldScene, drawGuis: Boolean) {
+    fun render(delta: Float, camera: PlayerCamera, scene: WorldScene) {
         if (isFirstRender) {
             clouds.forEach {
                 findCloudSpawnPosition(it, true)
@@ -228,8 +228,5 @@ class WorldRenderer {
         val range = rangeMin..rangeMax
 
         Game.graphics2d.render(camera.camera) { it in range }
-
-        if (drawGuis)
-            Game.guis.render()
     }
 }

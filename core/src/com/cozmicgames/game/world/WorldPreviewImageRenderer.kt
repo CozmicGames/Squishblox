@@ -36,7 +36,7 @@ class WorldPreviewImageRenderer(val width: Int, val height: Int) : Disposable {
         scene.initialize(data)
         scene.baseRenderLayer = RenderLayers.WORLD_PREVIEW_BASE_LAYER + RenderLayers.WORLD_PREVIEW_BASE_LAYER_INCREMENT * indexInFrame
         scene.update(0.0f)
-        worldRenderer.render(0.0f, camera, scene, false)
+        worldRenderer.render(0.0f, camera, scene)
 
         val image = Pixmap.createFromFrameBuffer(0, 0, renderPass.width, renderPass.height)
 

@@ -1,8 +1,9 @@
 package com.cozmicgames.game.graphics.renderer
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Pixmap
 import com.cozmicgames.game.Game
 import com.cozmicgames.game.graphics.engine.rendergraph.functions.BlankRenderFunction
-import com.cozmicgames.game.graphics.engine.rendergraph.functions.BlurHorizontalRenderFunction
 import com.cozmicgames.game.graphics.engine.rendergraph.functions.present.TonemapPresentFunction
 import com.cozmicgames.game.graphics.engine.rendergraph.onRender
 import com.cozmicgames.game.graphics.engine.rendergraph.passes.ColorRenderPass
@@ -10,23 +11,28 @@ import com.cozmicgames.game.renderGraph
 
 class Renderer2D {
     companion object {
+        const val LOADING = "loading"
+
         const val MENU = "menu"
 
         const val WORLD = "world"
-
-        const val INGAME_MENU_BLUR_HORIZONTAL = "inGameMenuBlurHorizontal"
-        const val INGAME_MENU_BLUR_VERTICAL = "inGameMenuBlurVertical"
-        const val INGAME_MENU = "inGameMenuFinal"
 
         const val TRANSITION_FROM = "transitionFrom"
         const val TRANSITION_TO = "transitionTo"
         const val TRANSITION = "transition"
     }
 
-    var currentPresentSource = WORLD
+    var currentPresentSource = ""
         private set
 
+    private var takeScreenshotCallbacks = arrayListOf<(Pixmap) -> Unit>()
+
     init {
+        /**
+         * MENU
+         */
+        Game.renderGraph.onRender(LOADING, ColorRenderPass(), LoadingRenderFunction())
+
         /**
          * MENU
          */
@@ -36,13 +42,6 @@ class Renderer2D {
          * WORLD
          */
         Game.renderGraph.onRender(WORLD, ColorRenderPass(), WorldRenderFunction())
-
-        /**
-         * INGAME MENU
-         */
-        Game.renderGraph.onRender(INGAME_MENU_BLUR_HORIZONTAL, ColorRenderPass(), BlurHorizontalRenderFunction(WORLD, 0))
-        Game.renderGraph.onRender(INGAME_MENU_BLUR_VERTICAL, ColorRenderPass(), BlurHorizontalRenderFunction(INGAME_MENU_BLUR_HORIZONTAL, 0))
-        Game.renderGraph.onRender(INGAME_MENU, ColorRenderPass(), InGameMenuRenderFunction())
 
         /**
          * TRANSITION
@@ -62,11 +61,24 @@ class Renderer2D {
         currentPresentSource = pass
     }
 
+    fun takeScreenshot(callback: (Pixmap) -> Unit) {
+        takeScreenshotCallbacks += callback
+    }
+
     fun beginFrame() {
 
     }
 
     fun endFrame() {
+        if (takeScreenshotCallbacks.isNotEmpty()) {
+            val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.width, Gdx.graphics.height)
 
+            takeScreenshotCallbacks.forEach {
+                it(pixmap)
+            }
+
+            pixmap.dispose()
+            takeScreenshotCallbacks.clear()
+        }
     }
 }

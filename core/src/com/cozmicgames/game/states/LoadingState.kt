@@ -9,14 +9,14 @@ import com.cozmicgames.game.graphics.gui.elements.Image
 import com.cozmicgames.game.graphics.gui.elements.Label
 import com.cozmicgames.game.graphics.gui.elements.Progressbar
 import com.cozmicgames.game.graphics.gui.skin.ColorDrawableValue
+import com.cozmicgames.game.graphics.renderer.Renderer2D
 import com.cozmicgames.game.widgets.ConfirmWidget
 import java.util.ArrayDeque
 import kotlin.system.measureTimeMillis
 
-class LoadingState : GameState {
-    private var returnState: GameState = this
+class LoadingState : InGameState() {
+    override val presentSource get() = Renderer2D.LOADING
 
-    private val gui = Game.guis.create()
     private val loadingTasks = ArrayDeque<() -> Unit>()
     private var toLoadCount = 0
     private var loadedCount = 0
@@ -168,7 +168,7 @@ class LoadingState : GameState {
         gui.addElement(versionLabel)
     }
 
-    override fun render(delta: Float): () -> GameState {
+    override fun update(delta: Float) {
         var usedTime = 0L
         while (usedTime < 10 && loadingTasks.isNotEmpty()) {
             usedTime += measureTimeMillis {
@@ -202,7 +202,7 @@ class LoadingState : GameState {
                 if (!isTutorialInfoWindowOpen) {
                     isTutorialInfoWindowOpen = true
 
-                    val window = Game.guis.openWindow("", 500.0f, 300.0f, false, false, false)
+                    val window = gui.openWindow("", 500.0f, 300.0f, false, false, false)
                     val widget = ConfirmWidget("Play tutorial", "You haven't played the tutorial yet.\nPlay it now?") {
                         returnState = if (it)
                             TransitionGameState(PlayTutorialLevelState(), CircleTransition())
@@ -210,7 +210,7 @@ class LoadingState : GameState {
                             TransitionGameState(LocalLevelsState(), CircleTransition())
 
                         Game.tasks.submit({
-                            Game.guis.closeWindow(window)
+                            window.close()
                         })
                     }.also {
                         it.constraints.x = same()
@@ -223,11 +223,5 @@ class LoadingState : GameState {
             } else
                 returnState = TransitionGameState(LocalLevelsState(), CircleTransition())
         }
-
-        return { returnState }
-    }
-
-    override fun end() {
-        Game.guis.remove(gui)
     }
 }

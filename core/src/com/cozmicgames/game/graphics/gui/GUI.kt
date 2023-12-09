@@ -14,7 +14,7 @@ import com.cozmicgames.common.utils.extensions.unproject
 import com.cozmicgames.common.utils.maths.intersectPointRect
 import kotlin.math.abs
 
-class GUI : Disposable {
+class GUI(private val baseWindowLayer: Int = 1000, private val maxLayersInWindow: Int = 100) : Disposable {
     var inputX = -Float.MAX_VALUE
         private set
 
@@ -60,8 +60,6 @@ class GUI : Disposable {
 
     var isEnabled by root::isEnabled
 
-    var pauseRenderingOnDisabled = false
-
     var baseLayer = 0
 
     private val layers = hashMapOf<Int, GUILayer>()
@@ -69,6 +67,7 @@ class GUI : Disposable {
     private val usedLayers = hashSetOf<Int>()
     private val scissorStack = ScissorStack()
     private var deltaCounter = 0.0f
+    private val windows = arrayListOf<GUIWindow>()
 
     init {
         root.constraints.x = absolute(0.0f)
@@ -82,8 +81,29 @@ class GUI : Disposable {
         root.addElement(element)
     }
 
-    fun removeElement(element: GUIElement) {
-        root.removeElement(element)
+    fun removeElement(element: GUIElement): Boolean {
+        return root.removeElement(element)
+    }
+
+    fun openWindow(title: String, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true) = openWindow(title, (Gdx.graphics.width - width) * 0.5f, (Gdx.graphics.height - height) * 0.5f, width, height, isResizable, hasTitleBar, isScrollable)
+
+    fun openWindow(title: String, x: Float, y: Float, width: Float, height: Float, isResizable: Boolean = true, hasTitleBar: Boolean = true, isScrollable: Boolean = true): GUIWindow {
+        val window = GUIWindow(title, isResizable, hasTitleBar, isScrollable, baseWindowLayer + windows.size * maxLayersInWindow).also { //TODO: Temporary fix, actually fix multiple windows overlapping eventually
+            it.windowX = x
+            it.windowY = y
+            it.windowWidth = width
+            it.windowHeight = height
+        }
+        windows += window
+        addElement(window)
+        return window
+    }
+
+    fun closeWindow(window: GUIWindow) {
+        if (removeElement(window)) {
+            windows -= window
+            window.onClose()
+        }
     }
 
     fun pushScissor(rectangle: Rectangle) {
@@ -172,9 +192,6 @@ class GUI : Disposable {
     }
 
     fun render() {
-        if (pauseRenderingOnDisabled && !root.isEnabled)
-            return
-
         usedLayers.clear()
 
         fun renderElement(element: GUIElement) {

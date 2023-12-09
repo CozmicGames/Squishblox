@@ -10,7 +10,6 @@ abstract class WorldGameState : InGameState(), SuspendableGameState {
     override val presentSource = Renderer2D.WORLD
 
     init {
-        Game.player.currentState = this
         Game.player.camera.getMaxZoom = { 1.5f }
         Game.player.camera.getMinZoom = { 0.5f }
         Game.player.camera.getMinY = { WorldConstants.WORLD_MIN_Y }
@@ -30,9 +29,5 @@ abstract class WorldGameState : InGameState(), SuspendableGameState {
         Game.renderer2d.setPresentSource(presentSource)
 
         gui.isInteractionEnabled = true
-    }
-
-    override fun end() {
-        Game.guis.remove(gui)
     }
 }

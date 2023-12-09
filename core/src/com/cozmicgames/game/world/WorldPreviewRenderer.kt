@@ -33,7 +33,7 @@ class WorldPreviewRenderer(val width: Int, val height: Int) : Updatable, Disposa
         val camera = camera ?: return
         renderPass.begin()
         scene.update(delta)
-        worldRenderer.render(delta, camera, scene, false)
+        worldRenderer.render(delta, camera, scene)
 
         FrameBuffer.unbind()
     }
