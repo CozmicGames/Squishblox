@@ -65,10 +65,16 @@ abstract class GUIElement {
     var isSolid = true
 
     var minContentWidth = 0.0f
-        protected set
+        protected set(value) {
+            field = value
+            transform.update(0.0f)
+        }
 
     var minContentHeight = 0.0f
-        protected set
+        protected set(value) {
+            field = value
+            transform.update(0.0f)
+        }
 
     open val scissorRectangle: Rectangle? = null
 
@@ -83,6 +89,9 @@ abstract class GUIElement {
     fun addElement(element: GUIElement) {
         element.parent = this
         element.onAdded()
+
+        transform.update(0.0f)
+        element.transform.update(0.0f)
     }
 
     fun removeElement(element: GUIElement): Boolean {
@@ -91,6 +100,8 @@ abstract class GUIElement {
 
         element.parent = null
         element.onRemoved()
+
+        transform.update(0.0f)
 
         return true
     }

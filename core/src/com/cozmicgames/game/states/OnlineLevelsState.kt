@@ -25,7 +25,9 @@ import com.cozmicgames.game.widgets.LeaderboardWidget
 import com.cozmicgames.game.widgets.SettingsWidget
 
 class OnlineLevelsState : InGameState() {
-    private abstract inner class MenuElement : GUIElement()
+    private abstract inner class MenuElement : GUIElement() {
+        override val additionalLayers get() = 10
+    }
 
     private inner class LoadingLevelElement : MenuElement() {
         override fun render() {
