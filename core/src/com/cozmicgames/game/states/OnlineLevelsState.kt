@@ -264,7 +264,7 @@ class OnlineLevelsState : InGameState() {
                 it.color.set(0xd3c781FF.toInt())
             }
         }) {
-            override val additionalLayers = 10
+            override val additionalLayers = 15
         }
         buttonBackground.constraints.x = absolute(0.0f, true)
         buttonBackground.constraints.y = absolute(0.0f)

@@ -13,10 +13,6 @@ import com.cozmicgames.game.graphics.renderer.TransitionRenderFunction
 class TransitionGameState(private val toGameState: InGameState, transition: Transition, val duration: Float = 1.0f, val interpolation: Interpolation = Interpolation.fade) : GameState {
     private var time = 0.0f
 
-    private val framebuffer = FrameBufferBuilder(Gdx.graphics.width, Gdx.graphics.height).apply {
-        addBasicColorTextureAttachment(Pixmap.Format.RGBA8888)
-    }.build()
-
     init {
         Game.renderGraph.getNode(Renderer2D.TRANSITION_FROM)?.renderFunction = ScreenshotRenderFunction()
 
@@ -44,9 +40,5 @@ class TransitionGameState(private val toGameState: InGameState, transition: Tran
             return { toGameState }
         } else
             return { this }
-    }
-
-    override fun end() {
-        framebuffer.dispose()
     }
 }

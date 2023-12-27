@@ -49,8 +49,6 @@ class Renderer2D {
         Game.renderGraph.onRender(TRANSITION_FROM, ColorRenderPass(), BlankRenderFunction())
         Game.renderGraph.onRender(TRANSITION_TO, ColorRenderPass(), BlankRenderFunction())
         Game.renderGraph.onRender(TRANSITION, ColorRenderPass(), BlankRenderFunction())
-
-        setPresentSource(MENU)
     }
 
     fun setPresentSource(pass: String) {
